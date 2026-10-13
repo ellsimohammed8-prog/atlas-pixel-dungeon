@@ -23,6 +23,13 @@ public class Atlas_Changes {
 
 	public static void add_Atlas_Changes( ArrayList<ChangeInfo> changeInfos ){
 
+		ChangeInfo changes113 = new ChangeInfo("v1.1.3", true, "");
+		changes113.hardlight(Window.TITLE_COLOR);
+		changeInfos.add(changes113);
+
+		changes113.addButton( new ChangeButton( ChangeIcons.V081_MISC, "Arabic, Drawn Solid",
+				"Arabic text is now drawn with a hairline outline in the text's own colour, thickening the fine strokes that join letters together. Words now read as the connected cursive Arabic is written in — in menus, descriptions, and the dungeon log alike."));
+
 		ChangeInfo changes112 = new ChangeInfo("v1.1.2", true, "");
 		changes112.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes112);

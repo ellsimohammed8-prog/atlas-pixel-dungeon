@@ -177,10 +177,15 @@ public abstract class PlatformSupport {
 			parameters.size = genSize;
 			parameters.flip = flipped;
 			if (border) {
-				//Atlas: no border for Arabic. The outline is drawn per-glyph, and since
-				//Arabic glyphs overlap (ink wider than advance), each glyph's outline
-				//paints over the previous glyph's joining stroke, cutting words apart.
-				parameters.borderWidth = arabicText ? 0f : parameters.size / 10f;
+				//Atlas: Arabic gets a hairline border in the SAME colour as the text
+				//itself (white — glyphs are tinted at draw time). Naskh joining
+				//strokes rasterize ~1px and nearly invisible at UI sizes, so words
+				//look disconnected even with correct advances; the same-colour
+				//outline fattens every stroke, joins included, so words read as
+				//connected cursive. (A dark outline would cut the joins instead —
+				//that was the original reason Arabic had no border at all.)
+				parameters.borderWidth = arabicText ? Math.max(0.5f, parameters.size * 0.03f) : parameters.size / 10f;
+				if (arabicText) parameters.borderColor = com.badlogic.gdx.graphics.Color.WHITE;
 			}
 			if (size >= 20){
 				parameters.renderCount = 2;

@@ -23,6 +23,13 @@ public class Atlas_Changes {
 
 	public static void add_Atlas_Changes( ArrayList<ChangeInfo> changeInfos ){
 
+		ChangeInfo changes112 = new ChangeInfo("v1.1.2", true, "");
+		changes112.hardlight(Window.TITLE_COLOR);
+		changeInfos.add(changes112);
+
+		changes112.addButton( new ChangeButton( ChangeIcons.V081_MISC, "Arabic, Finally Connected",
+				"A fault in how Arabic letters were spaced — every letter was advanced at double its proper width — has been found and fixed. Arabic words now join up in true cursive, the way Arabic is written, in menus, descriptions, and the dungeon log alike."));
+
 		ChangeInfo changes111 = new ChangeInfo("v1.1.1", true, "");
 		changes111.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes111);

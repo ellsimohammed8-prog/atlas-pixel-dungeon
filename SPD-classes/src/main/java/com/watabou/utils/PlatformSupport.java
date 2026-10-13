@@ -166,10 +166,13 @@ public abstract class PlatformSupport {
 		if (border) key += Short.MAX_VALUE; //surely we'll never have a size above 32k
 		if (flipped) key = -key;
 		if (!fonts.get(generator).containsKey(key)) {
-			//Atlas: Arabic is generated at 2x size and scaled back down. At the small
-			//sizes the UI uses, Naskh joining strokes are thinner than one pixel and
-			//are lost when rasterized; supersampling keeps them thick enough to survive.
-			int genSize = arabicText ? size * 2 : size;
+			//Atlas: Arabic is generated at its TRUE size. Do NOT supersample Arabic:
+			//with incremental glyph loading, glyphs loaded after generation keep
+			//their generation-scale xadvance (setScale does not reach them), so a
+			//2x generation silently doubles every Arabic letter advance and words
+			//can never join. Measured directly: at size 13 a medial beh advances
+			//8px under 2x+setScale vs the font's designed 4px at 1x.
+			int genSize = size;
 			FreeTypeFontGenerator.FreeTypeFontParameter parameters = new FreeTypeFontGenerator.FreeTypeFontParameter();
 			parameters.size = genSize;
 			parameters.flip = flipped;
@@ -192,7 +195,6 @@ public abstract class PlatformSupport {
 
 			try {
 				BitmapFont font = generator.generateFont(parameters);
-				if (arabicText) font.getData().setScale(0.5f);
 				font.getData().missingGlyph = font.getData().getGlyph('�');
 				fonts.get(generator).put(key, font);
 			} catch ( Exception e ){
@@ -202,9 +204,9 @@ public abstract class PlatformSupport {
 		}
 
 		BitmapFont result = fonts.get(generator).get(key);
-		//Atlas: tighten Arabic glyph advances proportionally (~8% of each advance).
-		//A flat -1 was invisible at phone font sizes (advances there are 2-3x the
-		//desktop test sizes), which left words looking scattered on real devices.
+		//Atlas: tighten Arabic glyph advances slightly (~6% of each advance) so
+		//joining strokes overlap a hair beyond the font's own metrics — a safety
+		//margin against per-glyph rounding at small sizes.
 		//integer advances rounded up from the font's metrics, which spreads joining
 		//letters apart; pulling each advance in by one unit closes the joins.
 		if (result != null && arabicText) {
@@ -217,7 +219,7 @@ public abstract class PlatformSupport {
 				if (page == null) continue;
 				for (com.badlogic.gdx.graphics.g2d.BitmapFont.Glyph g : page) {
 					if (g != null && done.add(g.id)) {
-						int cut = Math.max(1, Math.round(g.xadvance * 0.08f));
+						int cut = (g.xadvance > 3) ? Math.max(1, Math.round(g.xadvance * 0.06f)) : 0;
 						g.xadvance = Math.max(1, g.xadvance - cut);
 					}
 				}

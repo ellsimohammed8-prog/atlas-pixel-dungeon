@@ -15,8 +15,8 @@ allprojects {
         appPackageName = 'com.mohammedguejjim.atlaspixeldungeon'
 
         //Full releases gets +2 on version code, needed for an F-Droid quirk
-        appVersionCode = 924
-        appVersionName = '1.1.1'
+        appVersionCode = 925
+        appVersionName = '1.1.2'
 
         appJavaCompatibility = JavaVersion.VERSION_11
 

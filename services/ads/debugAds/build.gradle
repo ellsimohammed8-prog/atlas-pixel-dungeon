@@ -5,5 +5,7 @@ java.sourceCompatibility = java.targetCompatibility = appJavaCompatibility
 
 dependencies {
     implementation project(':SPD-classes')
+    //AdService lives in :core (Atlas ads abstraction), the impls must depend on it explicitly
+    implementation project(':core')
     api project(':services')
 }

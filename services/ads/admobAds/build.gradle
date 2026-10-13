@@ -16,6 +16,8 @@ android {
 
 dependencies {
     implementation project(':SPD-classes')
+    //AdService lives in :core (Atlas ads abstraction), the impls must depend on it explicitly
+    implementation project(':core')
     api project(':services')
     // AdMob SDK (Atlas: replace test ad IDs in AdMobAds.java / AndroidManifest with your own before release)
     implementation 'com.google.android.gms:play-services-ads:23.6.0'

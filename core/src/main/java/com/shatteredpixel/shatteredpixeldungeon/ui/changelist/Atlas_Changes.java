@@ -23,6 +23,18 @@ public class Atlas_Changes {
 
 	public static void add_Atlas_Changes( ArrayList<ChangeInfo> changeInfos ){
 
+		ChangeInfo changes111 = new ChangeInfo("v1.1.1", true, "");
+		changes111.hardlight(Window.TITLE_COLOR);
+		changeInfos.add(changes111);
+
+		changes111.addButton( new ChangeButton( ChangeIcons.V081_MISC, "Heroes, Framed for Your Phone",
+				"Every hero's splash artwork has been repainted in portrait, composed for phone screens, so your hero stands front and center instead of being cropped away at the edges.\n" +
+				"\n" +
+				"The hero select screen also opens with the Atlas King already presented — no more empty black screen before you choose."));
+
+		changes111.addButton( new ChangeButton( ChangeIcons.V074_SHPX, "Arabic, Drawn Tighter",
+				"Arabic letter spacing has been tightened throughout the game, scaled to the larger text sizes phones actually use, so words hold together the way they should."));
+
 		ChangeInfo changes110 = new ChangeInfo("v1.1.0", true, "");
 		changes110.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes110);

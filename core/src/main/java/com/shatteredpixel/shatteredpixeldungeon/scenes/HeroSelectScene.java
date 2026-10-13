@@ -388,9 +388,10 @@ public class HeroSelectScene extends PixelScene {
 		add(fadeResetter);
 		resetFade();
 
-		if (GamesInProgress.selectedClass != null){
-			setSelectedHero(GamesInProgress.selectedClass);
-		}
+		//Atlas: always present a hero on entry (the Atlas King by default) so a
+		//fresh profile never opens onto an empty black screen.
+		setSelectedHero(GamesInProgress.selectedClass != null
+				? GamesInProgress.selectedClass : HeroClass.WARRIOR);
 
 		if (Badges.isUnlocked(Badges.Badge.VICTORY) && !SPDSettings.victoryNagged()) {
 			SPDSettings.victoryNagged(true);
@@ -425,6 +426,20 @@ public class HeroSelectScene extends PixelScene {
 		}
 		background.visible = true;
 		background.hardlight(1.5f,1.5f,1.5f);
+
+		//Atlas: hero splash art is portrait (phone-shaped) since v1.1.1, so re-fit
+		//the background to the actual texture instead of assuming 800x450 landscape.
+		background.scale.set(Camera.main.height/background.height);
+		background.x = (Camera.main.width - background.width())/2f;
+		background.y = (Camera.main.height - background.height())/2f;
+		if (landscape()){
+			background.x += insets.left + Math.max(100, (Camera.main.width - insets.left - insets.right)/3f)/6f;
+		}
+		PixelScene.align(background);
+		fadeLeft.x = background.x-2;
+		fadeLeft.scale.set(3, background.height());
+		fadeRight.x = background.x + background.width() + 2;
+		fadeRight.y = background.y + background.height();
 
 		float leftPortion = Math.max(100, (Camera.main.width - insets.left - insets.right)/3f);
 

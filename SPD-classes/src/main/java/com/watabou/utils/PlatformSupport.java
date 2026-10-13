@@ -202,7 +202,9 @@ public abstract class PlatformSupport {
 		}
 
 		BitmapFont result = fonts.get(generator).get(key);
-		//Atlas: tighten Arabic glyph advances by 1 (at generation scale). libGDX stores
+		//Atlas: tighten Arabic glyph advances proportionally (~8% of each advance).
+		//A flat -1 was invisible at phone font sizes (advances there are 2-3x the
+		//desktop test sizes), which left words looking scattered on real devices.
 		//integer advances rounded up from the font's metrics, which spreads joining
 		//letters apart; pulling each advance in by one unit closes the joins.
 		if (result != null && arabicText) {
@@ -215,7 +217,8 @@ public abstract class PlatformSupport {
 				if (page == null) continue;
 				for (com.badlogic.gdx.graphics.g2d.BitmapFont.Glyph g : page) {
 					if (g != null && done.add(g.id)) {
-						g.xadvance = Math.max(1, g.xadvance - 1);
+						int cut = Math.max(1, Math.round(g.xadvance * 0.08f));
+						g.xadvance = Math.max(1, g.xadvance - cut);
 					}
 				}
 			}

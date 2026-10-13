@@ -1,0 +1,13 @@
+apply plugin: 'java-library'
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+java.sourceCompatibility = java.targetCompatibility = appJavaCompatibility
+
+dependencies {
+    implementation project(':SPD-classes')
+    api project(':services')
+    // AdMob SDK (Atlas: replace test ad IDs in AdMobAds.java / AndroidManifest with your own before release)
+    implementation 'com.google.android.gms:play-services-ads:23.6.0'
+    // UMP consent SDK (GDPR consent form for EEA/UK; also ships transitively with play-services-ads)
+    implementation 'com.google.android.ump:user-messaging-platform:2.2.0'
+}

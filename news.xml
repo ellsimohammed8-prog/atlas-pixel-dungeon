@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Atlas Pixel Dungeon in-game news feed.
+     The game downloads this file and shows the entries below in its news window.
+     To publish a new article, add an <entry> at the TOP of the list and push.
+     Dates must use the format yyyy-MM-dd. Keep summaries short. -->
+<feed>
+	<entry>
+		<title>Welcome to Atlas Pixel Dungeon!</title>
+		<published>2026-10-13</published>
+		<summary>Version 1.1.0 is here: full Arabic support, a new ads setting, and the story of King Atlas and the Crown. Thank you for playing!</summary>
+		<link href="https://github.com/ellsimohammed8-prog/atlas-pixel-dungeon"/>
+	</entry>
+	<entry>
+		<title>مرحبًا بكم في أطلس بيكسل دانجن!</title>
+		<published>2026-10-13</published>
+		<summary>الإصدار 1.1.0 وصل: دعم كامل للعربية، إعداد جديد للإعلانات، وقصة الملك أطلس والتاج. شكرًا للعبكم!</summary>
+		<link href="https://github.com/ellsimohammed8-prog/atlas-pixel-dungeon"/>
+	</entry>
+</feed>

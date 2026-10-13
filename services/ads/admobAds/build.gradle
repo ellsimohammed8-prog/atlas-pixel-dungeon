@@ -1,7 +1,18 @@
-apply plugin: 'java-library'
+//Atlas: this module is an ANDROID library, not a plain Java library.
+//It compiles against the AdMob/UMP SDKs, which ship as Android archives
+//(AAR) whose dependencies only publish Android variants — a java-library
+//consumer cannot resolve them ('No matching variant' in Gradle).
+apply plugin: 'com.android.library'
 
-[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-java.sourceCompatibility = java.targetCompatibility = appJavaCompatibility
+android {
+    namespace 'com.shatteredpixel.shatteredpixeldungeon.services.ads'
+    compileSdk appAndroidCompileSDK
+    compileOptions.sourceCompatibility = compileOptions.targetCompatibility = appJavaCompatibility
+
+    defaultConfig {
+        minSdk appAndroidMinSDK
+    }
+}
 
 dependencies {
     implementation project(':SPD-classes')

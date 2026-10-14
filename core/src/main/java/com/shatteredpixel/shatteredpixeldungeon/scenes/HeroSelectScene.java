@@ -87,6 +87,7 @@ public class HeroSelectScene extends PixelScene {
 	private RenderedTextBlock heroName; //only on landscape
 	private RenderedTextBlock heroDesc; //only on landscape
 	private StyledButton startBtn;
+	private StyledButton pactsBtn;
 	private IconButton infoButton;
 	private IconButton btnOptions;
 	private GameOptions optionsPane;
@@ -168,6 +169,27 @@ public class HeroSelectScene extends PixelScene {
 		startBtn.textColor(Window.TITLE_COLOR);
 		add(startBtn);
 		startBtn.visible = startBtn.active = false;
+
+		//Atlas: a clearly labelled, always-visible entry to the challenges & pacts window.
+		//The options-gear path alone left the feature undiscoverable on phones.
+		pactsBtn = new StyledButton(Chrome.Type.GREY_BUTTON_TR, Messages.titleCase(Messages.get(this, "challenges_pacts"))){
+			@Override
+			protected void onClick() {
+				super.onClick();
+				ShatteredPixelDungeon.scene().addToFront(new WndChallenges(SPDSettings.challenges(), true) {
+					public void onBackPressed() {
+						super.onBackPressed();
+						pactsBtn.icon(Icons.get(SPDSettings.challenges() > 0 || SPDSettings.pacts() > 0 ? Icons.CHALLENGE_COLOR : Icons.CHALLENGE_GREY));
+						updateOptionsColor();
+					}
+				} );
+			}
+		};
+		pactsBtn.icon(Icons.get(SPDSettings.challenges() > 0 || SPDSettings.pacts() > 0 ? Icons.CHALLENGE_COLOR : Icons.CHALLENGE_GREY));
+		pactsBtn.setSize(pactsBtn.reqWidth() + 8, 21);
+		pactsBtn.textColor(Window.TITLE_COLOR);
+		add(pactsBtn);
+		pactsBtn.visible = pactsBtn.active = false;
 
 		infoButton = new IconButton(Icons.get(Icons.INFO)){
 			@Override
@@ -466,6 +488,10 @@ public class HeroSelectScene extends PixelScene {
 
 			startBtn.visible = startBtn.active = true;
 
+			pactsBtn.visible = pactsBtn.active = true;
+			pactsBtn.setPos(insets.left + leftPortion + (Camera.main.width - insets.left - insets.right - leftPortion - pactsBtn.width())/2f, insets.top + 6);
+			align(pactsBtn);
+
 			infoButton.visible = infoButton.active = true;
 			infoButton.setPos(heroName.right(), heroName.top() + (heroName.height() - infoButton.height())/2f);
 			align(infoButton);
@@ -487,6 +513,10 @@ public class HeroSelectScene extends PixelScene {
 
 			btnOptions.visible = btnOptions.active = !SPDSettings.intro();
 			btnOptions.setPos(startBtn.left()-btnOptions.width(), startBtn.top());
+
+			pactsBtn.visible = pactsBtn.active = true;
+			pactsBtn.setPos((Camera.main.width - pactsBtn.width())/2f, insets.top + 6);
+			PixelScene.align(pactsBtn);
 
 			optionsPane.setPos(heroBtns.get(0).left(), startBtn.top() - optionsPane.height() - 2);
 			align(optionsPane);

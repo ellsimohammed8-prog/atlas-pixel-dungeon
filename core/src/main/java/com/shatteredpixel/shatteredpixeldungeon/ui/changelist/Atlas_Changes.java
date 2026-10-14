@@ -23,6 +23,13 @@ public class Atlas_Changes {
 
 	public static void add_Atlas_Changes( ArrayList<ChangeInfo> changeInfos ){
 
+		ChangeInfo changes122 = new ChangeInfo("v1.2.2", true, "");
+		changes122.hardlight(Window.TITLE_COLOR);
+		changeInfos.add(changes122);
+
+		changes122.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.AMULET), "Pacts, Front and Center",
+				"The challenges and pacts window could only be reached through the small options gear on the hero select screen - easy to miss entirely on a phone, and missing altogether before your first finished run. There is now a labelled _Challenges & Pacts_ button at the top of the hero select screen, always there when a hero is chosen."));
+
 		ChangeInfo changes121 = new ChangeInfo("v1.2.1", true, "");
 		changes121.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes121);

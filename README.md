@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.2.1-gold" alt="Version 1.2.1">
+  <img src="https://img.shields.io/badge/version-1.2.2-gold" alt="Version 1.2.2">
   <img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="License GPL-3.0">
   <img src="https://img.shields.io/badge/platform-Android%20%7C%20Desktop-green" alt="Platforms">
   <img src="https://img.shields.io/badge/languages-22%20incl.%20full%20Arabic-red" alt="22 languages">

@@ -5,6 +5,18 @@
      Dates must use the format yyyy-MM-dd. Keep summaries short. -->
 <feed>
 	<entry>
+		<title>Version 1.2.2 — Pacts, Front and Center</title>
+		<published>2026-10-15</published>
+		<summary>The challenges and pacts window could only be opened from a small options gear on the hero select screen — easy to miss entirely on a phone. There is now a labelled Challenges &amp; Pacts button at the top of the hero select screen, always visible when a hero is chosen.</summary>
+		<link href="https://github.com/ellsimohammed8-prog/atlas-pixel-dungeon/releases"/>
+	</entry>
+	<entry>
+		<title>الإصدار 1.2.2 — العهود في الواجهة</title>
+		<published>2026-10-15</published>
+		<summary>كانت نافذة التحديات والعهود لا تُفتح إلا من أيقونة خيارات صغيرة في شاشة اختيار البطل — يسهل تفويتها كليًا على الهاتف. أصبح هناك الآن زر واضح باسم «التحديات والعهود» في أعلى شاشة اختيار البطل، ظاهر دائمًا عند اختيار بطل.</summary>
+		<link href="https://github.com/ellsimohammed8-prog/atlas-pixel-dungeon/releases"/>
+	</entry>
+	<entry>
 		<title>Version 1.2.1 — Pacts, Open to All</title>
 		<published>2026-10-14</published>
 		<summary>A quick fix, with an apology: in 1.2.0 the Pacts of Atlas were locked behind a first victory, hiding them from new players. Pacts are now open from the very first run. Challenges still unlock after a victory, as they always have.</summary>

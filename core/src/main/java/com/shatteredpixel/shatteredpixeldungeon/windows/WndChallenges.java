@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
+import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Pacts;
@@ -33,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.watabou.utils.DeviceCompat;
 
 import java.util.ArrayList;
 
@@ -64,6 +66,9 @@ public class WndChallenges extends Window {
 
 		boxes = new ArrayList<>();
 
+		//Atlas: challenges stay victory-gated, pacts are open to all from the first run
+		boolean challengesLocked = editable && !Badges.isUnlocked(Badges.Badge.VICTORY) && !DeviceCompat.isDebug();
+
 		float pos = TTL_HEIGHT;
 		for (int i=0; i < Challenges.NAME_IDS.length; i++) {
 
@@ -71,7 +76,7 @@ public class WndChallenges extends Window {
 			
 			CheckBox cb = new CheckBox( Messages.titleCase(Messages.get(Challenges.class, challenge)) );
 			cb.checked( (checked & Challenges.MASKS[i]) != 0 );
-			cb.active = editable;
+			cb.active = editable && !challengesLocked;
 
 			if (i > 0) {
 				pos += GAP;
@@ -94,6 +99,17 @@ public class WndChallenges extends Window {
 			add(info);
 			
 			pos = cb.bottom();
+		}
+
+		if (challengesLocked) {
+			pos += GAP + 3;
+			RenderedTextBlock lockNote = PixelScene.renderTextBlock( Messages.get(this, "challenges_locked"), 8 );
+			lockNote.maxWidth(WIDTH);
+			lockNote.hardlight( 0x999999 );
+			lockNote.setPos( (WIDTH - lockNote.width()) / 2, pos );
+			PixelScene.align(lockNote);
+			add( lockNote );
+			pos += lockNote.height();
 		}
 
 		//Atlas Pixel Dungeon: pacts section

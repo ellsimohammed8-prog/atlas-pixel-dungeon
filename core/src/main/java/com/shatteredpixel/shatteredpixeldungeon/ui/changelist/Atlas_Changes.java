@@ -23,6 +23,15 @@ public class Atlas_Changes {
 
 	public static void add_Atlas_Changes( ArrayList<ChangeInfo> changeInfos ){
 
+		ChangeInfo changes121 = new ChangeInfo("v1.2.1", true, "");
+		changes121.hardlight(Window.TITLE_COLOR);
+		changeInfos.add(changes121);
+
+		changes121.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.AMULET), "Pacts, Open to All",
+				"An apology and a fix. In v1.2.0 the Pacts of Atlas were locked until you had conquered the dungeon once - which hid this edition's newest system from exactly the new players it was made for. Pacts are now open to everyone from the very first run.\n" +
+				"\n" +
+				"Challenges still unlock with a first victory, as they always have."));
+
 		ChangeInfo changes120 = new ChangeInfo("v1.2.0", true, "");
 		changes120.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes120);
@@ -32,7 +41,7 @@ public class Atlas_Changes {
 				"\n" +
 				"The Open Map reveals every floor's layout, but enemies strike harder. The Buried Hoard swells every gold pile, but shop prices rise with it. Thorns answer your wounds in kind, but healing runs weaker. Eight pacts in all - mix them with challenges for runs that play by new rules.\n" +
 				"\n" +
-				"Pacts unlock alongside challenges, once you have conquered the dungeon."));
+				"Pacts are picked in the challenges window before a run, and mix freely with challenges."));
 
 		changes120.addButton( new ChangeButton( ChangeIcons.V081_MISC, "Using Abilities & Targeting",
 				"The Tome of Dungeon Mastery has a new page: _Using Abilities & Targeting_. It explains melee and ranged targeting, which heroes bear weapon abilities, and how armor abilities are earned - the page is yours as soon as you pick the tome up."));

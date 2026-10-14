@@ -236,6 +236,9 @@ public class HeroSelectScene extends PixelScene {
 		if (!Badges.isUnlocked(Badges.Badge.VICTORY) && !DeviceCompat.isDebug()){
 			Dungeon.challenges = 0;
 			SPDSettings.challenges(0);
+			//Atlas: pacts sit behind the same victory gate as challenges
+			Dungeon.pacts = 0;
+			SPDSettings.pacts(0);
 			SPDSettings.customSeed("");
 		}
 

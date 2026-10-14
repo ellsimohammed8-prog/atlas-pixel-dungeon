@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.1.3-gold" alt="Version 1.1.3">
+  <img src="https://img.shields.io/badge/version-1.2.0-gold" alt="Version 1.2.0">
   <img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="License GPL-3.0">
   <img src="https://img.shields.io/badge/platform-Android%20%7C%20Desktop-green" alt="Platforms">
   <img src="https://img.shields.io/badge/languages-22%20incl.%20full%20Arabic-red" alt="22 languages">
@@ -32,6 +32,7 @@ Will you conquer the dungeon and claim the Crown?
 - **25 floors** of procedurally generated dungeon, plus generated side-floors and quests
 - **5 bosses**, each with its own arena and mechanics
 - **Hundreds of items**: weapons, armor, wands, rings, artifacts, potions, scrolls, seeds and more
+- **Pacts of Atlas** *(v1.2.0)* — swear up to 3 optional pacts before a run; each grants a boon and exacts a price, changing how the dungeon plays: reveal every floor's layout while enemies hit harder, swell gold piles while shop prices climb, double a chest's contents while mimics grow bolder, and five more
 - **Full Arabic localization** with proper connected-script rendering — alongside 21 other languages
 - **In-game news and updates served from this very repository** (see [`news.xml`](news.xml))
 - **No account, no always-online requirement** — a classic single-player roguelike

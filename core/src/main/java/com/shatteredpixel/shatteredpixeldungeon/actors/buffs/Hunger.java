@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.actors.buffs;
 
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Pacts;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfChallenge;
@@ -91,6 +92,8 @@ public class Hunger extends Buff implements Hero.Doom {
 					hungerDelay *= 1.5f;
 				}
 				hungerDelay /= SaltCube.hungerGainMultiplier();
+				//Atlas pact: Hungry Dark slows hunger's growth
+				if (Dungeon.isPacted( Pacts.HUNGRY_DARK )) hungerDelay *= 2f;
 
 				float newLevel = level + (1f/hungerDelay);
 				if (newLevel >= STARVING) {

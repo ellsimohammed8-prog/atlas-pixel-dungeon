@@ -23,6 +23,8 @@ package com.shatteredpixel.shatteredpixeldungeon.items;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Pacts;
+import com.watabou.utils.Random;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Wraith;
@@ -76,12 +78,22 @@ public class Heap implements Bundlable {
 	public ItemSprite sprite;
 	public boolean seen = false;
 	public boolean haunted = false;
+	public boolean gamblerDoubled = false; //Atlas pact: chest loot already doubled
 	public boolean autoExplored = false; //used to determine if this heap should count for exploration bonus
 	public boolean hidden = false; //sets alpha to 15%
 	
 	public LinkedList<Item> items = new LinkedList<>();
 	
 	public void open( Hero hero ) {
+		//Atlas pact: Gambler's Crown can double a chest's loot, once, when first opened
+		if (type == Type.CHEST && !gamblerDoubled && Dungeon.isPacted( Pacts.GAMBLER )
+				&& !items.isEmpty() && Random.Float() < 0.25f) {
+			gamblerDoubled = true;
+			ArrayList<Item> extra = new ArrayList<>();
+			for (Item i : items) extra.add( i.duplicate() );
+			items.addAll( extra );
+		}
+
 		switch (type) {
 		case TOMB:
 			Wraith.spawnAround( hero.pos );
@@ -425,6 +437,7 @@ public class Heap implements Bundlable {
 	private static final String HAUNTED	= "haunted";
 	private static final String AUTO_EXPLORED	= "auto_explored";
 	private static final String HIDDEN	= "hidden";
+	private static final String GAMBLER_DOUBLED	= "gambler_doubled";
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -451,6 +464,7 @@ public class Heap implements Bundlable {
 		haunted = bundle.getBoolean( HAUNTED );
 		autoExplored = bundle.getBoolean( AUTO_EXPLORED );
 		hidden = bundle.getBoolean( HIDDEN );
+		gamblerDoubled = bundle.getBoolean( GAMBLER_DOUBLED );
 	}
 
 	@Override
@@ -462,6 +476,7 @@ public class Heap implements Bundlable {
 		bundle.put( HAUNTED, haunted );
 		bundle.put( AUTO_EXPLORED, autoExplored );
 		bundle.put( HIDDEN, hidden );
+		bundle.put( GAMBLER_DOUBLED, gamblerDoubled );
 	}
 	
 }

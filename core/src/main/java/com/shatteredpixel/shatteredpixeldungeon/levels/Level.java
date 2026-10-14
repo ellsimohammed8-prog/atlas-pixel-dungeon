@@ -24,6 +24,7 @@ package com.shatteredpixel.shatteredpixeldungeon.levels;
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Pacts;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
@@ -155,7 +156,7 @@ public abstract class Level implements Bundlable {
 	public boolean[] mapped;
 	public boolean[] discoverable;
 
-	public int viewDistance = Dungeon.isChallenged( Challenges.DARKNESS ) ? 2 : 8;
+	public int viewDistance = Dungeon.isChallenged( Challenges.DARKNESS ) ? 2 : (Dungeon.isPacted( Pacts.HUNGRY_DARK ) ? 6 : 8);
 	
 	public boolean[] heroFOV;
 	
@@ -1415,6 +1416,24 @@ public abstract class Level implements Bundlable {
 				if (!fieldOfView[p] && distance(c.pos, p) <= range) {
 					for (int i : PathFinder.NEIGHBOURS9) {
 						fieldOfView[mob.pos + i] = true;
+					}
+				}
+			}
+		}
+
+		//Atlas pact: Cartographer's Eye reveals secrets and traps near the hero
+		if (c.isAlive() && c == Dungeon.hero && Dungeon.isPacted( Pacts.CARTOGRAPHER )) {
+			for (int cell = 0; cell < length(); cell++) {
+				if (fieldOfView[cell] && distance( c.pos, cell ) <= 6) {
+					int terr = map[cell];
+					if ((Terrain.flags[terr] & Terrain.SECRET) != 0) {
+						discover( cell );
+						GameScene.discoverTile( cell, terr );
+					}
+					Trap t = traps.get( cell );
+					if (t != null && !t.visible) {
+						t.reveal();
+						GameScene.updateMap( cell );
 					}
 				}
 			}

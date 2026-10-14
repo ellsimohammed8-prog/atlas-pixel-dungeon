@@ -181,6 +181,7 @@ public class Dungeon {
 	}
 
 	public static int challenges;
+	public static int pacts;
 	public static float mobsToChampion;
 
 	public static Hero hero;
@@ -235,6 +236,7 @@ public class Dungeon {
 
 		initialVersion = version = Game.versionCode;
 		challenges = SPDSettings.challenges();
+		pacts = SPDSettings.pacts();
 		mobsToChampion = 1;
 
 		Actor.clear();
@@ -289,6 +291,10 @@ public class Dungeon {
 
 	public static boolean isChallenged( int mask ) {
 		return (challenges & mask) != 0;
+	}
+
+	public static boolean isPacted( int mask ) {
+		return (pacts & mask) != 0;
 	}
 
 	public static boolean levelHasBeenGenerated(int depth, int branch){
@@ -490,6 +496,14 @@ public class Dungeon {
 		Actor.init();
 
 		level.addRespawner();
+
+		//Atlas pact: Open Map reveals the whole floor layout on entry
+		if (isPacted( Pacts.OPEN_MAP )) {
+			boolean[] mapped = level.mapped;
+			for (int i = 0; i < level.length(); i++) {
+				mapped[i] = true;
+			}
+		}
 		
 		for(Mob m : level.mobs){
 			if (m.pos == hero.pos && !Char.hasProp(m, Char.Property.IMMOVABLE)){
@@ -607,6 +621,7 @@ public class Dungeon {
 	private static final String DAILY_REPLAY= "daily_replay";
 	private static final String LAST_PLAYED = "last_played";
 	private static final String CHALLENGES	= "challenges";
+	private static final String PACTS	= "pacts";
 	private static final String MOBS_TO_CHAMPION	= "mobs_to_champion";
 	private static final String HERO		= "hero";
 	private static final String DEPTH		= "depth";
@@ -634,6 +649,7 @@ public class Dungeon {
 			bundle.put( DAILY_REPLAY, dailyReplay );
 			bundle.put( LAST_PLAYED, lastPlayed = Game.realTime);
 			bundle.put( CHALLENGES, challenges );
+			bundle.put( PACTS, pacts );
 			bundle.put( MOBS_TO_CHAMPION, mobsToChampion );
 			bundle.put( HERO, hero );
 			bundle.put( DEPTH, depth );
@@ -741,6 +757,7 @@ public class Dungeon {
 		Toolbar.swappedQuickslots = false;
 
 		Dungeon.challenges = bundle.getInt( CHALLENGES );
+		Dungeon.pacts = bundle.getInt( PACTS );
 		Dungeon.mobsToChampion = bundle.getFloat( MOBS_TO_CHAMPION );
 		
 		Dungeon.level = null;
@@ -860,6 +877,7 @@ public class Dungeon {
 		info.depth = bundle.getInt( DEPTH );
 		info.version = bundle.getInt( VERSION );
 		info.challenges = bundle.getInt( CHALLENGES );
+		info.pacts = bundle.getInt( PACTS );
 		info.seed = bundle.getLong( SEED );
 		info.customSeed = bundle.getString( CUSTOM_SEED );
 		info.daily = bundle.getBoolean( DAILY );

@@ -23,6 +23,23 @@ public class Atlas_Changes {
 
 	public static void add_Atlas_Changes( ArrayList<ChangeInfo> changeInfos ){
 
+		ChangeInfo changes120 = new ChangeInfo("v1.2.0", true, "");
+		changes120.hardlight(Window.TITLE_COLOR);
+		changeInfos.add(changes120);
+
+		changes120.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.AMULET), "Pacts of Atlas",
+				"King Atlas sealed his kingdom with oaths, and oaths still hold power in the buried halls. Before a run, open the challenges window and swear up to 3 _Pacts of Atlas_ - bargains that grant a boon and exact a price:\n" +
+				"\n" +
+				"The Open Map reveals every floor's layout, but enemies strike harder. The Buried Hoard swells every gold pile, but shop prices rise with it. Thorns answer your wounds in kind, but healing runs weaker. Eight pacts in all - mix them with challenges for runs that play by new rules.\n" +
+				"\n" +
+				"Pacts unlock alongside challenges, once you have conquered the dungeon."));
+
+		changes120.addButton( new ChangeButton( ChangeIcons.V081_MISC, "Using Abilities & Targeting",
+				"The Tome of Dungeon Mastery has a new page: _Using Abilities & Targeting_. It explains melee and ranged targeting, which heroes bear weapon abilities, and how armor abilities are earned - the page is yours as soon as you pick the tome up."));
+
+		changes120.addButton( new ChangeButton( ChangeIcons.V074_SHPX, "Small Mercies",
+				"Unidentified items now note the floor they were found on, so a mystery potion or scroll is easier to place."));
+
 		ChangeInfo changes113 = new ChangeInfo("v1.1.3", true, "");
 		changes113.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes113);

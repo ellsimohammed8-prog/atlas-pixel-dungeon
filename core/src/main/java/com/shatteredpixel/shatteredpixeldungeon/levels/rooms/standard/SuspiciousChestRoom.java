@@ -21,6 +21,8 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.rooms.standard;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Pacts;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mimic;
 import com.shatteredpixel.shatteredpixeldungeon.items.Gold;
 import com.shatteredpixel.shatteredpixeldungeon.items.Heap;
@@ -63,6 +65,8 @@ public class SuspiciousChestRoom extends StandardRoom {
 		Painter.set(level, center, Terrain.PEDESTAL);
 
 		float mimicChance = 1/3f * MimicTooth.mimicChanceMultiplier();
+		//Atlas pact: Gambler's Crown makes chest mimics far more common
+		if (Dungeon.isPacted( Pacts.GAMBLER )) mimicChance = Math.min( 0.9f, mimicChance * 2.5f );
 		if (Random.Float() < mimicChance) {
 			level.mobs.add(Mimic.spawnAt(center, i));
 		} else {

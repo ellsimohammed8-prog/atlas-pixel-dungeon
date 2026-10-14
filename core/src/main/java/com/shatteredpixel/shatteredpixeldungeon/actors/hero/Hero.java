@@ -25,6 +25,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
 import com.shatteredpixel.shatteredpixeldungeon.Bones;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Pacts;
 import com.shatteredpixel.shatteredpixeldungeon.GamesInProgress;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
@@ -698,7 +699,7 @@ public class Hero extends Char {
 		}
 
 		if (dmg < 0) dmg = 0;
-		return dmg;
+		return Dungeon.isPacted( Pacts.GLASS ) ? Math.round( dmg * 1.25f ) : dmg;
 	}
 
 	//damage rolls that come from the hero can have their RNG influenced by clover
@@ -789,7 +790,7 @@ public class Hero extends Char {
 
 		if (!RingOfForce.fightingUnarmed(this)) {
 			
-			return delay * belongings.attackingWeapon().delayFactor( this );
+			return delay * belongings.attackingWeapon().delayFactor( this ) * (Dungeon.isPacted( Pacts.IRON_PATIENCE ) ? 1.15f : 1f);
 			
 		} else {
 			//Normally putting furor speed on unarmed attacks would be unnecessary
@@ -807,7 +808,7 @@ public class Hero extends Char {
 				delay = ((Weapon)belongings.weapon).augment.delayFactor(delay);
 			}
 
-			return delay/speed;
+			return delay/speed * (Dungeon.isPacted( Pacts.IRON_PATIENCE ) ? 1.15f : 1f);
 		}
 	}
 
@@ -1645,6 +1646,27 @@ public class Hero extends Char {
 		//temporarily assign to a float to avoid rounding a bunch
 		float damage = dmg;
 
+		//Atlas pacts: incoming damage modifiers and thorns reflection
+		if (src instanceof Char && ((Char) src).alignment == Char.Alignment.ENEMY
+				&& Dungeon.isPacted( Pacts.OPEN_MAP )) {
+			damage *= 1.15f;
+		}
+		if (Dungeon.isPacted( Pacts.GLASS ) && !(src instanceof Hunger)) {
+			damage *= 1.25f;
+		}
+		if (Dungeon.isPacted( Pacts.IRON_PATIENCE ) && !(src instanceof Hunger)) {
+			damage = Math.max( 0, damage - 2 );
+		}
+		if (Dungeon.isPacted( Pacts.THORNS ) && src instanceof Char
+				&& ((Char) src).alignment == Char.Alignment.ENEMY
+				&& ((Char) src).isAlive()
+				&& Dungeon.level.adjacent( pos, ((Char) src).pos )) {
+			int reflect = Math.round( dmg * 0.25f );
+			if (reflect > 0) {
+				((Char) src).damage( reflect, this );
+			}
+		}
+
 		Endure.EndureTracker endure = buff(Endure.EndureTracker.class);
 		if (!(src instanceof Char)){
 			//reduce damage here if it isn't coming from a character (if it is we already reduced it)
@@ -2008,6 +2030,11 @@ public class Hero extends Char {
 	}
 	
 	public void earnExp( int exp, Class source ) {
+
+		//Atlas pact: Cartographer's Eye trades experience for sight
+		if (Dungeon.isPacted( Pacts.CARTOGRAPHER )) {
+			exp = Math.round( exp * 0.85f );
+		}
 
 		//xp granted by ascension challenge is only for on-exp gain effects
 		if (source != AscensionChallenge.class) {

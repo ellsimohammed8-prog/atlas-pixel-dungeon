@@ -123,6 +123,8 @@ public class Item implements Bundlable {
 	}
 
 	public boolean doPickUp(Hero hero, int pos) {
+		//Atlas QoL: remember the floor this item was first picked up on
+		if (foundDepth == 0) foundDepth = Dungeon.depth;
 		if (collect( hero.belongings.backpack )) {
 			
 			GameScene.pickUp( this, pos );
@@ -530,7 +532,14 @@ public class Item implements Bundlable {
 			}
 		}
 
-		return desc();
+		String info = desc();
+
+		//Atlas QoL: unidentified items show the floor they were found on
+		if (foundDepth > 0 && !isIdentified()) {
+			info += "\n\n" + Messages.get( Item.class, "found_on", foundDepth );
+		}
+
+		return info;
 	}
 	
 	public String desc() {
@@ -577,6 +586,9 @@ public class Item implements Bundlable {
 		GameScene.updateItemDisplays = true;
 	}
 	
+	public int foundDepth = 0; //Atlas QoL: floor where this item was first picked up, 0 = unknown
+
+	private static final String FOUND_DEPTH		= "found_depth";
 	private static final String QUANTITY		= "quantity";
 	private static final String LEVEL			= "level";
 	private static final String LEVEL_KNOWN		= "levelKnown";
@@ -588,6 +600,7 @@ public class Item implements Bundlable {
 	
 	@Override
 	public void storeInBundle( Bundle bundle ) {
+		bundle.put( FOUND_DEPTH, foundDepth );
 		bundle.put( QUANTITY, quantity );
 		bundle.put( LEVEL, level );
 		bundle.put( LEVEL_KNOWN, levelKnown );
@@ -602,6 +615,7 @@ public class Item implements Bundlable {
 	
 	@Override
 	public void restoreFromBundle( Bundle bundle ) {
+		foundDepth	= bundle.getInt( FOUND_DEPTH );
 		quantity	= bundle.getInt( QUANTITY );
 		levelKnown	= bundle.getBoolean( LEVEL_KNOWN );
 		cursedKnown	= bundle.getBoolean( CURSED_KNOWN );

@@ -5,6 +5,18 @@
      Dates must use the format yyyy-MM-dd. Keep summaries short. -->
 <feed>
 	<entry>
+		<title>Version 1.2.0 — Pacts of Atlas</title>
+		<published>2026-10-14</published>
+		<summary>The first gameplay expansion is here: swear up to 3 Pacts of Atlas before a run — each grants a boon and exacts a price, from the Open Map's revealed floors to the Gambler's Crown's doubled chests. Plus a new Tome page on abilities and targeting, and found-on-floor notes for unidentified items.</summary>
+		<link href="https://github.com/ellsimohammed8-prog/atlas-pixel-dungeon/releases"/>
+	</entry>
+	<entry>
+		<title>الإصدار 1.2.0 — عهود أطلس</title>
+		<published>2026-10-14</published>
+		<summary>وصلت أول توسعة لعب: اِقسم حتى 3 من عهود أطلس قبل بدء الجولة — كل عهد يمنح نعمة ويفرض ثمنًا، من خريطة الطوابق المكشوفة إلى صناديق تاج المقامر المضاعفة. إضافة إلى صفحة جديدة في المخطوط عن القدرات والتصويب، وملاحظة الطابق الذي وُجد فيه الغرض غير المعرّف.</summary>
+		<link href="https://github.com/ellsimohammed8-prog/atlas-pixel-dungeon/releases"/>
+	</entry>
+	<entry>
 		<title>Version 1.1.3 — Arabic, Drawn Solid</title>
 		<published>2026-10-13</published>
 		<summary>Arabic text now renders with solid, connected joining strokes, so words read as Arabic is written — in menus, descriptions, and the game log. Also includes the portrait hero art and phone fixes from 1.1.1.</summary>

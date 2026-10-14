@@ -198,6 +198,8 @@ public enum Document {
 					return new ItemSprite( ItemSpriteSheet.TOMB );
 				case Document.GUIDE_SEARCHING:
 					return Icons.get(Icons.MAGNIFY);
+				case "Abilities":
+					return Icons.get(Icons.TALENT);
 				case "Strength":
 					return new ItemSprite( ItemSpriteSheet.GREATAXE );
 				case "Upgrades":
@@ -252,6 +254,7 @@ public enum Document {
 	public static final String GUIDE_DIEING         = "Dieing";
 
 	public static final String GUIDE_SEARCHING      = "Searching";
+	public static final String GUIDE_ABILITIES      = "Abilities";
 
 	public static final String KING_ATTRITION       = "attrition";
 
@@ -268,6 +271,7 @@ public enum Document {
 		ADVENTURERS_GUIDE.pagesStates.put(GUIDE_DIEING,         debug ? READ : NOT_FOUND);
 		//given in sewers
 		ADVENTURERS_GUIDE.pagesStates.put(GUIDE_SEARCHING,      debug ? READ : NOT_FOUND);
+		ADVENTURERS_GUIDE.pagesStates.put(GUIDE_ABILITIES,      debug ? READ : NOT_FOUND);
 		ADVENTURERS_GUIDE.pagesStates.put("Strength",           debug ? READ : NOT_FOUND);
 		ADVENTURERS_GUIDE.pagesStates.put("Upgrades",           debug ? READ : NOT_FOUND);
 		ADVENTURERS_GUIDE.pagesStates.put("Looting",            debug ? READ : NOT_FOUND);

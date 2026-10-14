@@ -22,6 +22,8 @@
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
 import com.shatteredpixel.shatteredpixeldungeon.Challenges;
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Pacts;
 import com.shatteredpixel.shatteredpixeldungeon.SPDSettings;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -43,6 +45,7 @@ public class WndChallenges extends Window {
 
 	private boolean editable;
 	private ArrayList<CheckBox> boxes;
+	private ArrayList<CheckBox> pactBoxes;
 
 	public WndChallenges( int checked, boolean editable ) {
 
@@ -93,6 +96,66 @@ public class WndChallenges extends Window {
 			pos = cb.bottom();
 		}
 
+		//Atlas Pixel Dungeon: pacts section
+		pos += GAP + 4;
+		RenderedTextBlock pactsTitle = PixelScene.renderTextBlock( Messages.get(this, "pacts_title"), 12 );
+		pactsTitle.hardlight( TITLE_COLOR );
+		pactsTitle.setPos(
+				(WIDTH - pactsTitle.width()) / 2,
+				pos
+		);
+		PixelScene.align(pactsTitle);
+		add( pactsTitle );
+		pos += pactsTitle.height() + GAP + 3;
+
+		pactBoxes = new ArrayList<>();
+		int pactChecked = editable ? SPDSettings.pacts() : Dungeon.pacts;
+		for (int i=0; i < Pacts.NAME_IDS.length; i++) {
+
+			final String pact = Pacts.NAME_IDS[i];
+
+			CheckBox cb = new CheckBox( Messages.titleCase(Messages.get(Pacts.class, pact)) ){
+				@Override
+				protected void onClick() {
+					if (!checked() && editable) {
+						int count = 0;
+						for (CheckBox b : pactBoxes) if (b.checked()) count++;
+						if (count >= Pacts.MAX_PACTS) {
+							ShatteredPixelDungeon.scene().add(
+									new WndMessage(Messages.get(WndChallenges.class, "pacts_max"))
+							);
+							return;
+						}
+					}
+					super.onClick();
+				}
+			};
+			cb.checked( (pactChecked & Pacts.MASKS[i]) != 0 );
+			cb.active = editable;
+
+			if (i > 0) {
+				pos += GAP;
+			}
+			cb.setRect( 0, pos, WIDTH-16, BTN_HEIGHT );
+
+			add( cb );
+			pactBoxes.add( cb );
+
+			IconButton info = new IconButton(Icons.get(Icons.INFO)){
+				@Override
+				protected void onClick() {
+					super.onClick();
+					ShatteredPixelDungeon.scene().add(
+							new WndMessage(Messages.get(Pacts.class, pact+"_desc"))
+					);
+				}
+			};
+			info.setRect(cb.right(), pos, 16, BTN_HEIGHT);
+			add(info);
+
+			pos = cb.bottom();
+		}
+
 		resize( WIDTH, (int)pos );
 	}
 
@@ -107,6 +170,14 @@ public class WndChallenges extends Window {
 				}
 			}
 			SPDSettings.challenges( value );
+
+			int pactValue = 0;
+			for (int i=0; i < pactBoxes.size(); i++) {
+				if (pactBoxes.get( i ).checked()) {
+					pactValue |= Pacts.MASKS[i];
+				}
+			}
+			SPDSettings.pacts( pactValue );
 		}
 
 		super.onBackPressed();

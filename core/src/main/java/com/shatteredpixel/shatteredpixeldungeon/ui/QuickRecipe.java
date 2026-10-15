@@ -52,6 +52,16 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfMi
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfToxicEssence;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
+import com.shatteredpixel.shatteredpixeldungeon.items.Blueprints;
+import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfUpgrade;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.BattleAxe;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.CedarCleaver;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Crownblade;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.EngineHammer;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Glaive;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Longsword;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MirelordsReach;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.WarHammer;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.Alchemize;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.BeaconOfReturning;
@@ -383,6 +393,21 @@ public class QuickRecipe extends Component {
 				result.add(new QuickRecipe(new ReclaimTrap.Recipe()));
 				result.add(new QuickRecipe(new SummonElemental.Recipe()));
 				result.add(new QuickRecipe(new BeaconOfReturning.Recipe()));
+				return result;
+			case 9:
+				//Atlas Blueprints: weapon evolutions
+				result.add(new QuickRecipe(new Blueprints.CrownbladeRecipe(),
+						new ArrayList<>(Arrays.asList(new Longsword(), new ScrollOfUpgrade())),
+						new Crownblade()));
+				result.add(new QuickRecipe(new Blueprints.EngineHammerRecipe(),
+						new ArrayList<>(Arrays.asList(new WarHammer(), new ScrollOfUpgrade())),
+						new EngineHammer()));
+				result.add(new QuickRecipe(new Blueprints.MirelordsReachRecipe(),
+						new ArrayList<>(Arrays.asList(new Glaive(), new ScrollOfUpgrade())),
+						new MirelordsReach()));
+				result.add(new QuickRecipe(new Blueprints.CedarCleaverRecipe(),
+						new ArrayList<>(Arrays.asList(new BattleAxe(), new ScrollOfUpgrade())),
+						new CedarCleaver()));
 				return result;
 		}
 	}

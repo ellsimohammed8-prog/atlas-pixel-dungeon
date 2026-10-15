@@ -168,7 +168,11 @@ public abstract class Recipe {
 	//*******
 
 	private static Recipe[] variableRecipes = new Recipe[]{
-			//none for now
+			//Atlas Blueprints: weapon evolutions
+			new Blueprints.CrownbladeRecipe(),
+			new Blueprints.EngineHammerRecipe(),
+			new Blueprints.MirelordsReachRecipe(),
+			new Blueprints.CedarCleaverRecipe()
 	};
 	
 	private static Recipe[] oneIngredientRecipes = new Recipe[]{

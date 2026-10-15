@@ -23,6 +23,19 @@ public class Atlas_Changes {
 
 	public static void add_Atlas_Changes( ArrayList<ChangeInfo> changeInfos ){
 
+		ChangeInfo changes130 = new ChangeInfo("v1.3.0", true, "");
+		changes130.hardlight(Window.TITLE_COLOR);
+		changeInfos.add(changes130);
+
+		changes130.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.ALCH_PAGE), "Atlas Blueprints",
+				"Evolve weapons at an alchemy pot! Place a base weapon and a scroll of upgrade in the pot and pay 8 energy: a longsword becomes the _Crownblade of Atlas_, a war hammer the _Hammer of the Buried Engine_, a glaive the _Mirelord's Reach_, and a battle axe the _Cedar Cleaver_.\\n" +
+				"\\n" +
+				"The evolved weapon keeps everything the old one had earned: its upgrade level, enchantment, and augment. Nothing is lost but the scroll.\\n" +
+				"\\n" +
+				"Each evolved weapon also fights differently: the Crownblade brands foes with _star marks_, the Engine Hammer looses _shockwaves_, the Mirelord's Reach _roots_ enemies struck at full reach, and the Cedar Cleaver _finishes the wounded_ and refunds time on kills.\\n" +
+				"\\n" +
+				"The Blueprints page waits in the alchemy guide from the very start of a run. No victories required, as always."));
+
 		ChangeInfo changes122 = new ChangeInfo("v1.2.2", true, "");
 		changes122.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes122);

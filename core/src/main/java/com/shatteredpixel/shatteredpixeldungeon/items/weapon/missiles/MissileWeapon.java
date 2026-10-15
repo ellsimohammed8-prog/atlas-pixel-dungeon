@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Pacts;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
@@ -401,11 +402,17 @@ abstract public class MissileWeapon extends Weapon {
 	
 	@Override
 	public float castDelay(Char user, int cell) {
+		float delay;
 		if (Actor.findChar(cell) != null && Actor.findChar(cell) != user){
-			return delayFactor( user );
+			delay = delayFactor( user );
 		} else {
-			return super.castDelay(user, cell);
+			delay = super.castDelay(user, cell);
 		}
+		//Atlas pact: Iron Patience slows the hero's thrown weapons too, not just melee
+		if (user == Dungeon.hero && Dungeon.isPacted( Pacts.IRON_PATIENCE )){
+			delay *= 1.15f;
+		}
+		return delay;
 	}
 	
 	protected void rangedHit( Char enemy, int cell ){

@@ -46,14 +46,20 @@ public class WndChallenges extends Window {
 	private static final int GAP        = 1;
 
 	private boolean editable;
+	private int shownPacts;
 	private ArrayList<CheckBox> boxes;
 	private ArrayList<CheckBox> pactBoxes;
 
 	public WndChallenges( int checked, boolean editable ) {
+		this( checked, editable, Dungeon.pacts );
+	}
+
+	public WndChallenges( int checked, boolean editable, int pacts ) {
 
 		super();
 
 		this.editable = editable;
+		this.shownPacts = pacts;
 
 		RenderedTextBlock title = PixelScene.renderTextBlock( Messages.get(this, "title"), 12 );
 		title.hardlight( TITLE_COLOR );
@@ -125,7 +131,7 @@ public class WndChallenges extends Window {
 		pos += pactsTitle.height() + GAP + 3;
 
 		pactBoxes = new ArrayList<>();
-		int pactChecked = editable ? SPDSettings.pacts() : Dungeon.pacts;
+		int pactChecked = editable ? SPDSettings.pacts() : shownPacts;
 		for (int i=0; i < Pacts.NAME_IDS.length; i++) {
 
 			final String pact = Pacts.NAME_IDS[i];

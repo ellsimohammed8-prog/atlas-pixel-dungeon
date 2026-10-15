@@ -23,6 +23,20 @@ public class Atlas_Changes {
 
 	public static void add_Atlas_Changes( ArrayList<ChangeInfo> changeInfos ){
 
+		ChangeInfo changes131 = new ChangeInfo("v1.3.1", true, "");
+		changes131.hardlight(Window.TITLE_COLOR);
+		changeInfos.add(changes131);
+
+		changes131.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.ALCH_PAGE), "Blueprints, Fixed",
+				"An apology and a fix: in v1.3.0 the Blueprints could not actually be used. The alchemy pot refused to accept any melee weapon, so no evolution could ever be brewed. The pot now accepts longswords, war hammers, glaives and battle axes as it always should have. If you tried in v1.3.0 and failed, please try again - it works now."));
+
+		changes131.addButton( new ChangeButton( new ItemSprite(ItemSpriteSheet.AMULET), "Pacts & Text Repairs",
+				"Every Pact of Atlas now does exactly what its description promises. _Glass_ amplifies wand damage as well as weapon damage. _Iron Patience_ also slows thrown weapons and wand zaps. _Thorns_ only weakens healing potions (not elixirs or regrowth bombs), and its reflection now answers melee hits only, based on the damage you actually took. _Cartographer's Eye_ reveals secrets within 6 tiles as described, even through walls.\\n" +
+				"\\n" +
+				"Saved runs now show their own pacts in the game info window, and the Hammer of the Buried Engine's shockwave can no longer strike enemies through walls or in rooms you cannot see.\\n" +
+				"\\n" +
+				"Plus a round of text repairs: star mark naming is now consistent everywhere, ghost quests name their targets correctly, and leftover names from the game's ancestor have been swept out of dialogues, quest text and system messages."));
+
 		ChangeInfo changes130 = new ChangeInfo("v1.3.0", true, "");
 		changes130.hardlight(Window.TITLE_COLOR);
 		changeInfos.add(changes130);

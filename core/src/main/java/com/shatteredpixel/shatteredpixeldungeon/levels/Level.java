@@ -1424,7 +1424,7 @@ public abstract class Level implements Bundlable {
 		//Atlas pact: Cartographer's Eye reveals secrets and traps near the hero
 		if (c.isAlive() && c == Dungeon.hero && Dungeon.isPacted( Pacts.CARTOGRAPHER )) {
 			for (int cell = 0; cell < length(); cell++) {
-				if (fieldOfView[cell] && distance( c.pos, cell ) <= 6) {
+				if (distance( c.pos, cell ) <= 6) {
 					int terr = map[cell];
 					if ((Terrain.flags[terr] & Terrain.SECRET) != 0) {
 						discover( cell );

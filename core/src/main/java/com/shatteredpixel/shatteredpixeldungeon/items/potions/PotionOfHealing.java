@@ -53,18 +53,24 @@ public class PotionOfHealing extends Potion {
 	public void apply( Hero hero ) {
 		identify();
 		cure( hero );
-		heal( hero );
+		heal( hero, true );
 	}
 
 	public static void heal( Char ch ){
+		heal( ch, false );
+	}
+
+	public static void heal( Char ch, boolean potion ){
 		if (ch == Dungeon.hero && Dungeon.isChallenged(Challenges.NO_HEALING)){
 			pharmacophobiaProc(Dungeon.hero);
 		} else {
 			//starts out healing 30 hp, equalizes with hero health total at level 11
 			Healing healing = Buff.affect(ch, Healing.class);
 			int healAmount = (int) (0.8f * ch.HT + 14);
-			//Atlas pact: Thorns weakens healing potions for the hero
-			if (ch == Dungeon.hero && Dungeon.isPacted( Pacts.THORNS )) healAmount = Math.round( healAmount * 0.75f );
+			//Atlas pact: Thorns weakens healing potions for the hero. Only the potion
+			//itself is weakened, not other healing that shares this helper
+			//(e.g. elixir of honeyed healing, regrowth bomb).
+			if (potion && ch == Dungeon.hero && Dungeon.isPacted( Pacts.THORNS )) healAmount = Math.round( healAmount * 0.75f );
 			healing.setHeal(healAmount, 0.25f, 0, true);
 			if (ch == Dungeon.hero){
 				GLog.p( Messages.get(PotionOfHealing.class, "heal") );

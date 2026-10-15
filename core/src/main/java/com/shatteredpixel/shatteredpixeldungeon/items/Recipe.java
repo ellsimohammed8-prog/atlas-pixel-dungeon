@@ -58,6 +58,10 @@ import com.shatteredpixel.shatteredpixeldungeon.items.spells.WildEnergy;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.Trinket;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.TrinketCatalyst;
 import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.BattleAxe;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Glaive;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Longsword;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.WarHammer;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.watabou.utils.Reflection;
 
@@ -260,9 +264,14 @@ public abstract class Recipe {
 	
 	public static boolean usableInRecipe(Item item){
 		//only upgradeable thrown weapons and wands allowed among equipment items
+		//Atlas: blueprint base weapons are also allowed, they evolve at the pot
 		if (item instanceof EquipableItem){
 			return item.cursedKnown && !item.cursed &&
-					item instanceof MissileWeapon && item.isUpgradable();
+					((item instanceof MissileWeapon && item.isUpgradable())
+					|| item instanceof Longsword
+					|| item instanceof WarHammer
+					|| item instanceof Glaive
+					|| item instanceof BattleAxe);
 		} else if (item instanceof Wand) {
 			return item.cursedKnown && !item.cursed;
 		} else {

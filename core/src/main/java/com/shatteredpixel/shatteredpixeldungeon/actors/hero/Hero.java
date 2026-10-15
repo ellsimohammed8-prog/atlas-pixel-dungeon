@@ -1583,9 +1583,15 @@ public class Hero extends Char {
 		return damage;
 	}
 	
+	//Atlas pact: Thorns. Set in defenseProc (which only melee attacks pass through)
+	//and consumed in damage(), so reflection can use the damage actually taken.
+	private Char lastMeleeAttacker;
+
 	@Override
 	public int defenseProc( Char enemy, int damage ) {
-		
+
+		lastMeleeAttacker = enemy;
+
 		if (damage > 0 && subClass == HeroSubClass.BERSERKER){
 			Berserk berserk = Buff.affect(this, Berserk.class);
 			berserk.damage(damage);
@@ -1627,6 +1633,11 @@ public class Hero extends Char {
 
 	@Override
 	public void damage( int dmg, Object src ) {
+		//Atlas pact: Thorns only reflects melee hits. Capture and clear the
+		//attacker marked by defenseProc before anything else can interfere.
+		Char meleeAttacker = lastMeleeAttacker;
+		lastMeleeAttacker = null;
+
 		if (buff(TimekeepersHourglass.timeStasis.class) != null
 				|| buff(TimeStasis.class) != null) {
 			return;
@@ -1657,16 +1668,6 @@ public class Hero extends Char {
 		if (Dungeon.isPacted( Pacts.IRON_PATIENCE ) && !(src instanceof Hunger)) {
 			damage = Math.max( 0, damage - 2 );
 		}
-		if (Dungeon.isPacted( Pacts.THORNS ) && src instanceof Char
-				&& ((Char) src).alignment == Char.Alignment.ENEMY
-				&& ((Char) src).isAlive()
-				&& Dungeon.level.adjacent( pos, ((Char) src).pos )) {
-			int reflect = Math.round( dmg * 0.25f );
-			if (reflect > 0) {
-				((Char) src).damage( reflect, this );
-			}
-		}
-
 		Endure.EndureTracker endure = buff(Endure.EndureTracker.class);
 		if (!(src instanceof Char)){
 			//reduce damage here if it isn't coming from a character (if it is we already reduced it)
@@ -1707,6 +1708,18 @@ public class Hero extends Char {
 		int effectiveDamage = preHP - postHP;
 
 		if (effectiveDamage <= 0) return;
+
+		//Atlas pact: Thorns reflects 25% of the damage actually taken, melee hits only
+		if (isAlive() && meleeAttacker != null && src == meleeAttacker
+				&& Dungeon.isPacted( Pacts.THORNS )
+				&& meleeAttacker.alignment == Char.Alignment.ENEMY
+				&& meleeAttacker.isAlive()
+				&& Dungeon.level.adjacent( pos, meleeAttacker.pos )) {
+			int reflect = Math.round( effectiveDamage * 0.25f );
+			if (reflect > 0) {
+				meleeAttacker.damage( reflect, this );
+			}
+		}
 
 		if (buff(Challenge.DuelParticipant.class) != null){
 			buff(Challenge.DuelParticipant.class).addDamage(effectiveDamage);

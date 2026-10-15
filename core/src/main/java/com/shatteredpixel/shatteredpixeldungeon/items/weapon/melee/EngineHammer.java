@@ -33,6 +33,9 @@ public class EngineHammer extends WarHammer {
 			for (int offset : PathFinder.NEIGHBOURS8) {
 				int cell = defender.pos + offset;
 				if (!Dungeon.level.insideMap(cell)) continue;
+				//the shockwave cannot pass through walls, nor reach enemies the hero cannot see
+				if (Dungeon.level.solid[cell]) continue;
+				if (attacker.fieldOfView != null && !attacker.fieldOfView[cell]) continue;
 				Char ch = Actor.findChar(cell);
 				if (ch != null && ch != defender && ch.isAlive()
 						&& ch.alignment == Char.Alignment.ENEMY) {

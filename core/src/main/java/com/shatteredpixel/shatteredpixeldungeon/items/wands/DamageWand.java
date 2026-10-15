@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.wands;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
+import com.shatteredpixel.shatteredpixeldungeon.Pacts;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.WandEmpower;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -58,6 +59,10 @@ public abstract class DamageWand extends Wand{
 				emp.detach();
 			}
 			Sample.INSTANCE.play(Assets.Sounds.HIT_STRONG, 0.75f, 1.2f);
+		}
+		//Atlas pact: Glass amplifies the hero's wand damage too, not just melee/thrown
+		if (Dungeon.isPacted( Pacts.GLASS )){
+			dmg = Math.round( dmg * 1.25f );
 		}
 		return dmg;
 	}

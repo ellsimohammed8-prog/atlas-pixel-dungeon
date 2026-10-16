@@ -50,6 +50,8 @@ public class HeroIcon extends Image {
 	public static final int MONK        = 9;
 	public static final int PRIEST      = 10;
 	public static final int PALADIN     = 11;
+	//slice 1 placeholder: the Herald of Dawn reuses the Keeper of Light icon, no new art yet
+	public static final int HERALD_OF_DAWN = PRIEST;
 
 	//abilities
 	public static final int HEROIC_LEAP     = 16;
@@ -100,6 +102,8 @@ public class HeroIcon extends Image {
 	public static final int BEAMING_RAY     = 64;
 	public static final int LIFE_LINK       = 65;
 	public static final int STASIS          = 66;
+	//slice 1 placeholder: reuses the Hallowed Ground icon, no new art yet
+	public static final int CALL_WISP       = HALLOWED_GROUND;
 
 	//all cleric spells have a separate icon with no background for the action indicator
 	public static final int SPELL_ACTION_OFFSET      = 32;

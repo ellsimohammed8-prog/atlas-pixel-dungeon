@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.DirectableAlly;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HolyTome;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfTeleportation;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.CellSelector;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CrystalWispSprite;
 import com.shatteredpixel.shatteredpixeldungeon.ui.HeroIcon;
@@ -71,21 +72,36 @@ public class CallWisp extends ClericSpell {
 
 	@Override
 	public float chargeUse(Hero hero) {
-		return CHARGE_COST;
+		//directing an existing wisp is free, only summoning spends holy power
+		return getWisp() == null ? CHARGE_COST : 0f;
 	}
 
 	@Override
 	public boolean canCast(Hero hero) {
-		//only one wisp may be alive at a time
+		//castable both to summon a wisp and to direct a wisp that is already out
 		return super.canCast(hero)
-				&& hero.subClass == HeroSubClass.HERALD_OF_DAWN
-				&& getWisp() == null;
+				&& hero.subClass == HeroSubClass.HERALD_OF_DAWN;
 	}
 
 	@Override
 	public void onCast(HolyTome tome, Hero hero) {
 		if (getWisp() != null){
-			GLog.w(Messages.get(this, "already_summoned"));
+			//a wisp is already out: choose a cell to direct it to, free of charge
+			GameScene.selectCell(new CellSelector.Listener() {
+				@Override
+				public void onSelect(Integer cell) {
+					if (cell == null) return;
+					WispOfDawn active = getWisp();
+					if (active == null) return;
+					active.directTocell(cell);
+					hero.spendAndNext(1f);
+				}
+
+				@Override
+				public String prompt() {
+					return Messages.get(CallWisp.this, "prompt");
+				}
+			});
 			return;
 		}
 

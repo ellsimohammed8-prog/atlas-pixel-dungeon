@@ -143,6 +143,8 @@ public abstract class ClericSpell {
 
 			} else if (cleric.subClass == HeroSubClass.PALADIN){
 				spells.add(Smite.INSTANCE);
+			} else if (cleric.subClass == HeroSubClass.HERALD_OF_DAWN){
+				spells.add(CallWisp.INSTANCE);
 			}
 
 			if (cleric.hasTalent(Talent.CLEANSE)){
@@ -220,6 +222,7 @@ public abstract class ClericSpell {
 		spells.add(Cleanse.INSTANCE);
 		spells.add(Radiance.INSTANCE);
 		spells.add(Smite.INSTANCE);
+		spells.add(CallWisp.INSTANCE);
 		spells.add(LayOnHands.INSTANCE);
 		spells.add(AuraOfProtection.INSTANCE);
 		spells.add(WallOfLight.INSTANCE);

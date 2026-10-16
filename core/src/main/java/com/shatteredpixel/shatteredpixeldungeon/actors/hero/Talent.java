@@ -190,6 +190,8 @@ public enum Talent {
 	HOLY_LANCE(171, 3), HALLOWED_GROUND(172, 3), MNEMONIC_PRAYER(173, 3),
 	//Paladin T3
 	LAY_ON_HANDS(174, 3), AURA_OF_PROTECTION(175, 3), WALL_OF_LIGHT(176, 3),
+	//Herald of Dawn T3 (slice 1 placeholder icons: reuses the Keeper of Light's icons, no new art yet)
+	WISP_STRENGTH(171, 3), WISP_ENDURANCE(172, 3), WISP_HEALING_AURA(173, 3),
 	//Ascended Form T4
 	DIVINE_INTERVENTION(177, 4), JUDGEMENT(178, 4), FLASH(179, 4),
 	//Trinity T4
@@ -1115,6 +1117,9 @@ public enum Talent {
 				break;
 			case PALADIN:
 				Collections.addAll(tierTalents, LAY_ON_HANDS, AURA_OF_PROTECTION, WALL_OF_LIGHT);
+				break;
+			case HERALD_OF_DAWN:
+				Collections.addAll(tierTalents, WISP_STRENGTH, WISP_ENDURANCE, WISP_HEALING_AURA);
 				break;
 		}
 		for (Talent talent : tierTalents){

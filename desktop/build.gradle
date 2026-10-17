@@ -14,6 +14,20 @@ processResources {
 
 def osName = System.getProperty('os.name').toLowerCase(Locale.ROOT)
 
+//Atlas: diagnostic harness for Arabic text rendering (agent/arabic-fix).
+//Renders the probe strings through the production pipeline and screenshots them.
+tasks.register('arabicFixHarness', JavaExec) {
+    group = 'verification'
+    description = 'Renders Arabic probe strings through the production font/text pipeline and saves a screenshot.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = "com.shatteredpixel.shatteredpixeldungeon.desktop.ArabicFixHarness"
+    systemProperties = System.getProperties() //forward -D properties (fix.out, fix.lang, sweep.*)
+    jvmArgs '-Dfile.encoding=UTF-8'
+    if (osName.contains('mac')) {
+        jvmArgs '-XstartOnFirstThread'
+    }
+}
+
 tasks.register('debug', JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
     ignoreExitValue = true

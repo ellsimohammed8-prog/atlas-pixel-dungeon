@@ -5,6 +5,18 @@
      Dates must use the format yyyy-MM-dd. Keep summaries short. -->
 <feed>
 	<entry>
+		<title>Version 1.3.2 — Text Rendering, Fixed</title>
+		<published>2026-10-17</published>
+		<summary>This update rebuilds how the game shapes and lays out right-to-left text: letters now connect into real words, lines wrap and align the way they should, and mixed text with numbers, brackets and foreign names keeps its proper order. If you play in a right-to-left language, every screen should finally read the way it was written.</summary>
+		<link href="https://github.com/ellsimohammed8-prog/atlas-pixel-dungeon/releases"/>
+	</entry>
+	<entry>
+		<title>الإصدار 1.3.2 — عرض النصوص تصلّح</title>
+		<published>2026-10-17</published>
+		<summary>هذا التحديث يعيد بناء طريقة تشكيل النصوص من اليمين لليسار وعرضها: الحروف الآن تتصل لتكوّن كلمات حقيقية، والأسطر تلتف وتتراصف كما ينبغي، والنص المختلط بالأرقام والأقواس والأسماء الأجنبية يحتفظ بترتيبه الصحيح. إذا كنت تلعب بلغة تُكتب من اليمين لليسار، فكل شاشة ستُقرأ أخيرًا كما كُتبت.</summary>
+		<link href="https://github.com/ellsimohammed8-prog/atlas-pixel-dungeon/releases"/>
+	</entry>
+	<entry>
 		<title>Version 1.3.1 — Blueprints, Fixed</title>
 		<published>2026-10-15</published>
 		<summary>An apology and a fix: in 1.3.0 the alchemy pot refused every melee weapon, so Blueprints evolutions could not be brewed at all. They work now. This update also makes every Pact of Atlas match its description exactly, shows a saved run's own pacts in its info window, stops the Engine Hammer's shockwave from passing through walls, and sweeps leftover old names out of the game's texts.</summary>

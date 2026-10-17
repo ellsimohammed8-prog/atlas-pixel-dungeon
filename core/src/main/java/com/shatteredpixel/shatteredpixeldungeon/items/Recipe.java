@@ -42,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfIc
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfMight;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.elixirs.ElixirOfToxicEssence;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.Scroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ExoticScroll;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.Alchemize;
@@ -185,6 +186,7 @@ public abstract class Recipe {
 		new ExoticScroll.ScrollToExotic(),
 		new ArcaneResin.Recipe(),
 		new LiquidMetal.Recipe(),
+		new LiquidGold.MeltRecipe(),
 		new BlizzardBrew.Recipe(),
 		new InfernalBrew.Recipe(),
 		new AquaBrew.Recipe(),
@@ -218,7 +220,9 @@ public abstract class Recipe {
 		new CurseInfusion.Recipe(),
 		new ReclaimTrap.Recipe(),
 		new WildEnergy.Recipe(),
-		new StewedMeat.twoMeat()
+		new StewedMeat.twoMeat(),
+		//Atlas Liquid Gold: pour liquid gold into a ring to raise it by +1
+		new LiquidGold.ApplyRingRecipe()
 	};
 	
 	private static Recipe[] threeIngredientRecipes = new Recipe[]{
@@ -263,6 +267,11 @@ public abstract class Recipe {
 	}
 	
 	public static boolean usableInRecipe(Item item){
+		//Atlas Liquid Gold: any ring (cursed or not, at any level) can be melted down.
+		//Its curse state must be known so the yield can be shown before confirming.
+		if (item instanceof Ring){
+			return item.cursedKnown;
+		}
 		//only upgradeable thrown weapons and wands allowed among equipment items
 		//Atlas: blueprint base weapons are also allowed, they evolve at the pot
 		if (item instanceof EquipableItem){

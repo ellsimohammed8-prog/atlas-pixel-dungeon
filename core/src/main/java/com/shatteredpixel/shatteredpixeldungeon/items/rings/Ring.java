@@ -312,6 +312,24 @@ public class Ring extends KindofMisc {
 		return null;
 	}
 
+	//used by the alchemy guide and other UIs as a stand-in for 'any ring'
+	public static class PlaceHolder extends Ring {
+
+		{
+			image = ItemSpriteSheet.RING_HOLDER;
+		}
+
+		@Override
+		public boolean isSimilar(Item item) {
+			return item instanceof Ring;
+		}
+
+		@Override
+		public String info() {
+			return "";
+		}
+	}
+
 	private static final String LEVELS_TO_ID    = "levels_to_ID";
 
 	@Override

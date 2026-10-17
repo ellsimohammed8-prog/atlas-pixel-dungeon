@@ -598,10 +598,14 @@ public class ItemSpriteSheet {
 	public static final int POTION_IVORY    = POTIONS+11;
 
 	public static final int LIQUID_METAL    = POTIONS+13;
+
+	//Atlas Liquid Gold: reuses the liquid metal vial, tinted gold
+	public static final int LIQUID_GOLD     = POTIONS+14;
 	static {
 		for (int i = POTIONS; i < POTIONS+16; i++)
 			assignItemRect(i, 12, 14);
 		assignItemRect(LIQUID_METAL,    8, 15);
+		assignItemRect(LIQUID_GOLD,     8, 15);
 	}
 	
 	private static final int EXOTIC_POTIONS =                               xy(1, 24);  //16 slots

@@ -65,11 +65,13 @@ public class ArabicSupport {
 
 	private static boolean isArabicLetter(char c) { return forms(c) != null; }
 
-	private static boolean joinsForward(char c) { // letter joins to the NEXT letter
-		int[] f = forms(c);
-		return f != null && f[2] != 0;
+	private static boolean isArabicDigit(char c) { // Arabic-Indic digits ٠-٩ read left-to-right
+		return c >= 0x0660 && c <= 0x0669;
 	}
 
+	private static boolean isBracket(char c) { // pairs are re-mirrored by the final pass
+		return c == '(' || c == ')' || c == '[' || c == ']' || c == '{' || c == '}';
+	}
 	private static boolean isMark(char c) { // harakat / tatweel: transparent for joining
 		return (c >= 0x064B && c <= 0x0652) || c == 0x0670 || c == 0x0640;
 	}
@@ -114,29 +116,77 @@ public class ArabicSupport {
 			}
 		}
 
-		// 2) simplified bidi, word based: reverse word order; inside each word,
-		//    reverse the order of units, where a unit is one arabic char or a
-		//    maximal non-arabic run (latin words, numbers, %1$d placeholders)
+		// 2) simplified bidi: reverse the ORDER of chunks. A chunk is either one
+		//    Arabic word (reversed again at unit level, so Arabic reads right-to-
+		//    left), or a maximal run of CONSECUTIVE non-Arabic words which reads
+		//    left-to-right and keeps its word order (Latin phrases and multi-word
+		//    numbers would read backwards word-by-word otherwise). A unit inside
+		//    an Arabic word is one Arabic char, one ASCII bracket pair member, an
+		//    Arabic-Indic digit run, or a maximal non-Arabic character run (latin
+		//    words, numbers, %1$d placeholders).
 		String s = shaped.toString();
 		String[] words = s.split(" ", -1);
-		StringBuilder out = new StringBuilder();
-		for (int w = words.length - 1; w >= 0; w--) {
-			if (w < words.length - 1) out.append(' ');
-			String word = words[w];
-			java.util.ArrayList<String> units = new java.util.ArrayList<>();
-			int i = 0;
-			while (i < word.length()) {
-				if (isArabicUnit(word.charAt(i))) {
-					units.add(word.substring(i, i + 1));
-					i++;
-				} else {
-					int j = i;
-					while (j < word.length() && !isArabicUnit(word.charAt(j))) j++;
-					units.add(word.substring(i, j));
-					i = j;
+		java.util.ArrayList<java.util.ArrayList<String>> chunks = new java.util.ArrayList<>();
+		java.util.ArrayList<String> latinRun = null;
+		for (String word : words) {
+			boolean arabicChunk = false;
+			for (int k = 0; k < word.length() && !arabicChunk; k++) arabicChunk = isArabicUnit(word.charAt(k));
+			if (arabicChunk) {
+				latinRun = null;
+				java.util.ArrayList<String> one = new java.util.ArrayList<>();
+				one.add(word);
+				chunks.add(one);
+			} else {
+				if (latinRun == null) {
+					latinRun = new java.util.ArrayList<>();
+					chunks.add(latinRun);
 				}
+				latinRun.add(word);
 			}
-			for (int u = units.size() - 1; u >= 0; u--) out.append(units.get(u));
+		}
+		StringBuilder out = new StringBuilder();
+		for (int w = chunks.size() - 1; w >= 0; w--) {
+			if (w < chunks.size() - 1) out.append(' ');
+			java.util.ArrayList<String> chunk = chunks.get(w);
+			if (chunk.size() > 1) { // latin run: word order and inner spacing preserved
+				for (int k = 0; k < chunk.size(); k++) {
+					if (k > 0) out.append(' ');
+					out.append(chunk.get(k));
+				}
+			} else {
+				String word = chunk.get(0);
+				java.util.ArrayList<String> units = new java.util.ArrayList<>();
+				int i = 0;
+				while (i < word.length()) {
+					//Atlas: ASCII brackets resolve to the RTL side in real bidi (a bracket
+					//group round Arabic content displays as "( content )" with the
+					//brackets at the group's visual edges). Making each bracket its own
+					//unit lets the reversal move it there; the final pass re-mirrors the
+					//glyph. Character runs like "+10%" / "%1$d" are deliberately kept as
+					//single LTR islands so placeholder syntax never gets reordered.
+					if (isBracket(word.charAt(i))) {
+						units.add(word.substring(i, i + 1));
+						i++;
+					}
+					//Atlas: Arabic-Indic digit runs read left-to-right within RTL text,
+					//so a maximal run of ٠-٩ is one unit, like a latin word
+					else if (isArabicDigit(word.charAt(i))) {
+						int j = i;
+						while (j < word.length() && isArabicDigit(word.charAt(j))) j++;
+						units.add(word.substring(i, j));
+						i = j;
+					} else if (isArabicUnit(word.charAt(i))) {
+						units.add(word.substring(i, i + 1));
+						i++;
+					} else {
+						int j = i;
+						while (j < word.length() && !isArabicUnit(word.charAt(j)) && !isBracket(word.charAt(j))) j++;
+						units.add(word.substring(i, j));
+						i = j;
+					}
+				}
+				for (int u = units.size() - 1; u >= 0; u--) out.append(units.get(u));
+			}
 		}
 
 		// 3) mirror brackets: in RTL visual order bracket glyphs face the other way
@@ -157,6 +207,21 @@ public class ArabicSupport {
 		return mirrored.toString();
 	}
 
+	/**
+	 * Atlas: true when s contains Arabic either in logical codepoints
+	 * (U+0600–U+06FF) or already shaped (presentation forms A/B and the
+	 * supplementary Arabic range). RenderedTextBlock uses this to decide
+	 * which lines to right-align, including tokens produced by shape().
+	 */
+	public static boolean containsArabicText(String s) {
+		if (s == null) return false;
+		for (int i = 0; i < s.length(); i++) {
+			char c = s.charAt(i);
+			if ((c >= 0x0600 && c <= 0x06FF) || (c >= 0xFB50 && c <= 0xFDFF) || (c >= 0xFE70 && c <= 0xFEFF)) return true;
+		}
+		return false;
+	}
+
 	private static boolean joinsPrev(String s, int i) {
 		for (int j = i - 1; j >= 0; j--) {
 			char pc = s.charAt(j);
@@ -171,18 +236,17 @@ public class ArabicSupport {
 				|| (c >= 0x0600 && c <= 0x06FF);
 	}
 
-	private static boolean isNeutral(char c) {
-		return !isArabicUnit(c) && !Character.isLetterOrDigit(c);
-	}
-
-	private static boolean isFormatToken(String s, int i) {
-		return s.charAt(i) == '%' && i + 1 < s.length()
-				&& (Character.isDigit(s.charAt(i + 1)) || s.charAt(i + 1) == '%');
-	}
-
 	/** Shapes every line of a (possibly multi-line) string. */
 	public static String shape(String text) {
 		if (!containsArabic(text)) return text;
+		//Atlas: presentation-form input means the string has ALREADY been shaped
+		//(RenderedTextBlock pre-shapes whole strings before tokenizing, then each
+		//token goes through RenderedText.shape() again). Shaping must be
+		//idempotent, or the bidi pass would re-reorder the visual glyphs.
+		for (int i = 0; i < text.length(); i++) {
+			char c = text.charAt(i);
+			if (c >= 0xFE70 && c <= 0xFEFF) return text;
+		}
 		String[] lines = text.split("\n", -1);
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < lines.length; i++) {

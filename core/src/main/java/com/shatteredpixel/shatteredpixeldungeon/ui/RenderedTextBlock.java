@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
 import com.watabou.noosa.Game;
 import com.watabou.noosa.RenderedText;
 import com.watabou.noosa.ui.Component;
+import com.watabou.utils.ArabicSupport;
 
 import java.util.ArrayList;
 
@@ -68,9 +69,17 @@ public class RenderedTextBlock extends Component {
 		this.text = text;
 
 		if (text != null && !text.equals("")) {
-			
-			tokens = Game.platform.splitforTextBlock(text, multiline);
-			
+			//Atlas: shape the string once, on the whole text, BEFORE tokenizing.
+			//Arabic shaping is context-sensitive (joins, lam-alef ligatures, word
+			//order). Shaping each token separately has no context — a single
+			//Arabic letter can only render in its ISOLATED form, and wrapped /
+			//highlighted words would break joins at every token boundary.
+			//shape() also bidi-reorders each line into visual order, so downstream
+			//tokens are already laid out left-to-right correctly.
+			String display = ArabicSupport.shape(text);
+
+			tokens = Game.platform.splitforTextBlock(display, multiline);
+
 			build();
 		}
 	}
@@ -282,20 +291,25 @@ public class RenderedTextBlock extends Component {
 			}
 		}
 
-		//Atlas: mirror any line containing Arabic horizontally, so Arabic
-		//paragraphs read right-to-left and right-align within the block
+		//Atlas: tokens are already shaped into visual order (see text()), so
+		//they are laid out left-to-right correctly per line. Arabic paragraphs
+		//read right-to-left, so Arabic lines are right-aligned within the block.
+		//Note there is deliberately NO positional mirroring of the words: shape()
+		//already produced the visual order, and mirroring again would undo it
+		//(the two reorder layers used to fight each other).
 		if (Messages.lang() == Languages.ARABIC){
 			for (ArrayList<RenderedText> line : lines){
 				boolean rtl = false;
 				for (RenderedText word : line){
-					if (com.watabou.utils.ArabicSupport.containsArabic(word.text())){
+					if (com.watabou.utils.ArabicSupport.containsArabicText(word.text())){
 						rtl = true;
 						break;
 					}
 				}
-				if (!rtl) continue;
+				if (!rtl || alignment != LEFT_ALIGN) continue;
+				float lineWidth = line.get(line.size()-1).width() + line.get(line.size()-1).x - this.x;
 				for (RenderedText word : line){
-					word.x = this.x + width() - (word.x - this.x) - word.width();
+					word.x += width() - lineWidth;
 					PixelScene.align(word);
 				}
 			}

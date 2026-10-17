@@ -158,25 +158,27 @@ public class DesktopPlatformSupport extends PlatformSupport {
 		}
 	}
 	
+	//Atlas: Arabic is NOT split into individual characters (that used to be done
+	//here via the InArabic / InArabic_Presentation_Forms_B classes). Each token
+	//becomes one RenderedText, and a RenderedText consisting of a single Arabic
+	//letter has no join context, so every letter rendered in its isolated form
+	//and words could never read as connected cursive. RenderedTextBlock now
+	//shapes the whole string before tokenizing, so tokens are whole shaped words.
 	//splits on newline (for layout), chinese/japanese (for font choice), and '_'/'**' (for highlighting)
 	private Pattern regularsplitter = Pattern.compile(
 			"(?<=\n)|(?=\n)|(?<=_)|(?=_)|(?<=\\*\\*)|(?=\\*\\*)|" +
 					"(?<=\\p{InHiragana})|(?=\\p{InHiragana})|" +
 					"(?<=\\p{InKatakana})|(?=\\p{InKatakana})|" +
 					"(?<=\\p{InCJK_Unified_Ideographs})|(?=\\p{InCJK_Unified_Ideographs})|" +
-					"(?<=\\p{InCJK_Symbols_and_Punctuation})|(?=\\p{InCJK_Symbols_and_Punctuation})|" +
-					"(?<=\\p{InArabic})|(?=\\p{InArabic})|" +
-					"(?<=\\p{InArabic_Presentation_Forms_B})|(?=\\p{InArabic_Presentation_Forms_B})");
-	
+					"(?<=\\p{InCJK_Symbols_and_Punctuation})|(?=\\p{InCJK_Symbols_and_Punctuation})");
+
 	//additionally splits on spaces, so that each word can be laid out individually
 	private Pattern regularsplitterMultiline = Pattern.compile(
 			"(?<= )|(?= )|(?<=\n)|(?=\n)|(?<=_)|(?=_)|(?<=\\*\\*)|(?=\\*\\*)|" +
 					"(?<=\\p{InHiragana})|(?=\\p{InHiragana})|" +
 					"(?<=\\p{InKatakana})|(?=\\p{InKatakana})|" +
 					"(?<=\\p{InCJK_Unified_Ideographs})|(?=\\p{InCJK_Unified_Ideographs})|" +
-					"(?<=\\p{InCJK_Symbols_and_Punctuation})|(?=\\p{InCJK_Symbols_and_Punctuation})|" +
-					"(?<=\\p{InArabic})|(?=\\p{InArabic})|" +
-					"(?<=\\p{InArabic_Presentation_Forms_B})|(?=\\p{InArabic_Presentation_Forms_B})");
+					"(?<=\\p{InCJK_Symbols_and_Punctuation})|(?=\\p{InCJK_Symbols_and_Punctuation})");
 	
 	@Override
 	public String[] splitforTextBlock(String text, boolean multiline) {

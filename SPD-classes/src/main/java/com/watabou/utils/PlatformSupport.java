@@ -90,8 +90,6 @@ public abstract class PlatformSupport {
 
 	protected int pageSize;
 	protected PixmapPacker packer;
-	//Atlas: glyphs whose advance has already been tightened, per font
-	private static final java.util.HashMap<BitmapFont, java.util.HashSet<Integer>> atlasTweakedGlyphs = new java.util.HashMap<>();
 	protected boolean systemfont;
 	
 	public abstract void setupFontGenerators(int pageSize, boolean systemFont );
@@ -195,7 +193,20 @@ public abstract class PlatformSupport {
 			parameters.hinting = arabicText ? FreeTypeFontGenerator.Hinting.Full : FreeTypeFontGenerator.Hinting.None;
 			parameters.spaceX = -(int) parameters.borderWidth;
 			parameters.incremental = true;
-			parameters.characters = "�";
+			//Atlas: preload the complete Arabic repertoire (base letters, marks and
+			//all presentation forms B glyphs) at font creation instead of '\uFFFD'.
+			//Shape results have a finite, small glyph set (~600), and loading them
+			//up front keeps every glyph (and its xadvance) identical regardless of
+			//the order text is first drawn in — late incremental loads used to get
+			//no shift applied. Purely build-time cost, no per-frame work.
+			if (arabicText) {
+				StringBuilder chars = new StringBuilder("\uFFFD 0123456789");
+				for (int cp = 0x0600; cp <= 0x06FF; cp++) chars.append((char) cp);
+				for (int cp = 0xFE70; cp <= 0xFEFC; cp++) chars.append((char) cp);
+				parameters.characters = chars.toString();
+			} else {
+				parameters.characters = "\uFFFD";
+			}
 			parameters.packer = packer;
 
 			try {
@@ -207,30 +218,7 @@ public abstract class PlatformSupport {
 				return null;
 			}
 		}
-
-		BitmapFont result = fonts.get(generator).get(key);
-		//Atlas: tighten Arabic glyph advances slightly (~6% of each advance) so
-		//joining strokes overlap a hair beyond the font's own metrics — a safety
-		//margin against per-glyph rounding at small sizes.
-		//integer advances rounded up from the font's metrics, which spreads joining
-		//letters apart; pulling each advance in by one unit closes the joins.
-		if (result != null && arabicText) {
-			java.util.HashSet<Integer> done = atlasTweakedGlyphs.get(result);
-			if (done == null) {
-				done = new java.util.HashSet<>();
-				atlasTweakedGlyphs.put(result, done);
-			}
-			for (com.badlogic.gdx.graphics.g2d.BitmapFont.Glyph[] page : result.getData().glyphs) {
-				if (page == null) continue;
-				for (com.badlogic.gdx.graphics.g2d.BitmapFont.Glyph g : page) {
-					if (g != null && done.add(g.id)) {
-						int cut = (g.xadvance > 3) ? Math.max(1, Math.round(g.xadvance * 0.06f)) : 0;
-						g.xadvance = Math.max(1, g.xadvance - cut);
-					}
-				}
-			}
-		}
-		return result;
+		return fonts.get(generator).get(key);
 	}
 
 }

@@ -733,9 +733,16 @@ public class Item implements Bundlable {
 
 	protected static CellSelector.Listener thrower = new CellSelector.Listener() {
 		@Override
-		public void onSelect( Integer target ) {
+		public void onSelect( final Integer target ) {
 			if (target != null) {
-				curItem.cast( curUser, target );
+				if (!com.shatteredpixel.shatteredpixeldungeon.windows.MisclickProtection.confirmAoEThrow(curUser, curItem, target, new com.watabou.utils.Callback() {
+					@Override
+					public void call() {
+						curItem.cast( curUser, target );
+					}
+				})) {
+					curItem.cast( curUser, target );
+				}
 			}
 		}
 		@Override

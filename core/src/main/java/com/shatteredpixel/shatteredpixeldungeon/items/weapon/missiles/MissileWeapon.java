@@ -186,7 +186,14 @@ abstract public class MissileWeapon extends Weapon {
 	}
 
 	public boolean isSimilar( Item item ) {
-		return trueLevel() == item.trueLevel() && getClass() == item.getClass() && setID == (((MissileWeapon) item).setID);
+		if (item == null || getClass() != item.getClass() || trueLevel() != item.trueLevel()) {
+			return false;
+		}
+		MissileWeapon other = (MissileWeapon) item;
+		if (cursed != other.cursed) return false;
+		if (enchantment == null ? other.enchantment != null : (other.enchantment == null || enchantment.getClass() != other.enchantment.getClass())) return false;
+		if (customName == null ? other.customName != null : !customName.equals(other.customName)) return false;
+		return true;
 	}
 	
 	@Override
@@ -572,12 +579,6 @@ abstract public class MissileWeapon extends Weapon {
 			while (durability <= 0){
 				quantity -= 1;
 				durability += MAX_DURABILITY;
-			}
-
-			//hashcode check is for pre-3.2 saves, 0 check is for darts
-			if (quantity > defaultQuantity() && setID != 0 && setID != getClass().getSimpleName().hashCode()){
-				quantity = defaultQuantity();
-				durability = MAX_DURABILITY;
 			}
 
 			levelKnown = levelKnown || other.levelKnown;

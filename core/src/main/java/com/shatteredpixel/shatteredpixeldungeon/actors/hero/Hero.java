@@ -1045,6 +1045,7 @@ public class Hero extends Char {
 		curAction = null;
 		GameScene.resetKeyHold();
 		resting = false;
+		trapConfirmed = false;
 	}
 	
 	public void resume() {
@@ -1892,6 +1893,7 @@ public class Hero extends Char {
 	}
 	
 	private boolean walkingToVisibleTrapInFog = false;
+	public boolean trapConfirmed = false;
 	
 	private boolean getCloser( final int target ) {
 
@@ -1980,6 +1982,14 @@ public class Hero extends Char {
 				return false;
 			}
 
+			com.shatteredpixel.shatteredpixeldungeon.levels.traps.Trap trap = Dungeon.level.traps.get(step);
+			if (trap != null && trap.visible && trap.active && !flying && !trapConfirmed){
+				com.shatteredpixel.shatteredpixeldungeon.windows.MisclickProtection.confirmStepTrap(this, step);
+				interrupt();
+				canSelfTrample = false;
+				return false;
+			}
+
 			if (buff(GreaterHaste.class) != null){
 				buff(GreaterHaste.class).spendMove();
 			}
@@ -1990,6 +2000,7 @@ public class Hero extends Char {
 			
 			sprite.move(pos, step);
 			move(step);
+			trapConfirmed = false;
 
 			spend( delay / speed() );
 			

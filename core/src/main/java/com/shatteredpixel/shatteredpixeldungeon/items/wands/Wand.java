@@ -710,85 +710,13 @@ public abstract class Wand extends Item {
 					return;
 				}
 
-				curUser.sprite.zap(cell);
-
-				//attempts to target the cell aimed at if something is there, otherwise targets the collision pos.
-				if (Actor.findChar(target) != null)
-					QuickSlotButton.target(Actor.findChar(target));
-				else
-					QuickSlotButton.target(Actor.findChar(cell));
-				
-				if (curWand.tryToZap(curUser, target)) {
-					
-					curUser.busy();
-
-					//backup barrier logic
-					//This triggers before the wand zap, mostly so the barrier helps vs skeletons
-					if (curUser.hasTalent(Talent.BACKUP_BARRIER)
-							&& curWand.curCharges == curWand.chargesPerCast()
-							&& curWand.charger != null && curWand.charger.target == curUser){
-
-						//regular. If hero owns wand but it isn't in belongings it must be in the staff
-						if (curUser.heroClass == HeroClass.MAGE && !curUser.belongings.contains(curWand)){
-							//grants 3/5 shielding
-							int shieldToGive = 1 + 2 * Dungeon.hero.pointsInTalent(Talent.BACKUP_BARRIER);
-							Buff.affect(Dungeon.hero, Barrier.class).setShield(shieldToGive);
-							Dungeon.hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shieldToGive), FloatingText.SHIELDING);
-
-						//metamorphed. Triggers if wand is highest level hero has
-						} else if (curUser.heroClass != HeroClass.MAGE) {
-							boolean highest = true;
-							for (Item i : curUser.belongings.getAllItems(Wand.class)){
-								if (i.level() > curWand.level()){
-									highest = false;
-								}
-							}
-							if (highest){
-								//grants 3/5 shielding
-								int shieldToGive = 1 + 2 * Dungeon.hero.pointsInTalent(Talent.BACKUP_BARRIER);
-								Buff.affect(Dungeon.hero, Barrier.class).setShield(shieldToGive);
-								Dungeon.hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shieldToGive), FloatingText.SHIELDING);
-							}
-						}
+				if (!com.shatteredpixel.shatteredpixeldungeon.windows.MisclickProtection.confirmAoEWand(curUser, curWand, target, new Callback() {
+					@Override
+					public void call() {
+						executeZap(curUser, curWand, target, shot, cell);
 					}
-					
-					if (curWand.cursed){
-						if (!curWand.cursedKnown){
-							GLog.n(Messages.get(Wand.class, "curse_discover", curWand.name()));
-						}
-						CursedWand.cursedZap(curWand,
-								curUser,
-								new Ballistica(curUser.pos, target, Ballistica.MAGIC_BOLT),
-								new Callback() {
-									@Override
-									public void call() {
-										curWand.wandUsed();
-									}
-								});
-					} else {
-						curWand.fx(shot, new Callback() {
-							public void call() {
-								curWand.onZap(shot);
-								if (Random.Float() < WondrousResin.extraCurseEffectChance()){
-									WondrousResin.forcePositive = true;
-									CursedWand.cursedZap(curWand,
-											curUser,
-											new Ballistica(curUser.pos, target, Ballistica.MAGIC_BOLT), new Callback() {
-												@Override
-												public void call() {
-													WondrousResin.forcePositive = false;
-													curWand.wandUsed();
-												}
-											});
-								} else {
-									curWand.wandUsed();
-								}
-							}
-						});
-
-					}
-					curWand.cursedKnown = true;
-					
+				})) {
+					executeZap(curUser, curWand, target, shot, cell);
 				}
 				
 			}
@@ -799,6 +727,89 @@ public abstract class Wand extends Item {
 			return Messages.get(Wand.class, "prompt");
 		}
 	};
+
+	private static void executeZap(final Hero curUser, final Wand curWand, final int target, final Ballistica shot, final int cell) {
+		curUser.sprite.zap(cell);
+
+		//attempts to target the cell aimed at if something is there, otherwise targets the collision pos.
+		if (Actor.findChar(target) != null)
+			QuickSlotButton.target(Actor.findChar(target));
+		else
+			QuickSlotButton.target(Actor.findChar(cell));
+		
+		if (curWand.tryToZap(curUser, target)) {
+			
+			curUser.busy();
+
+			//backup barrier logic
+			//This triggers before the wand zap, mostly so the barrier helps vs skeletons
+			if (curUser.hasTalent(Talent.BACKUP_BARRIER)
+					&& curWand.curCharges == curWand.chargesPerCast()
+					&& curWand.charger != null && curWand.charger.target == curUser){
+
+				//regular. If hero owns wand but it isn't in belongings it must be in the staff
+				if (curUser.heroClass == HeroClass.MAGE && !curUser.belongings.contains(curWand)){
+					//grants 3/5 shielding
+					int shieldToGive = 1 + 2 * Dungeon.hero.pointsInTalent(Talent.BACKUP_BARRIER);
+					Buff.affect(Dungeon.hero, Barrier.class).setShield(shieldToGive);
+					Dungeon.hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shieldToGive), FloatingText.SHIELDING);
+
+				//metamorphed. Triggers if wand is highest level hero has
+				} else if (curUser.heroClass != HeroClass.MAGE) {
+					boolean highest = true;
+					for (Item i : curUser.belongings.getAllItems(Wand.class)){
+						if (i.level() > curWand.level()){
+							highest = false;
+						}
+					}
+					if (highest){
+						//grants 3/5 shielding
+						int shieldToGive = 1 + 2 * Dungeon.hero.pointsInTalent(Talent.BACKUP_BARRIER);
+						Buff.affect(Dungeon.hero, Barrier.class).setShield(shieldToGive);
+						Dungeon.hero.sprite.showStatusWithIcon(CharSprite.POSITIVE, Integer.toString(shieldToGive), FloatingText.SHIELDING);
+					}
+				}
+			}
+			
+			if (curWand.cursed){
+				if (!curWand.cursedKnown){
+					GLog.n(Messages.get(Wand.class, "curse_discover", curWand.name()));
+				}
+				CursedWand.cursedZap(curWand,
+						curUser,
+						new Ballistica(curUser.pos, target, Ballistica.MAGIC_BOLT),
+						new Callback() {
+							@Override
+							public void call() {
+								curWand.wandUsed();
+							}
+						});
+			} else {
+				curWand.fx(shot, new Callback() {
+					public void call() {
+						curWand.onZap(shot);
+						if (Random.Float() < WondrousResin.extraCurseEffectChance()){
+							WondrousResin.forcePositive = true;
+							CursedWand.cursedZap(curWand,
+									curUser,
+									new Ballistica(curUser.pos, target, Ballistica.MAGIC_BOLT), new Callback() {
+										@Override
+										public void call() {
+											WondrousResin.forcePositive = false;
+											curWand.wandUsed();
+										}
+									});
+						} else {
+							curWand.wandUsed();
+						}
+					}
+				});
+
+			}
+			curWand.cursedKnown = true;
+			
+		}
+	}
 	
 	public class Charger extends Buff {
 		

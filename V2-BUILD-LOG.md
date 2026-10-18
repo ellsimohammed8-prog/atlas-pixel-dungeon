@@ -249,4 +249,24 @@ Base commit: `964507a` (main, v1.3.2)
 - **Save compatibility**: Full compatibility. `custom_name` and `queued_talents` bundle tags are optional and default to `null` if absent when restoring older saves.
 - **Compile result**: BUILD SUCCESSFUL, 0 errors.
 
+## Slice B4.3: Misclick Protection and Thrown-Weapon Stacking
+
+- **Status**: BUILT
+- **What changed**: Added comprehensive misclick safeguards and stacked identical thrown weapons:
+  - Created `MisclickProtection.java` to detect dangerous AoE or direct hits against the Shopkeeper and active known traps before execution.
+  - Added Shopkeeper and known trap AoE confirmation dialogs for throwing harmful potions/bombs and zapping AoE wands (Fireblast cone, Blast Wave radius, Corrosion gas, Lightning arc, Disintegration beam).
+  - Added misclick trap step protection in `Hero.java`: intercepting hero movement before stepping onto a known active trap, showing a confirmation prompt (`MisclickProtection.confirmStepTrap`), resuming only if explicitly confirmed.
+  - Allowed identical thrown weapons (matching class, level, curse, and enchantment) to merge into a single inventory stack regardless of setID, removing the artificial clamp to `defaultQuantity()` upon merging.
+  - Full bilingual EN/AR parity on all new keys.
+- **Files touched**:
+  - `core/src/main/assets/messages/windows/windows.properties`
+  - `core/src/main/assets/messages/windows/windows_ar.properties`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/Hero.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Item.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/wands/Wand.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/weapon/missiles/MissileWeapon.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/MisclickProtection.java`
+- **Save compatibility**: Full compatibility. Thrown weapon bundles already serialize standard quantity and durability floats; existing saves load without alteration.
+- **Compile result**: BUILD SUCCESSFUL, 0 errors.
+
 ---

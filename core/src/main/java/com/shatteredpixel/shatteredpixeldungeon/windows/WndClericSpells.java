@@ -41,6 +41,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RightClickMenu;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.watabou.input.PointerEvent;
 import com.watabou.noosa.ColorBlock;
 import com.watabou.noosa.Image;
@@ -207,8 +208,21 @@ public class WndClericSpells extends Window {
 
 		@Override
 		protected boolean onLongClick() {
-			hide();
-			tome.setQuickSpell(spell);
+			GameScene.show(new WndOptions(new HeroIcon(spell),
+					Messages.titleCase(spell.name()),
+					spell.shortDesc(),
+					Messages.get(WndClericSpells.class, "pin_quickslot"),
+					Messages.get(WndClericSpells.class, "quick_cast")) {
+				@Override
+				protected void onSelect(int index) {
+					hide();
+					if (index == 0) {
+						QuickSlotButton.set(tome.getSpellProxy(spell));
+					} else if (index == 1) {
+						tome.setQuickSpell(spell);
+					}
+				}
+			});
 			return true;
 		}
 
@@ -219,7 +233,8 @@ public class WndClericSpells extends Window {
 					Messages.titleCase(spell.name()),
 					Messages.get(WndClericSpells.class, "cast"),
 					Messages.get(WndClericSpells.class, "info"),
-					Messages.get(WndClericSpells.class, "quick_cast")){
+					Messages.get(WndClericSpells.class, "quick_cast"),
+					Messages.get(WndClericSpells.class, "pin_quickslot")){
 				@Override
 				public void onSelect(int index) {
 					switch (index){
@@ -245,6 +260,10 @@ public class WndClericSpells extends Window {
 						case 2:
 							hide();
 							tome.setQuickSpell(spell);
+							break;
+						case 3:
+							hide();
+							QuickSlotButton.set(tome.getSpellProxy(spell));
 							break;
 					}
 				}

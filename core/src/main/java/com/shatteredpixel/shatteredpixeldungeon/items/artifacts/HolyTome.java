@@ -42,6 +42,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.HeroIcon;
 import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndClericSpells;
+import com.watabou.utils.Bundlable;
 import com.watabou.utils.Bundle;
 
 import java.util.ArrayList;
@@ -243,6 +244,17 @@ public class HolyTome extends Artifact {
 		}
 	}
 
+	public ArrayList<SpellProxy> proxies = new ArrayList<>();
+
+	public SpellProxy getSpellProxy(ClericSpell spell){
+		for (SpellProxy p : proxies){
+			if (p.getSpell() == spell) return p;
+		}
+		SpellProxy p = new SpellProxy(spell);
+		proxies.add(p);
+		return p;
+	}
+
 	private static final String QUICK_CLS = "quick_cls";
 
 	@Override
@@ -251,6 +263,7 @@ public class HolyTome extends Artifact {
 		if (quickSpell != null) {
 			bundle.put(QUICK_CLS, quickSpell.getClass());
 		}
+		bundle.put("proxies", proxies);
 	}
 
 	@Override
@@ -261,6 +274,14 @@ public class HolyTome extends Artifact {
 			for (ClericSpell spell : ClericSpell.getAllSpells()){
 				if (spell.getClass() == quickCls){
 					quickSpell = spell;
+				}
+			}
+		}
+		proxies.clear();
+		if (bundle.contains("proxies")){
+			for (Bundlable b : bundle.getCollection("proxies")){
+				if (b instanceof SpellProxy){
+					proxies.add((SpellProxy)b);
 				}
 			}
 		}
@@ -290,7 +311,7 @@ public class HolyTome extends Artifact {
 				if (Regeneration.regenOn()) {
 					float missing = (chargeCap - charge);
 					if (level() > 7) missing += 5*(level() - 7)/3f;
-					float turnsToCharge = (45 - missing);
+					float turnsToCharge = (32f - missing * 0.5f);
 					turnsToCharge /= RingOfEnergy.artifactChargeMultiplier(target);
 					float chargeToGain = (1f / turnsToCharge);
 					if (!isEquipped(Dungeon.hero)){
@@ -366,6 +387,118 @@ public class HolyTome extends Artifact {
 				if (quickSpell.targetingFlags() != -1 && Dungeon.quickslot.contains(HolyTome.this)){
 					targetingSpell = quickSpell;
 					QuickSlotButton.useTargeting(Dungeon.quickslot.getSlot(HolyTome.this));
+				}
+			}
+		}
+	}
+
+	public static class SpellProxy extends Item {
+		public Class<? extends ClericSpell> spellClass;
+		public transient ClericSpell spell;
+
+		public SpellProxy() {
+			defaultAction = AC_CAST;
+			unique = true;
+			bones = false;
+			image = ItemSpriteSheet.ARTIFACT_TOME;
+		}
+
+		public SpellProxy(ClericSpell spell) {
+			this();
+			this.spell = spell;
+			this.spellClass = spell.getClass();
+			usesTargeting = spell.targetingFlags() != -1;
+		}
+
+		public ClericSpell getSpell() {
+			if (spell == null && spellClass != null) {
+				for (ClericSpell s : ClericSpell.getAllSpells()) {
+					if (s.getClass() == spellClass) {
+						spell = s;
+						break;
+					}
+				}
+			}
+			return spell;
+		}
+
+		@Override
+		public String name() {
+			ClericSpell s = getSpell();
+			return s != null ? s.name() : Messages.get(HolyTome.class, "spell_proxy");
+		}
+
+		@Override
+		public String desc() {
+			ClericSpell s = getSpell();
+			return s != null ? s.desc() : Messages.get(HolyTome.class, "spell_proxy_desc");
+		}
+
+		@Override
+		public ArrayList<String> actions(Hero hero) {
+			ArrayList<String> actions = super.actions(hero);
+			actions.add(AC_CAST);
+			return actions;
+		}
+
+		@Override
+		public void execute(Hero hero, String action) {
+			super.execute(hero, action);
+			if (action.equals(AC_CAST)) {
+				HolyTome tome = hero.belongings.getItem(HolyTome.class);
+				ClericSpell s = getSpell();
+				if (tome == null || s == null) {
+					GLog.w(Messages.get(HolyTome.class, "no_tome"));
+					return;
+				}
+				if (tome.cursed) {
+					GLog.w(Messages.get(HolyTome.class, "cursed"));
+					return;
+				}
+				if (!tome.canCast(hero, s)) {
+					GLog.w(Messages.get(HolyTome.class, "no_spell"));
+					return;
+				}
+				s.onCast(tome, hero);
+				if (s.targetingFlags() != -1 && Dungeon.quickslot.contains(this)) {
+					tome.targetingSpell = s;
+					QuickSlotButton.useTargeting(Dungeon.quickslot.getSlot(this));
+				}
+			}
+		}
+
+		@Override
+		public String status() {
+			if (Dungeon.hero != null) {
+				HolyTome tome = Dungeon.hero.belongings.getItem(HolyTome.class);
+				if (tome != null) return tome.status();
+			}
+			return null;
+		}
+
+		private static final String SPELL_CLASS = "spell_class";
+
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			if (spellClass != null) {
+				bundle.put(SPELL_CLASS, spellClass.getName());
+			}
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			if (bundle.contains(SPELL_CLASS)) {
+				try {
+					spellClass = (Class<? extends ClericSpell>) Class.forName(bundle.getString(SPELL_CLASS));
+					getSpell();
+					if (spell != null) {
+						usesTargeting = spell.targetingFlags() != -1;
+					}
+				} catch (Exception e) {
+					// ignored
 				}
 			}
 		}

@@ -32,6 +32,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.KindofMisc;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.Armor;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.ClassArmor;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.Artifact;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HolyTome;
 import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
 import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.ScrollOfRemoveCurse;
@@ -283,6 +284,10 @@ public class Belongings implements Iterable<Item> {
 	}
 	
 	public boolean contains( Item contains ){
+
+		if (contains instanceof HolyTome.SpellProxy) {
+			return getItem(HolyTome.class) != null;
+		}
 
 		boolean lostInvent = lostInventory();
 		

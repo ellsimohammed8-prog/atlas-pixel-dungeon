@@ -102,3 +102,18 @@ Base commit: `964507a` (main, v1.3.2)
 - **Compile result**: BUILD SUCCESSFUL, 0 errors.
 
 ---
+
+## Slice B2.2: Dawn Priest Spell Pinning and Tome Charge Pacing
+
+- **Status**: BUILT
+- **What changed**: Smoothed HolyTome charge pacing in `HolyTome.TomeRecharge.act()` from `45 - missing` to `32f - missing * 0.5f` turns per charge, directly improving spell accessibility and pairing with Herald of Dawn's 3-charge Call Wisp. Added `HolyTome.SpellProxy` and updated `WndClericSpells` to allow pinning individual spells directly to toolbar quickslots on both mobile and desktop. Full EN/AR string parity.
+- **Files touched**:
+  - `core/src/main/assets/messages/items/items.properties`
+  - `core/src/main/assets/messages/items/items_ar.properties`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/Belongings.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/artifacts/HolyTome.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndClericSpells.java`
+- **Save compatibility**: Full compatibility. `SpellProxy` is a standard `Item` that serializes via `Bundle`. If absent in old saves, the proxy list initializes empty and populates on demand.
+- **Compile result**: BUILD SUCCESSFUL, 0 errors.
+
+---

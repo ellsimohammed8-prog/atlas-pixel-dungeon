@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Pacts;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Cripple;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.MagicImmune;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Momentum;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.PinCushion;
@@ -326,6 +327,14 @@ abstract public class MissileWeapon extends Weapon {
 		if (attacker == Dungeon.hero && Dungeon.hero.pointsInTalent(Talent.SURVIVALISTS_INTUITION) == 2){
 			usesLeftToID = Math.min(usesLeftToID, 0);
 			availableUsesToID =  Math.max(usesLeftToID, 0);
+		}
+
+		if (attacker instanceof Hero && ((Hero)attacker).hasTalent(Talent.PINPOINT_ACCURACY)
+				&& Dungeon.level != null && defender != null && Dungeon.level.distance(attacker.pos, defender.pos) >= 3){
+			damage = Math.round(damage * (1f + 0.12f * ((Hero)attacker).pointsInTalent(Talent.PINPOINT_ACCURACY)));
+			if (Random.Float() < 0.25f * ((Hero)attacker).pointsInTalent(Talent.PINPOINT_ACCURACY)){
+				Buff.prolong(defender, Cripple.class, 2f);
+			}
 		}
 
 		int result = super.proc(attacker, defender, damage);

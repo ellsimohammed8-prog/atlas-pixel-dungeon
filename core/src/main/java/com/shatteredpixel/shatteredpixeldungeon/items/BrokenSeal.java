@@ -43,6 +43,7 @@ import com.shatteredpixel.shatteredpixeldungeon.windows.WndBag;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndUseItem;
 import com.watabou.noosa.Image;
+import com.watabou.utils.Random;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.utils.Bundle;
 import com.watabou.utils.GameMath;
@@ -318,6 +319,11 @@ public class BrokenSeal extends Item {
 		public synchronized boolean act() {
 			if (cooldown > 0 && Regeneration.regenOn()){
 				cooldown--;
+				if (target instanceof Hero && ((Hero)target).hasTalent(Talent.VANGUARD_BULWARK) && cooldown > 0){
+					if (Random.Float() < 0.25f * ((Hero)target).pointsInTalent(Talent.VANGUARD_BULWARK)){
+						cooldown--;
+					}
+				}
 			}
 
 			if (shielding() > 0){

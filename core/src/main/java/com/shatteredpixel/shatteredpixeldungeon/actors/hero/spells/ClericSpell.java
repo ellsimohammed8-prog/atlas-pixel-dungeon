@@ -31,6 +31,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.cleric.AscendedForm;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.abilities.cleric.PowerOfMany;
+import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.HolyTome;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.ui.HeroIcon;
@@ -98,6 +99,15 @@ public abstract class ClericSpell {
 		if (hero.buff(AscendedForm.AscendBuff.class) != null){
 			hero.buff(AscendedForm.AscendBuff.class).spellCasts++;
 			hero.buff(AscendedForm.AscendBuff.class).incShield((int)(10*chargeUse(hero)));
+		}
+
+		if (hero.hasTalent(Talent.DIVINE_ILLUMINATION) && Dungeon.level != null){
+			for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])){
+				if (mob.alignment == Char.Alignment.ENEMY && Dungeon.level.distance(hero.pos, mob.pos) <= 4){
+					mob.invisible = 0;
+					mob.notice();
+				}
+			}
 		}
 	}
 

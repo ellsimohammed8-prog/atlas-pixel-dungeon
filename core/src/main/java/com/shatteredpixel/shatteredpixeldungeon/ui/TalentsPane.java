@@ -307,15 +307,38 @@ public class TalentsPane extends ScrollPane {
 				random.setRect(width - 16, y-2, 16, 14);
 			}
 
-			float gap = (width - buttons.size()*TalentButton.WIDTH)/(buttons.size()+1);
-			left = x + gap;
-			for (TalentButton btn : buttons){
-				btn.setPos(left, title.bottom() + 4);
-				PixelScene.align(btn);
-				left += btn.width() + gap;
+			if (buttons.size() > 5) {
+				int half = (buttons.size() + 1) / 2;
+				float gap1 = (width - half * TalentButton.WIDTH) / (half + 1);
+				float left1 = x + gap1;
+				float top1 = title.bottom() + 3;
+				for (int i = 0; i < half; i++) {
+					TalentButton btn = buttons.get(i);
+					btn.setPos(left1, top1);
+					PixelScene.align(btn);
+					left1 += btn.width() + gap1;
+				}
+				int secondHalf = buttons.size() - half;
+				float gap2 = (width - secondHalf * TalentButton.WIDTH) / (secondHalf + 1);
+				float left2 = x + gap2;
+				float top2 = top1 + TalentButton.HEIGHT + 3;
+				for (int i = half; i < buttons.size(); i++) {
+					TalentButton btn = buttons.get(i);
+					btn.setPos(left2, top2);
+					PixelScene.align(btn);
+					left2 += btn.width() + gap2;
+				}
+				height = buttons.get(buttons.size() - 1).bottom() - y;
+			} else {
+				float gap = (width - buttons.size()*TalentButton.WIDTH)/(buttons.size()+1);
+				left = x + gap;
+				for (TalentButton btn : buttons){
+					btn.setPos(left, title.bottom() + 4);
+					PixelScene.align(btn);
+					left += btn.width() + gap;
+				}
+				height = buttons.get(0).bottom() - y;
 			}
-
-			height = buttons.get(0).bottom() - y;
 
 		}
 

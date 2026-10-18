@@ -407,6 +407,10 @@ public abstract class Wand extends Item {
 				lvl += ((Hero)charger.target).pointsInTalent(Talent.DESPERATE_POWER);
 			}
 
+			if (charger.target instanceof Hero && ((Hero)charger.target).hasTalent(Talent.ASTRAL_FOCUS)){
+				lvl += ((Hero)charger.target).pointsInTalent(Talent.ASTRAL_FOCUS);
+			}
+
 			if (charger.target.buff(WildMagic.WildMagicTracker.class) != null){
 				int bonus = 4 + ((Hero)charger.target).pointsInTalent(Talent.WILD_POWER);
 				if (Random.Int(2) == 0) bonus++;
@@ -488,6 +492,14 @@ public abstract class Wand extends Item {
 		}
 		
 		curCharges -= cursed ? 1 : chargesPerCast();
+
+		if (curUser != null && curUser.hasTalent(Talent.ASTRAL_FOCUS)){
+			int shield = curUser.pointsInTalent(Talent.ASTRAL_FOCUS);
+			Barrier b = Buff.affect(curUser, Barrier.class);
+			if (b.shielding() < shield * 4){
+				b.incShield(shield);
+			}
+		}
 
 		//remove magic charge at a higher priority, if we are benefiting from it are and not the
 		//wand that just applied it

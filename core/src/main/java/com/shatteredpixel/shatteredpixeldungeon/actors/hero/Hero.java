@@ -567,6 +567,9 @@ public class Hero extends Char {
 		
 		float accuracy = 1;
 		accuracy *= RingOfAccuracy.accuracyMultiplier( this );
+		if (buff(Talent.TempestComboTracker.class) != null && hasTalent(Talent.TEMPEST_COMBO)){
+			accuracy *= 1f + 0.10f * pointsInTalent(Talent.TEMPEST_COMBO);
+		}
 		
 		//precise assault and liquid agility
 		if (!(wep instanceof MissileWeapon)) {
@@ -635,6 +638,10 @@ public class Hero extends Char {
 		float evasion = defenseSkill;
 		
 		evasion *= RingOfEvasion.evasionMultiplier( this );
+
+		if (invisible > 0 && hasTalent(Talent.PHANTOM_STRIDE)){
+			evasion *= 1f + 0.25f * pointsInTalent(Talent.PHANTOM_STRIDE);
+		}
 
 		if (buff(Talent.LiquidAgilEVATracker.class) != null){
 			if (pointsInTalent(Talent.LIQUID_AGILITY) == 1){
@@ -715,6 +722,20 @@ public class Hero extends Char {
 		if (buff(HoldFast.class) != null){
 			dr += buff(HoldFast.class).armorBonus();
 		}
+
+		if (hasTalent(Talent.VANGUARD_BULWARK)){
+			dr += pointsInTalent(Talent.VANGUARD_BULWARK) * 2;
+		}
+
+		if (hasTalent(Talent.FOREST_SANCTUARY) && Dungeon.level != null){
+			int t = Dungeon.level.map[pos];
+			if (t == com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.GRASS
+					|| t == com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.HIGH_GRASS
+					|| t == com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.FURROWED_GRASS
+					|| t == com.shatteredpixel.shatteredpixeldungeon.levels.Terrain.EMBERS){
+				dr += pointsInTalent(Talent.FOREST_SANCTUARY) * 2;
+			}
+		}
 		
 		return dr;
 	}
@@ -788,6 +809,10 @@ public class Hero extends Char {
 			speed *= (2f + 0.25f*pointsInTalent(Talent.GROWING_POWER));
 		}
 
+		if (invisible > 0 && hasTalent(Talent.PHANTOM_STRIDE)){
+			speed *= 1f + 0.10f * pointsInTalent(Talent.PHANTOM_STRIDE);
+		}
+
 		speed = AscensionChallenge.modifyHeroSpeed(speed);
 		
 		return speed;
@@ -840,6 +865,10 @@ public class Hero extends Char {
 		}
 
 		float delay = 1f;
+
+		if (buff(Talent.TempestComboTracker.class) != null && hasTalent(Talent.TEMPEST_COMBO)){
+			delay *= (1f - 0.08f * pointsInTalent(Talent.TEMPEST_COMBO));
+		}
 
 		if (!RingOfForce.fightingUnarmed(this)) {
 			

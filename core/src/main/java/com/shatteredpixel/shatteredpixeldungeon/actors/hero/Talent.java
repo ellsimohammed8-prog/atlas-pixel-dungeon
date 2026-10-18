@@ -36,6 +36,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.FlavourBuff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Haste;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Invisibility;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LostInventory;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Paralysis;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.PhysicalEmpower;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Recharging;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.RevealedArea;
@@ -202,7 +203,26 @@ public enum Talent {
 	//universal T4
 	HEROIC_ENERGY(26, 4), //See icon() and title() for special logic for this one
 	//Ratmogrify T4
-	RATSISTANCE(215, 4), RATLOMACY(216, 4), RATFORCEMENTS(217, 4);
+	RATSISTANCE(215, 4), RATLOMACY(216, 4), RATFORCEMENTS(217, 4),
+
+	//Atlas King T4 Capstones
+	VANGUARD_BULWARK(24, 4), CRUSHING_FORCE(22, 4),
+	//Star Sage T4 Capstones
+	ASTRAL_FOCUS(50, 4), ARCANE_HARVEST(54, 4),
+	//Dune Shadow T4 Capstones
+	PHANTOM_STRIDE(80, 4), DESERT_STRIKE(75, 4),
+	//Cedar Huntress T4 Capstones
+	FOREST_SANCTUARY(111, 4), PINPOINT_ACCURACY(107, 4),
+	//Sirocco Blade T4 Capstones
+	TEMPEST_COMBO(141, 4), WEAPON_MASTERY(139, 4),
+	//Dawn Priest T4 Capstones
+	DIVINE_ILLUMINATION(178, 4), DAWN_RESTORATION(174, 4);
+
+	public static class TempestComboTracker extends FlavourBuff{
+		public int icon() { return BuffIndicator.WEAPON; }
+		public void tintIcon(Image icon) { icon.hardlight(0.8f, 0.6f, 0.2f); }
+		public float iconFadePercent() { return Math.max(0, visualcooldown() / 2f); }
+	};
 
 	public static class ImprovisedProjectileCooldown extends FlavourBuff{
 		public int icon() { return BuffIndicator.TIME; }
@@ -924,6 +944,21 @@ public enum Talent {
 			}
 		}
 
+		if (hero.hasTalent(Talent.CRUSHING_FORCE) && !(hero.belongings.attackingWeapon() instanceof MissileWeapon)){
+			dmg += 2 * hero.pointsInTalent(Talent.CRUSHING_FORCE);
+			if (Random.Float() < 0.15f * hero.pointsInTalent(Talent.CRUSHING_FORCE) && enemy.isAlive()){
+				Buff.affect(enemy, Paralysis.class, 1f);
+			}
+		}
+
+		if (hero.hasTalent(Talent.DESERT_STRIKE) && enemy instanceof Mob && ((Mob)enemy).surprisedBy(hero)){
+			dmg = Math.round(dmg * (1f + 0.15f * hero.pointsInTalent(Talent.DESERT_STRIKE)));
+		}
+
+		if (hero.hasTalent(Talent.TEMPEST_COMBO)){
+			Buff.prolong(hero, TempestComboTracker.class, 2f);
+		}
+
 		return dmg;
 	}
 
@@ -1064,7 +1099,33 @@ public enum Talent {
 		tierTalents.clear();
 
 		//tier4
-		//TBD
+		switch (cls){
+			case WARRIOR: default:
+				Collections.addAll(tierTalents, VANGUARD_BULWARK, CRUSHING_FORCE);
+				break;
+			case MAGE:
+				Collections.addAll(tierTalents, ASTRAL_FOCUS, ARCANE_HARVEST);
+				break;
+			case ROGUE:
+				Collections.addAll(tierTalents, PHANTOM_STRIDE, DESERT_STRIKE);
+				break;
+			case HUNTRESS:
+				Collections.addAll(tierTalents, FOREST_SANCTUARY, PINPOINT_ACCURACY);
+				break;
+			case DUELIST:
+				Collections.addAll(tierTalents, TEMPEST_COMBO, WEAPON_MASTERY);
+				break;
+			case CLERIC:
+				Collections.addAll(tierTalents, DIVINE_ILLUMINATION, DAWN_RESTORATION);
+				break;
+		}
+		for (Talent talent : tierTalents){
+			if (replacements.containsKey(talent)){
+				talent = replacements.get(talent);
+			}
+			talents.get(3).put(talent, 0);
+		}
+		tierTalents.clear();
 	}
 
 	public static void initSubclassTalents( Hero hero ){

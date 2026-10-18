@@ -460,6 +460,9 @@ public class MeleeWeapon extends Weapon {
 					}
 
 					partialCharge += chargeToGain;
+					if (target instanceof Hero && ((Hero)target).hasTalent(Talent.WEAPON_MASTERY)){
+						partialCharge += chargeToGain * (0.15f * ((Hero)target).pointsInTalent(Talent.WEAPON_MASTERY));
+					}
 				}
 
 				int points = ((Hero)target).pointsInTalent(Talent.WEAPON_RECHARGING);

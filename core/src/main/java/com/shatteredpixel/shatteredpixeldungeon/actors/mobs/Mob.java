@@ -66,8 +66,11 @@ import com.shatteredpixel.shatteredpixeldungeon.effects.Wound;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.ShadowParticle;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.CloakOfShadows;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.MasterThievesArmband;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TalismanOfForesight;
+import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.TimekeepersHourglass;
 import com.shatteredpixel.shatteredpixeldungeon.items.potions.exotic.ExoticPotion;
 import com.shatteredpixel.shatteredpixeldungeon.items.rings.Ring;
@@ -1045,6 +1048,33 @@ public abstract class Mob extends Char {
 						&& Dungeon.hero.buff(Talent.LethalHasteCooldown.class) == null){
 					Buff.affect(Dungeon.hero, Talent.LethalHasteCooldown.class, 100f);
 					Buff.affect(Dungeon.hero, GreaterHaste.class).set(2 + 2*Dungeon.hero.pointsInTalent(Talent.LETHAL_HASTE));
+				}
+			}
+
+			if (Dungeon.hero != null && Dungeon.hero.isAlive()){
+				if (Dungeon.hero.hasTalent(Talent.ARCANE_HARVEST) && Random.Float() < 0.25f * Dungeon.hero.pointsInTalent(Talent.ARCANE_HARVEST)){
+					for (Item it : Dungeon.hero.belongings){
+						if (it instanceof Wand && ((Wand)it).curCharges < ((Wand)it).maxCharges){
+							((Wand)it).curCharges++;
+							((Wand)it).updateQuickslot();
+							break;
+						}
+					}
+					Buff.affect(Dungeon.hero, MindVision.class, 1f);
+				}
+
+				if (Dungeon.hero.hasTalent(Talent.DESERT_STRIKE) && surprisedBy(Dungeon.hero)){
+					CloakOfShadows cloak = Dungeon.hero.belongings.getItem(CloakOfShadows.class);
+					if (cloak != null && cloak.isEquipped(Dungeon.hero)){
+						cloak.charge(Dungeon.hero, 0.25f * Dungeon.hero.pointsInTalent(Talent.DESERT_STRIKE));
+					}
+				}
+
+				if (Dungeon.hero.hasTalent(Talent.WEAPON_MASTERY) && HT >= 40){
+					MeleeWeapon.Charger charger = Dungeon.hero.buff(MeleeWeapon.Charger.class);
+					if (charger != null){
+						charger.gainCharge(1f);
+					}
 				}
 			}
 

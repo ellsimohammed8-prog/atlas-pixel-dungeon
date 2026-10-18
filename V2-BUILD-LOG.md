@@ -330,3 +330,35 @@ Base commit: `964507a` (main, v1.3.2)
 - **Compile result**: BUILD SUCCESSFUL, 0 errors.
 
 ---
+
+## Slice B5.1: Tier-4 Talents
+
+- **Status**: BUILT
+- **What changed**:
+  - Added 12 new class-specific Tier-4 capstone talents (2 for each hero class, max 4 points each) expanding high-level progression choices for levels 21–30 beyond fixed stat growth:
+    - **Atlas King (Warrior)**: `VANGUARD_BULWARK` (+2/+4/+6/+8 base armor and Broken Seal shield generates 25-100% faster), `CRUSHING_FORCE` (+2/+4/+6/+8 melee weapon bonus damage and 15-60% chance to stagger/paralyze adjacent targets).
+    - **Star Sage (Mage)**: `ASTRAL_FOCUS` (+1/+2/+3/+4 effective wand level and temporary Barrier shield up to 4-16), `ARCANE_HARVEST` (25-100% chance on kill to restore 1 wand or staff charge and grant astral Mind Vision).
+    - **Dune Shadow (Rogue)**: `PHANTOM_STRIDE` (+25-100% evasion and +10-40% movement speed while invisible or freshly emerged from stealth), `DESERT_STRIKE` (+15-60% surprise attack damage and surprise kills restore 0.25-1.00 charge to Cloak of Shadows).
+    - **Cedar Huntress (Huntress)**: `FOREST_SANCTUARY` (+2/+4/+6/+8 armor while standing in grass or vegetation), `PINPOINT_ACCURACY` (+12-48% ranged attack damage against targets 3+ tiles away with 25-100% chance to cripple).
+    - **Sirocco Blade (Duelist)**: `TEMPEST_COMBO` (+10-40% accuracy and +8-32% attack speed for 2 turns on strike), `WEAPON_MASTERY` (+15-60% weapon ability recharge speed and defeating formidable enemies restores 1 weapon charge).
+    - **Dawn Priest (Cleric)**: `DIVINE_ILLUMINATION` (reveals invisible and stealth foes within 4 tiles on casting holy spells), `DAWN_RESTORATION` (recovers +2/+4/+6/+8 HP whenever casting a Tome spell).
+  - Multi-row layout support in `TalentsPane.TalentTierPane.layout()`: gracefully renders 2 balanced rows of buttons when tier buttons exceed 5, ensuring zero overlap or clipping on all screen sizes.
+  - Full EN + AR parity across all 12 talents in `actors.properties` and `actors_ar.properties`.
+- **Files touched**:
+  - `core/src/main/assets/messages/actors/actors.properties`
+  - `core/src/main/assets/messages/actors/actors_ar.properties`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/Hero.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/Talent.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/spells/ClericSpell.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Mob.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/BrokenSeal.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/artifacts/HolyTome.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/wands/Wand.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/weapon/melee/MeleeWeapon.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/weapon/missiles/MissileWeapon.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/TalentsPane.java`
+  - `V2-BUILD-LOG.md`
+- **Save compatibility**: Full compatibility. Talents use standard bundle restoration; old saves with armor ability talents retain all spent points, and unspent level 21-30 points can be allocated to the new talents immediately upon loading.
+- **Compile result**: BUILD SUCCESSFUL, 0 errors.
+
+---

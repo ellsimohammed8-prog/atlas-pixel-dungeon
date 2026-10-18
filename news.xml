@@ -5,6 +5,18 @@
      Dates must use the format yyyy-MM-dd. Keep summaries short. -->
 <feed>
 	<entry>
+		<title>Version 2.0.1 — Small Fixes</title>
+		<published>2026-10-18</published>
+		<summary>A small patch on the v2.0 finale: the Challenges &amp; Pacts window now scrolls properly when the list is taller than the screen, and translator credits were corrected.</summary>
+		<link href="https://github.com/ellsimohammed8-prog/atlas-pixel-dungeon/releases"/>
+	</entry>
+	<entry>
+		<title>الإصدار 2.0.1 — إصلاحات صغيرة</title>
+		<published>2026-10-18</published>
+		<summary>تحديث صغير على ختام 2.0: نافذة التحديات والعهود أصبحت قابلة للتمرير بشكل صحيح عندما تكون القائمة أطول من الشاشة، وتم تصحيح اعتمادات الترجمة.</summary>
+		<link href="https://github.com/ellsimohammed8-prog/atlas-pixel-dungeon/releases"/>
+	</entry>
+	<entry>
 		<title>Version 2.0.0 — The Grand Finale</title>
 		<published>2026-10-18</published>
 		<summary>Atlas Pixel Dungeon v2.0 is here: The Sunken Deep brings endless descent past the Crown of Atlas with depth ranking records. The Herald of Dawn joins the Dawn Priest, and Liquid Gold lets you melt spare rings at the alchemy pot. Discover Dual Enchantments via Blueprints, 12 new Tier-4 class talents, 5 brutal Deep Challenges, Casual/Assist mode with checkpoints, free seeded runs with curated Atlas phrases, full save export/import, combat stats inspector, hero and item renaming, talent queueing, and a complete suite of QoL improvements.</summary>

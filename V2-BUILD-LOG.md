@@ -44,3 +44,19 @@ Base commit: `964507a` (main, v1.3.2)
 - **Compile result**: BUILD SUCCESSFUL, 0 errors.
 
 ---
+
+## Slice A2: Chain Snare (Chain Warden Boss Mechanic)
+
+- **Status**: INTEGRATED
+- **What changed**: Integrated `agent/chain-warden` (commits `d3f2cc5`, `2ac429c`, `8bd0ffa`) adding the Chain Warden's Chain Snare ability (bind-only, telegraphed chain attack with counterplay, no damage, no reel) with full EN/AR string parity and design report.
+- **Files touched**:
+  - `CHAIN-WARDEN-DESIGN.md`
+  - `CHAIN-WARDEN-REPORT.md`
+  - `core/src/main/assets/messages/actors/actors.properties`
+  - `core/src/main/assets/messages/actors/actors_ar.properties`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/buffs/Chained.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Tengu.java`
+- **Save compatibility**: Old saves load cleanly. New fields on Tengu and the Chained buff use standard bundle serialization with backwards-compatible defaults if absent.
+- **Compile result**: BUILD SUCCESSFUL, 0 errors.
+
+---

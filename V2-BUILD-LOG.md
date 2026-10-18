@@ -79,3 +79,14 @@ Base commit: `964507a` (main, v1.3.2)
 - **Compile result**: BUILD SUCCESSFUL, 0 errors.
 
 ---
+
+## Slice B2 (DESIGN-FIRST): Class Fixes Design Note
+
+- **Status**: DESIGN-GATE
+- **What changed**: Created `CLASS-FIXES-DESIGN.md` detailing conservative, code-argued fixes for Atlas King (seal shield cooldown 150 -> 100 turns, Berserker rage buffer 3 -> 6, decay 0.05 -> 0.03), Dawn Priest (HolyTome charge pacing 45 -> 32 turns, quickslot spell pinning via SpellProxy), and Sirocco Blade (floor-band weapon charge pacing: 35t sewers, 45t prison, 60t caves+, base charge cap 3). All fork ideas credited (RKPD2 / Rat King Adventure / Polished PD).
+- **Files touched**:
+  - `CLASS-FIXES-DESIGN.md`
+- **Save compatibility**: Full compatibility; design covers constants, formulas, and Bundlable proxy items.
+- **Compile result**: N/A (Documentation/Design commit before code).
+
+---

@@ -33,7 +33,9 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.CheckBox;
 import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RenderedTextBlock;
+import com.shatteredpixel.shatteredpixeldungeon.ui.ScrollPane;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
+import com.watabou.noosa.ui.Component;
 import com.watabou.utils.DeviceCompat;
 
 import java.util.ArrayList;
@@ -77,7 +79,12 @@ public class WndChallenges extends Window {
 		final boolean challengesLocked = editable && !Badges.isUnlocked(Badges.Badge.VICTORY) && !DeviceCompat.isDebug();
 		final boolean isCasual = editable ? SPDSettings.casualMode() : Dungeon.casualMode;
 
-		float pos = TTL_HEIGHT;
+		//Atlas: with pacts, the casual toggle and 14 challenges the content is
+		//taller than the screen, so it lives in a scroll pane below the title
+		ScrollPane pane = new ScrollPane( new Component() );
+		Component content = pane.content();
+
+		float pos = 0;
 
 		chkCasual = new CheckBox( Messages.get(WndChallenges.class, "casual_mode") ){
 			@Override
@@ -101,7 +108,7 @@ public class WndChallenges extends Window {
 		chkCasual.checked( isCasual );
 		chkCasual.active = editable;
 		chkCasual.setRect( 0, pos, WIDTH-16, BTN_HEIGHT );
-		add( chkCasual );
+		content.add( chkCasual );
 
 		IconButton infoCasual = new IconButton(Icons.get(Icons.INFO)){
 			@Override
@@ -113,7 +120,7 @@ public class WndChallenges extends Window {
 			}
 		};
 		infoCasual.setRect(chkCasual.right(), pos, 16, BTN_HEIGHT);
-		add(infoCasual);
+		content.add(infoCasual);
 
 		pos = chkCasual.bottom() + GAP + 2;
 
@@ -130,7 +137,7 @@ public class WndChallenges extends Window {
 			}
 			cb.setRect( 0, pos, WIDTH-16, BTN_HEIGHT );
 
-			add( cb );
+			content.add( cb );
 			boxes.add( cb );
 			
 			IconButton info = new IconButton(Icons.get(Icons.INFO)){
@@ -143,7 +150,7 @@ public class WndChallenges extends Window {
 				}
 			};
 			info.setRect(cb.right(), pos, 16, BTN_HEIGHT);
-			add(info);
+			content.add(info);
 			
 			pos = cb.bottom();
 		}
@@ -155,7 +162,7 @@ public class WndChallenges extends Window {
 			lockNote.hardlight( 0x999999 );
 			lockNote.setPos( (WIDTH - lockNote.width()) / 2, pos );
 			PixelScene.align(lockNote);
-			add( lockNote );
+			content.add( lockNote );
 			pos += lockNote.height();
 		}
 
@@ -168,7 +175,7 @@ public class WndChallenges extends Window {
 				pos
 		);
 		PixelScene.align(pactsTitle);
-		add( pactsTitle );
+		content.add( pactsTitle );
 		pos += pactsTitle.height() + GAP + 3;
 
 		pactBoxes = new ArrayList<>();
@@ -201,7 +208,7 @@ public class WndChallenges extends Window {
 			}
 			cb.setRect( 0, pos, WIDTH-16, BTN_HEIGHT );
 
-			add( cb );
+			content.add( cb );
 			pactBoxes.add( cb );
 
 			IconButton info = new IconButton(Icons.get(Icons.INFO)){
@@ -214,12 +221,17 @@ public class WndChallenges extends Window {
 				}
 			};
 			info.setRect(cb.right(), pos, 16, BTN_HEIGHT);
-			add(info);
+			content.add(info);
 
 			pos = cb.bottom();
 		}
 
-		resize( WIDTH, (int)pos );
+		content.setSize( WIDTH, pos );
+		int paneHeight = (int)Math.min( pos, PixelScene.uiCamera.height - 20 - TTL_HEIGHT );
+		pane.setRect( 0, TTL_HEIGHT, WIDTH, paneHeight );
+		add( pane );
+
+		resize( WIDTH, TTL_HEIGHT + paneHeight );
 	}
 
 	@Override

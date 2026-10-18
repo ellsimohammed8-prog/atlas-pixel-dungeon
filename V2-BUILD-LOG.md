@@ -270,3 +270,27 @@ Base commit: `964507a` (main, v1.3.2)
 - **Compile result**: BUILD SUCCESSFUL, 0 errors.
 
 ---
+
+## Slice B4.4: Catalog Completeness, Quest Counters, Pouch Routing, and Quickslot Retention
+
+- **Status**: BUILT
+- **What changed**:
+  - Verified catalog completeness: Trinkets and Missile weapons were already integrated into `Catalog.equipmentCatalogs` in our base and properly discoverable.
+  - Added live quest progress counters to journal landmark titles and descriptions in `Notes.LandmarkRecord` for Sad Ghost (0/1 vs 1/1), Old Wandmaker (0/1 vs 1/1 depending on quest item possession), Troll Blacksmith (Dark Gold quantity counter or completed), and Ambitious Imp (Dwarf Token counter x/5 or completed).
+  - Added inventory auto-routing on grass trampling in `HighGrass.java`: Dewdrops auto-route directly into the hero's Waterskin if present and not full (or consume if hero is hurt); Seeds and Runestones auto-route directly into the Velvet Pouch via `hero.belongings.backpack` even when main general slots are filled.
+  - Added direct Waterskin routing override in `Dewdrop.collect(Bag container)`.
+  - Added quickslot preservation in `AlchemyScene.java`: tracked `inputQuickslots` when ingredients are placed into the alchemy pot (via guide, bag selection, or quick recipe populate); restored assigned quickslots if items are cancelled, cleared, or clicked back into inventory; transferred the primary ingredient's quickslot assignment to crafted output items.
+  - Full bilingual EN/AR parity in `messages/journal/journal.properties` and `journal_ar.properties`.
+- **Files touched**:
+  - `core/src/main/assets/messages/journal/journal.properties`
+  - `core/src/main/assets/messages/journal/journal_ar.properties`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/Ghost.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/npcs/Wandmaker.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Dewdrop.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/journal/Notes.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/levels/features/HighGrass.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/scenes/AlchemyScene.java`
+- **Save compatibility**: Full compatibility. No serialized variables modified; runtime routing and ephemeral scene quickslot tracking only.
+- **Compile result**: BUILD SUCCESSFUL, 0 errors.
+
+---

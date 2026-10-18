@@ -33,12 +33,17 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Talent;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.npcs.Blacksmith;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.particles.LeafParticle;
+import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.items.Dewdrop;
 import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
+import com.shatteredpixel.shatteredpixeldungeon.items.Item;
+import com.shatteredpixel.shatteredpixeldungeon.items.Waterskin;
 import com.shatteredpixel.shatteredpixeldungeon.items.armor.glyphs.Camouflage;
 import com.shatteredpixel.shatteredpixeldungeon.items.artifacts.SandalsOfNature;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.VelvetPouch;
 import com.shatteredpixel.shatteredpixeldungeon.items.food.Berry;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.PetrifiedSeed;
+import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.MiningLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Terrain;
@@ -137,10 +142,17 @@ public class HighGrass {
 				}
 
 				if (Random.Float() < lootChance) {
+					Item loot;
 					if (Random.Float() < PetrifiedSeed.stoneInsteadOfSeedChance()) {
-						level.drop(Generator.randomUsingDefaults(Generator.Category.STONE), pos).sprite.drop();
+						loot = Generator.randomUsingDefaults(Generator.Category.STONE);
 					} else {
-						level.drop(Generator.random(Generator.Category.SEED), pos).sprite.drop();
+						loot = Generator.random(Generator.Category.SEED);
+					}
+					if (ch instanceof Hero && ((Hero)ch).belongings.getItem(VelvetPouch.class) != null && loot.collect(((Hero)ch).belongings.backpack)) {
+						Catalog.setSeen(loot.getClass());
+						Statistics.itemTypesDiscovered.add(loot.getClass());
+					} else {
+						level.drop(loot, pos).sprite.drop();
 					}
 				}
 				
@@ -153,7 +165,24 @@ public class HighGrass {
 				}
 
 				if (Random.Float() < lootChance) {
-					level.drop(new Dewdrop(), pos).sprite.drop();
+					Dewdrop dew = new Dewdrop();
+					if (ch instanceof Hero) {
+						Hero hero = (Hero)ch;
+						Waterskin flask = hero.belongings.getItem(Waterskin.class);
+						if (flask != null && !flask.isFull()) {
+							flask.collectDew(dew);
+							Catalog.setSeen(Dewdrop.class);
+							Statistics.itemTypesDiscovered.add(Dewdrop.class);
+						} else if (hero.HP < hero.HT) {
+							Dewdrop.consumeDew(1, hero, false);
+							Catalog.setSeen(Dewdrop.class);
+							Statistics.itemTypesDiscovered.add(Dewdrop.class);
+						} else {
+							level.drop(dew, pos).sprite.drop();
+						}
+					} else {
+						level.drop(dew, pos).sprite.drop();
+					}
 				}
 			}
 

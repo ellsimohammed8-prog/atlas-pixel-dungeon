@@ -41,6 +41,10 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Generator;
 import com.shatteredpixel.shatteredpixeldungeon.items.Item;
 import com.shatteredpixel.shatteredpixeldungeon.items.LostBackpack;
 import com.shatteredpixel.shatteredpixeldungeon.items.keys.Key;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.CorpseDust;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.DarkGold;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.DwarfToken;
+import com.shatteredpixel.shatteredpixeldungeon.items.quest.Embers;
 import com.shatteredpixel.shatteredpixeldungeon.items.spells.BeaconOfReturning;
 import com.shatteredpixel.shatteredpixeldungeon.levels.Level;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.special.WeakFloorRoom;
@@ -56,6 +60,7 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.ShopkeeperSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.SpawnerSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.StatueSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.WandmakerSprite;
+import com.shatteredpixel.shatteredpixeldungeon.plants.Rotberry;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import com.watabou.noosa.BitmapText;
 import com.watabou.noosa.Image;
@@ -226,6 +231,52 @@ public class Notes {
 
 				case LOST_PACK:     return Messages.get(LostBackpack.class, "name");
 				case BEACON_LOCATION:return Messages.get(BeaconOfReturning.class, "name");
+
+				case GHOST: {
+					String title = Messages.get(Landmark.class, landmark.name());
+					if (Ghost.Quest.given()) {
+						title += " (" + (Ghost.Quest.processed() ? "1/1" : "0/1") + ")";
+					}
+					return title;
+				}
+				case WANDMAKER: {
+					String title = Messages.get(Landmark.class, landmark.name());
+					if (Wandmaker.Quest.given()) {
+						boolean hasItem = Dungeon.hero != null && (
+								(Wandmaker.Quest.type() == 1 && Dungeon.hero.belongings.getItem(CorpseDust.class) != null) ||
+								(Wandmaker.Quest.type() == 2 && Dungeon.hero.belongings.getItem(Embers.class) != null) ||
+								(Wandmaker.Quest.type() == 3 && Dungeon.hero.belongings.getItem(Rotberry.Seed.class) != null)
+						);
+						title += " (" + (hasItem ? "1/1" : "0/1") + ")";
+					}
+					return title;
+				}
+				case TROLL: {
+					String title = Messages.get(Landmark.class, landmark.name());
+					if (Blacksmith.Quest.given()) {
+						if (Blacksmith.Quest.completed()) {
+							title += " (" + Messages.get(Notes.class, "quest_completed") + ")";
+						} else {
+							DarkGold gold = Dungeon.hero != null ? Dungeon.hero.belongings.getItem(DarkGold.class) : null;
+							int count = gold != null ? gold.quantity() : 0;
+							title += " (" + count + " " + Messages.get(DarkGold.class, "name") + ")";
+						}
+					}
+					return title;
+				}
+				case IMP: {
+					String title = Messages.get(Landmark.class, landmark.name());
+					if (Imp.Quest.given()) {
+						if (Imp.Quest.isCompleted()) {
+							title += " (" + Messages.get(Notes.class, "quest_completed") + ")";
+						} else {
+							DwarfToken tokens = Dungeon.hero != null ? Dungeon.hero.belongings.getItem(DwarfToken.class) : null;
+							int count = tokens != null ? tokens.quantity() : 0;
+							title += " (" + count + "/5)";
+						}
+					}
+					return title;
+				}
 			}
 		}
 
@@ -256,11 +307,52 @@ public class Notes {
 				case LOST_PACK:         return Messages.get(LostBackpack.class, "desc");
 				case BEACON_LOCATION:   return Messages.get(BeaconOfReturning.class, "desc");
 
-				case GHOST:         return Messages.get(Ghost.class, "desc");
+				case GHOST: {
+					String desc = Messages.get(Ghost.class, "desc");
+					if (Ghost.Quest.given()) {
+						desc += "\n\n" + Messages.get(Notes.class, "quest_progress") + ": " + (Ghost.Quest.processed() ? "1/1" : "0/1");
+					}
+					return desc;
+				}
 				case RAT_KING:      return new RatKing().description(); //variable description based on holiday/run state
-				case WANDMAKER:     return Messages.get(Wandmaker.class, "desc");
-				case TROLL:         return Messages.get(Blacksmith.class, "desc");
-				case IMP:           return Messages.get(Imp.class, "desc");
+				case WANDMAKER: {
+					String desc = Messages.get(Wandmaker.class, "desc");
+					if (Wandmaker.Quest.given()) {
+						boolean hasItem = Dungeon.hero != null && (
+								(Wandmaker.Quest.type() == 1 && Dungeon.hero.belongings.getItem(CorpseDust.class) != null) ||
+								(Wandmaker.Quest.type() == 2 && Dungeon.hero.belongings.getItem(Embers.class) != null) ||
+								(Wandmaker.Quest.type() == 3 && Dungeon.hero.belongings.getItem(Rotberry.Seed.class) != null)
+						);
+						desc += "\n\n" + Messages.get(Notes.class, "quest_progress") + ": " + (hasItem ? "1/1" : "0/1");
+					}
+					return desc;
+				}
+				case TROLL: {
+					String desc = Messages.get(Blacksmith.class, "desc");
+					if (Blacksmith.Quest.given()) {
+						if (Blacksmith.Quest.completed()) {
+							desc += "\n\n" + Messages.get(Notes.class, "quest_progress") + ": " + Messages.get(Notes.class, "quest_completed");
+						} else {
+							DarkGold gold = Dungeon.hero != null ? Dungeon.hero.belongings.getItem(DarkGold.class) : null;
+							int count = gold != null ? gold.quantity() : 0;
+							desc += "\n\n" + Messages.get(Notes.class, "quest_progress") + ": " + count + " " + Messages.get(DarkGold.class, "name");
+						}
+					}
+					return desc;
+				}
+				case IMP: {
+					String desc = Messages.get(Imp.class, "desc");
+					if (Imp.Quest.given()) {
+						if (Imp.Quest.isCompleted()) {
+							desc += "\n\n" + Messages.get(Notes.class, "quest_progress") + ": " + Messages.get(Notes.class, "quest_completed");
+						} else {
+							DwarfToken tokens = Dungeon.hero != null ? Dungeon.hero.belongings.getItem(DwarfToken.class) : null;
+							int count = tokens != null ? tokens.quantity() : 0;
+							desc += "\n\n" + Messages.get(Notes.class, "quest_progress") + ": " + count + "/5";
+						}
+					}
+					return desc;
+				}
 
 				case DEMON_SPAWNER: return Messages.get(DemonSpawner.class, "desc");
 			}

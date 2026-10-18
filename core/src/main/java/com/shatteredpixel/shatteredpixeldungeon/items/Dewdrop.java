@@ -38,6 +38,7 @@ import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.CharSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.shatteredpixel.shatteredpixeldungeon.items.bags.Bag;
 import com.watabou.noosa.audio.Sample;
 
 public class Dewdrop extends Item {
@@ -77,6 +78,20 @@ public class Dewdrop extends Item {
 		hero.spendAndNext( pickupDelay() );
 		
 		return true;
+	}
+
+	@Override
+	public boolean collect(Bag container) {
+		if (Dungeon.hero != null) {
+			Waterskin flask = Dungeon.hero.belongings.getItem(Waterskin.class);
+			if (flask != null && !flask.isFull()) {
+				flask.collectDew(this);
+				Catalog.setSeen(getClass());
+				Statistics.itemTypesDiscovered.add(getClass());
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static boolean consumeDew(int quantity, Hero hero, boolean force){

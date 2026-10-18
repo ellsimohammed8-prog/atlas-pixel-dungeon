@@ -89,6 +89,7 @@ public class AlchemyScene extends PixelScene {
 
 	//max of 3 inputs, and 3 potential recipe outputs
 	private static final InputButton[] inputs = new InputButton[3];
+	private static final int[] inputQuickslots = new int[]{-1, -1, -1};
 	private static final CombineButton[] combines = new CombineButton[3];
 	private static final OutputSlot[] outputs = new OutputSlot[3];
 
@@ -309,6 +310,7 @@ public class AlchemyScene extends PixelScene {
 												if (item != null && inputs[0] != null) {
 													for (int i = 0; i < inputs.length; i++) {
 														if (inputs[i].item() == null) {
+															inputQuickslots[i] = Dungeon.quickslot.getSlot(item);
 															if (item instanceof LiquidMetal || item instanceof LiquidGold || item instanceof MissileWeapon){
 																inputs[i].item(item.detachAll(Dungeon.hero.belongings.backpack));
 															} else {
@@ -580,6 +582,7 @@ public class AlchemyScene extends PixelScene {
 				if (item != null && inputs[0] != null) {
 					for (int i = 0; i < inputs.length; i++) {
 						if (inputs[i].item() == null) {
+							inputQuickslots[i] = Dungeon.quickslot.getSlot(item);
 							if (item instanceof LiquidMetal || item instanceof LiquidGold || item instanceof MissileWeapon){
 								inputs[i].item(item.detachAll(Dungeon.hero.belongings.backpack));
 							} else {
@@ -757,9 +760,19 @@ public class AlchemyScene extends PixelScene {
 		smokeEmitter.burst(Speck.factory( Speck.WOOL ), 10 );
 		Sample.INSTANCE.play( Assets.Sounds.PUFF );
 
+		int primarySlot = -1;
+		for (int i = 0; i < inputs.length; i++) {
+			if (inputQuickslots[i] != -1) {
+				primarySlot = inputQuickslots[i];
+				break;
+			}
+		}
+
 		int resultQuantity = result.quantity();
 		if (!result.collect()){
 			Dungeon.level.drop(result, Dungeon.hero.pos);
+		} else if (primarySlot != -1 && Dungeon.quickslot.getItem(primarySlot) == null) {
+			Dungeon.quickslot.setSlot(primarySlot, result);
 		}
 
 		Statistics.itemsCrafted++;
@@ -780,6 +793,7 @@ public class AlchemyScene extends PixelScene {
 					Item item = inputs[i].item();
 					if (item.quantity() <= 0) {
 						inputs[i].item(null);
+						inputQuickslots[i] = -1;
 					} else {
 						inputs[i].slot.updateText();
 					}
@@ -801,16 +815,19 @@ public class AlchemyScene extends PixelScene {
 			int needed = finding.quantity();
 			ArrayList<Item> found = inventory.getAllSimilar(finding);
 			while (!found.isEmpty() && needed > 0){
+				Item src = found.get(0);
+				int slot = Dungeon.quickslot.getSlot(src);
 				Item detached;
 				if (finding instanceof LiquidMetal || finding instanceof LiquidGold || finding instanceof MissileWeapon) {
-					detached = found.get(0).detachAll(inventory.backpack);
+					detached = src.detachAll(inventory.backpack);
 				} else {
-					detached = found.get(0).detach(inventory.backpack);
+					detached = src.detach(inventory.backpack);
 				}
+				inputQuickslots[curslot] = slot;
 				inputs[curslot].item(detached);
 				curslot++;
 				needed -= detached.quantity();
-				if (detached == found.get(0)) {
+				if (detached == src) {
 					found.remove(0);
 				}
 			}
@@ -842,6 +859,7 @@ public class AlchemyScene extends PixelScene {
 			clearSlots();
 			for (int i = 0; i < inputs.length; i++) {
 				inputs[i] = null;
+				inputQuickslots[i] = -1;
 			}
 		}
 
@@ -861,8 +879,12 @@ public class AlchemyScene extends PixelScene {
 			for (int i = 0; i < inputs.length; i++) {
 				if (inputs[i] != null && inputs[i].item() != null) {
 					Item item = inputs[i].item();
+					int savedSlot = inputQuickslots[i];
+					inputQuickslots[i] = -1;
 					if (!item.collect()) {
 						Dungeon.level.drop(item, Dungeon.hero.pos);
+					} else if (savedSlot != -1 && Dungeon.quickslot.getItem(savedSlot) == null) {
+						Dungeon.quickslot.setSlot(savedSlot, item);
 					}
 					inputs[i].item(null);
 				}
@@ -1000,8 +1022,17 @@ public class AlchemyScene extends PixelScene {
 					super.onClick();
 					Item item = InputButton.this.item;
 					if (item != null) {
-						if (!item.collect()) {
-							Dungeon.level.drop(item, Dungeon.hero.pos);
+						for (int idx = 0; idx < inputs.length; idx++) {
+							if (inputs[idx] == InputButton.this) {
+								int savedSlot = inputQuickslots[idx];
+								inputQuickslots[idx] = -1;
+								if (!item.collect()) {
+									Dungeon.level.drop(item, Dungeon.hero.pos);
+								} else if (savedSlot != -1 && Dungeon.quickslot.getItem(savedSlot) == null) {
+									Dungeon.quickslot.setSlot(savedSlot, item);
+								}
+								break;
+							}
 						}
 						InputButton.this.item(null);
 						updateState();

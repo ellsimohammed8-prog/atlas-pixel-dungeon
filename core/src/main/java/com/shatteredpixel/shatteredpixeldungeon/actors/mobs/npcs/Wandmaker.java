@@ -458,5 +458,13 @@ public class Wandmaker extends NPC {
 				Statistics.questScores[1] += 2000;
 			}
 		}
+
+		public static boolean given() {
+			return spawned && given;
+		}
+
+		public static int type() {
+			return type;
+		}
 	}
 }

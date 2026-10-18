@@ -398,6 +398,10 @@ public class Ghost extends NPC {
 			Notes.remove( Notes.Landmark.GHOST );
 		}
 
+		public static boolean given(){
+			return spawned && given;
+		}
+
 		public static boolean processed(){
 			return spawned && processed;
 		}

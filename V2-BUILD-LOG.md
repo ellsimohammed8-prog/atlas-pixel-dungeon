@@ -227,3 +227,26 @@ Base commit: `964507a` (main, v1.3.2)
 - **Compile result**: BUILD SUCCESSFUL, 0 errors.
 
 ---
+
+## Slice B4.2: Item and Hero Renaming plus Talent Queue
+
+- **Status**: BUILT
+- **What changed**: Added item & hero customization and auto-progression queueing:
+  - Added hero renaming support: `hero.customName` field and `name()` override with full serialization in `Hero.java`. Added rename button in `WndHero` `StatsTab` triggering `WndTextInput`.
+  - Added item renaming support: `item.customName` field and `name()` override with full serialization in `Item.java`. Added rename button in `WndUseItem` allowing renaming of any equipment or inventory item.
+  - Added talent pre-queueing: players can queue unmaxed talents in `TalentButton` / `WndInfoTalent` when currently out of points. Queued talents glow with a distinct cyan border (`0x44AAFF`) and auto-apply via `Hero.processTalentQueue()` immediately upon gaining points during level-up or talent boosts.
+  - Full bilingual EN/AR parity on all new keys.
+- **Files touched**:
+  - `core/src/main/assets/messages/actors/actors.properties`
+  - `core/src/main/assets/messages/actors/actors_ar.properties`
+  - `core/src/main/assets/messages/windows/windows.properties`
+  - `core/src/main/assets/messages/windows/windows_ar.properties`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/Hero.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Item.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/TalentButton.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndHero.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndUseItem.java`
+- **Save compatibility**: Full compatibility. `custom_name` and `queued_talents` bundle tags are optional and default to `null` if absent when restoring older saves.
+- **Compile result**: BUILD SUCCESSFUL, 0 errors.
+
+---

@@ -217,6 +217,15 @@ public class Hero extends Char {
 	public ArmorAbility armorAbility = null;
 	public ArrayList<LinkedHashMap<Talent, Integer>> talents = new ArrayList<>();
 	public LinkedHashMap<Talent, Talent> metamorphedTalents = new LinkedHashMap<>();
+
+	private static final String CUSTOM_NAME = "custom_name";
+	private static final String QUEUED_TALENTS = "queued_talents";
+	public String customName = null;
+	public ArrayList<Talent> queuedTalents = new ArrayList<>();
+
+	public void customName(String name) {
+		this.customName = name;
+	}
 	
 	private int attackSkill = 10;
 	private int defenseSkill = 5;
@@ -324,6 +333,17 @@ public class Hero extends Char {
 		
 		bundle.put( HTBOOST, HTBoost );
 
+		if (customName != null) {
+			bundle.put(CUSTOM_NAME, customName);
+		}
+		if (queuedTalents != null && !queuedTalents.isEmpty()) {
+			String[] names = new String[queuedTalents.size()];
+			for (int i = 0; i < queuedTalents.size(); i++) {
+				names[i] = queuedTalents.get(i).name();
+			}
+			bundle.put(QUEUED_TALENTS, names);
+		}
+
 		belongings.storeInBundle( bundle );
 	}
 	
@@ -336,6 +356,16 @@ public class Hero extends Char {
 		HTBoost = bundle.getInt(HTBOOST);
 
 		super.restoreFromBundle( bundle );
+
+		customName = bundle.contains(CUSTOM_NAME) ? bundle.getString(CUSTOM_NAME) : null;
+		if (bundle.contains(QUEUED_TALENTS)) {
+			queuedTalents = new ArrayList<>();
+			for (String tName : bundle.getStringArray(QUEUED_TALENTS)) {
+				try {
+					queuedTalents.add(Talent.valueOf(tName));
+				} catch (Exception ignored) {}
+			}
+		}
 
 		heroClass = bundle.getEnum( CLASS, HeroClass.class );
 		subClass = bundle.getEnum( SUBCLASS, HeroSubClass.class );
@@ -423,11 +453,33 @@ public class Hero extends Char {
 
 	@Override
 	public String name(){
-		if (buff(HeroDisguise.class) != null) {
+		if (customName != null && !customName.isEmpty()) {
+			return customName;
+		} else if (buff(HeroDisguise.class) != null) {
 			return buff(HeroDisguise.class).getDisguise().title();
 		} else {
 			return className();
 		}
+	}
+
+	public void processTalentQueue() {
+		if (queuedTalents == null || queuedTalents.isEmpty()) return;
+		ArrayList<Talent> toRemove = new ArrayList<>();
+		for (Talent t : queuedTalents) {
+			int tier = -1;
+			for (int tIdx = 0; tIdx < talents.size(); tIdx++) {
+				if (talents.get(tIdx).containsKey(t)) {
+					tier = tIdx + 1;
+					break;
+				}
+			}
+			if (tier != -1 && talentPointsAvailable(tier) > 0 && pointsInTalent(t) < t.maxPoints()) {
+				upgradeTalent(t);
+				toRemove.add(t);
+				GLog.p(Messages.get(Hero.class, "talent_auto_applied", Messages.titleCase(t.name())));
+			}
+		}
+		queuedTalents.removeAll(toRemove);
 	}
 
 	@Override
@@ -2139,6 +2191,7 @@ public class Hero extends Char {
 					GLog.p( Messages.get(this, "new_talent") );
 					StatusPane.talentBlink = 10f;
 					WndHero.lastIdx = 1;
+					processTalentQueue();
 				}
 			}
 			

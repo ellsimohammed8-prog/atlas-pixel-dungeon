@@ -28,6 +28,10 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.ItemJournalButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.RedButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 
+import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.ui.IconButton;
+import com.shatteredpixel.shatteredpixeldungeon.ui.Icons;
 import java.util.ArrayList;
 
 public class WndUseItem extends WndInfoItem {
@@ -81,6 +85,36 @@ public class WndUseItem extends WndInfoItem {
 			ItemJournalButton btn = new ItemJournalButton(item, this);
 			btn.setRect(width - 16, 0, 16, 16);
 			add(btn);
+
+			IconButton renameBtn = new IconButton(Icons.get(Icons.CHANGES)){
+				@Override
+				protected void onClick() {
+					super.onClick();
+					GameScene.show(new WndTextInput(Messages.get(WndUseItem.class, "rename_title"),
+							Messages.get(WndUseItem.class, "rename_body"),
+							item.customName != null ? item.customName : "",
+							20,
+							false,
+							Messages.get(WndTextInput.class, "confirm"),
+							Messages.get(WndTextInput.class, "cancel")){
+						@Override
+						public void onSelect(boolean positive, String text) {
+							if (positive) {
+								item.customName = text.trim().isEmpty() ? null : text.trim();
+								Item.updateQuickslot();
+								WndUseItem.this.hide();
+							}
+						}
+					});
+				}
+
+				@Override
+				protected String hoverText() {
+					return Messages.get(WndUseItem.class, "rename");
+				}
+			};
+			renameBtn.setRect(width - 32, 0, 16, 16);
+			add(renameBtn);
 		}
 
 		resize( width, (int)(y) );

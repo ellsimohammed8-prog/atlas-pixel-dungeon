@@ -38,6 +38,7 @@ import com.watabou.noosa.PointerArea;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 public class TalentButton extends Button {
@@ -101,6 +102,12 @@ public class TalentButton extends Button {
 
 		bg.x = x;
 		bg.y = y;
+
+		if (Dungeon.hero != null && Dungeon.hero.queuedTalents != null && Dungeon.hero.queuedTalents.contains(talent)) {
+			bg.hardlight(0x44AAFF);
+		} else {
+			bg.resetColor();
+		}
 
 		icon.x = x + 2;
 		icon.y = y + 2;
@@ -211,6 +218,28 @@ public class TalentButton extends Button {
 
 				}
 			});
+		} else if (mode == Mode.UPGRADE
+				&& Dungeon.hero != null
+				&& Dungeon.hero.isAlive()
+				&& Dungeon.hero.pointsInTalent(talent) < talent.maxPoints()) {
+			final boolean isQueued = Dungeon.hero.queuedTalents != null && Dungeon.hero.queuedTalents.contains(talent);
+			toAdd = new WndInfoTalent(talent, pointsInTalent, new WndInfoTalent.TalentButtonCallback() {
+				@Override
+				public String prompt() {
+					return isQueued ? Messages.get(WndInfoTalent.class, "unqueue") : Messages.get(WndInfoTalent.class, "queue");
+				}
+
+				@Override
+				public void call() {
+					if (Dungeon.hero.queuedTalents == null) Dungeon.hero.queuedTalents = new ArrayList<>();
+					if (isQueued) {
+						Dungeon.hero.queuedTalents.remove(talent);
+					} else {
+						Dungeon.hero.queuedTalents.add(talent);
+					}
+					TalentButton.this.layout();
+				}
+			});
 		} else {
 			toAdd = new WndInfoTalent(talent, pointsInTalent, null);
 		}
@@ -232,7 +261,11 @@ public class TalentButton extends Button {
 	@Override
 	protected void onPointerUp() {
 		icon.resetColor();
-		bg.resetColor();
+		if (Dungeon.hero != null && Dungeon.hero.queuedTalents != null && Dungeon.hero.queuedTalents.contains(talent)) {
+			bg.hardlight(0x44AAFF);
+		} else {
+			bg.resetColor();
+		}
 	}
 
 	@Override

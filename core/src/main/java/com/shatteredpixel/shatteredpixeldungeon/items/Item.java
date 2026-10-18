@@ -498,8 +498,11 @@ public class Item implements Bundlable {
 
 	}
 	
+	private static final String CUSTOM_NAME = "custom_name";
+	public String customName = null;
+
 	public String name() {
-		return trueName();
+		return customName != null && !customName.isEmpty() ? customName : trueName();
 	}
 	
 	public final String trueName() {
@@ -611,6 +614,7 @@ public class Item implements Bundlable {
 		}
 		bundle.put( KEPT_LOST, keptThoughLostInvent );
 		if (customNoteID != -1)     bundle.put(CUSTOM_NOTE_ID, customNoteID);
+		if (customName != null)     bundle.put(CUSTOM_NAME, customName);
 	}
 	
 	@Override
@@ -638,6 +642,7 @@ public class Item implements Bundlable {
 
 		keptThoughLostInvent = bundle.getBoolean( KEPT_LOST );
 		if (bundle.contains(CUSTOM_NOTE_ID))    customNoteID = bundle.getInt(CUSTOM_NOTE_ID);
+		if (bundle.contains(CUSTOM_NAME))       customName = bundle.getString(CUSTOM_NAME);
 	}
 
 	public int targetingPos( Hero user, int dst ){

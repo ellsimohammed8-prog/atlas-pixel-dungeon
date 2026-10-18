@@ -23,6 +23,17 @@ android {
         targetSdkVersion appAndroidTargetSDK
     }
 
+    signingConfigs {
+        release {
+            if (project.hasProperty('RELEASE_STORE_FILE')) {
+                storeFile file(RELEASE_STORE_FILE)
+                storePassword RELEASE_STORE_PASSWORD
+                keyAlias RELEASE_KEY_ALIAS
+                keyPassword RELEASE_KEY_PASSWORD
+            }
+        }
+    }
+
     buildTypes {
         debug {
             applicationIdSuffix ".indev"
@@ -34,6 +45,10 @@ android {
             }
         }
         release {
+
+            if (project.hasProperty('RELEASE_STORE_FILE')) {
+                signingConfig signingConfigs.release
+            }
 
             //These lines enable R8, which is a code shrinker/optimizer/obfuscator.
             //This makes release APKs smaller and more efficient, but also makes debugging trickier

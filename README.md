@@ -9,10 +9,10 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/version-1.2.2-gold" alt="Version 1.2.2">
+  <img src="https://img.shields.io/badge/version-2.0.0-gold" alt="Version 2.0.0">
   <img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="License GPL-3.0">
   <img src="https://img.shields.io/badge/platform-Android%20%7C%20Desktop-green" alt="Platforms">
-  <img src="https://img.shields.io/badge/languages-22%20incl.%20full%20Arabic-red" alt="22 languages">
+  <img src="https://img.shields.io/badge/languages-24%20incl.%20full%20Arabic-red" alt="24 languages">
 </p>
 
 <p align="center">
@@ -28,12 +28,18 @@ Will you conquer the dungeon and claim the Crown?
 ## ✨ Features
 
 - **A complete new world and story** — a buried kingdom in five layers, with rewritten lore, characters, enemies and endings
-- **6 heroes**, each with unique abilities, and **12 subclasses** to specialize into
-- **25 floors** of procedurally generated dungeon, plus generated side-floors and quests
-- **5 bosses**, each with its own arena and mechanics
+- **6 heroes**, each with unique abilities, and **13 subclasses** to specialize into (including the **Herald of Dawn**)
+- **The Sunken Deep** *(v2.0.0)* — endless scaling descent beyond the Crown of Atlas, recorded in global depth rankings
+- **Dual Enchantments & Blueprints** — forge weapon evolutions at the alchemy pot and bind two independent enchantments to a single weapon
+- **Liquid Gold** — melt spare rings into alchemical gold to raise equipped rings to higher power
+- **Tier-4 Talents** — 12 powerful class-specific capstone talents for levels 21–30
+- **Deep Challenges & Pacts of Atlas** — swear up to 3 optional Pacts, and endure 14 hardcore run challenges
+- **Assist / Casual Mode** — unranked play with floor checkpoints and tuned hunger
+- **Free Custom Seeds** — seed generation unlocked from the start with curated Atlas seed phrases
+- **Full Save Backup & Restore** — export and import active runs and profile progress via clipboard or local files
+- **Complete QoL Suite** — live combat stats inspector, item/hero renaming, talent pre-queueing, misclick confirmation, and thrown-weapon stacking
 - **Hundreds of items**: weapons, armor, wands, rings, artifacts, potions, scrolls, seeds and more
-- **Pacts of Atlas** *(v1.2.0)* — swear up to 3 optional pacts before a run; each grants a boon and exacts a price, changing how the dungeon plays: reveal every floor's layout while enemies hit harder, swell gold piles while shop prices climb, double a chest's contents while mimics grow bolder, and five more
-- **Full Arabic localization** with proper connected-script rendering — alongside 21 other languages
+- **Full Arabic localization** with proper connected-script rendering — alongside 23 other languages
 - **In-game news and updates served from this very repository** (see [`news.xml`](news.xml))
 - **No account, no always-online requirement** — a classic single-player roguelike
 - **Completely free and open source** under the GNU GPL-3.0
@@ -130,7 +136,7 @@ The dungeon is the buried kingdom of Atlas itself, sunk layer by layer beneath t
 
 ## 🌍 Languages
 
-Atlas Pixel Dungeon ships with **22 languages**, including a complete, hand-reviewed **Arabic** translation with fully connected script rendering and right-to-left interface support. Switch language any time in **Settings**.
+Atlas Pixel Dungeon ships with **24 languages**, including a complete, hand-reviewed **Arabic** translation with fully connected script rendering and right-to-left interface support. Switch language any time in **Settings**.
 
 ## 📰 News & Updates
 

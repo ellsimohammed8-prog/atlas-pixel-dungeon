@@ -1,14 +1,16 @@
 name: Attach APK to Release
 
-# Manually dispatched: builds the debug APK on GitHub's runners and uploads
-# it straight to an existing GitHub Release (no local download/upload needed).
+# Manually dispatched: builds a release or debug artifact on GitHub runners
+# and uploads it straight to an existing GitHub Release.
+# Supports signed assembleRelease / bundleRelease when GitHub secrets are provided,
+# falling back to assembleDebug when signing secrets are absent.
 on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Release tag to upload the APK to'
+        description: 'Release tag to upload the APK/AAB to'
         required: true
-        default: 'v1.1.0'
+        default: 'v2.0.0'
 
 permissions:
   contents: write
@@ -25,16 +27,43 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Build debug APK
+      - name: Build Android package
+        env:
+          KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: |
           chmod +x ./gradlew
-          ./gradlew :android:assembleDebug
+          if [ -n "$KEYSTORE_BASE64" ] && [ -n "$STORE_PASSWORD" ] && [ -n "$KEY_ALIAS" ] && [ -n "$KEY_PASSWORD" ]; then
+            echo "Signing secrets detected. Building signed release..."
+            echo "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/release.keystore"
+            ./gradlew :android:assembleRelease :android:bundleRelease \
+              -PRELEASE_STORE_FILE="$RUNNER_TEMP/release.keystore" \
+              -PRELEASE_STORE_PASSWORD="$STORE_PASSWORD" \
+              -PRELEASE_KEY_ALIAS="$KEY_ALIAS" \
+              -PRELEASE_KEY_PASSWORD="$KEY_PASSWORD"
+          else
+            echo "No signing secrets provided. Falling back to debug build..."
+            ./gradlew :android:assembleDebug
+          fi
 
-      - name: Upload APK to the release
+      - name: Upload artifacts to the release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          APK=$(ls android/build/outputs/apk/debug/*.apk | head -1)
-          echo "Built: $APK"
-          cp "$APK" "atlas-pixel-dungeon-${{ inputs.tag }}.apk"
-          gh release upload "${{ inputs.tag }}" "atlas-pixel-dungeon-${{ inputs.tag }}.apk" --clobber
+          if ls android/build/outputs/apk/release/*.apk 1> /dev/null 2>&1; then
+            APK=$(ls android/build/outputs/apk/release/*.apk | head -1)
+            cp "$APK" "atlas-pixel-dungeon-${{ inputs.tag }}.apk"
+            gh release upload "${{ inputs.tag }}" "atlas-pixel-dungeon-${{ inputs.tag }}.apk" --clobber
+            if ls android/build/outputs/bundle/release/*.aab 1> /dev/null 2>&1; then
+              AAB=$(ls android/build/outputs/bundle/release/*.aab | head -1)
+              cp "$AAB" "atlas-pixel-dungeon-${{ inputs.tag }}.aab"
+              gh release upload "${{ inputs.tag }}" "atlas-pixel-dungeon-${{ inputs.tag }}.aab" --clobber
+            fi
+          else
+            APK=$(ls android/build/outputs/apk/debug/*.apk | head -1)
+            echo "Built debug fallback: $APK"
+            cp "$APK" "atlas-pixel-dungeon-${{ inputs.tag }}-debug.apk"
+            gh release upload "${{ inputs.tag }}" "atlas-pixel-dungeon-${{ inputs.tag }}-debug.apk" --clobber
+          fi

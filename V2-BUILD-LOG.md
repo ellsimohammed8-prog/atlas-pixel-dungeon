@@ -424,3 +424,23 @@ Base commit: `964507a` (main, v1.3.2)
 - **Compile result**: BUILD SUCCESSFUL, 0 errors.
 
 ---
+
+## Phase F: Finale Release Packaging, News, and Workflow
+
+- **Status**: BUILT
+- **What changed**:
+  - Bumped version in root `build.gradle`: `versionName '2.0.0'`, `versionCode 933`.
+  - Added bilingual v2.0 entries to `news.xml` (EN + AR) accurately reporting the full shipped feature set: The Sunken Deep, Herald of Dawn, Liquid Gold ring melting, Dual Enchantments via Blueprints, Tier-4 capstone talents, Deep Challenges, Casual/Assist mode with checkpoints, ungated custom seeds and phrases, full save export/import, combat stats inspector, hero/item renaming, talent queue, and comprehensive QoL improvements.
+  - Enhanced GitHub release workflow (`.github/workflows/release-apk.yml`) and `android/build.gradle`: added release `signingConfigs` conditional on project properties. The GitHub Action builds a signed `assembleRelease` AAB/APK when signing secrets are provided via GitHub secrets (`RELEASE_KEYSTORE_BASE64`, `RELEASE_STORE_PASSWORD`, `RELEASE_KEY_ALIAS`, `RELEASE_KEY_PASSWORD`), gracefully falling back to `./gradlew :android:assembleDebug` when absent. No placeholder signing keys or AdMob IDs invented.
+  - Executed README truth pass: updated version badge to 2.0.0, language count to 24 (verified from `Languages.java`), hero subclasses to 13, and documented all shipped v2.0 features accurately without mentioning excluded items.
+- **Files touched**:
+  - `README.md`
+  - `V2-BUILD-LOG.md`
+  - `android/build.gradle`
+  - `build.gradle`
+  - `news.xml`
+  - `.github/workflows/release-apk.yml`
+- **Save compatibility**: Full compatibility. Version increment preserves serialization formats; all previous version saves load cleanly.
+- **Compile result**: BUILD SUCCESSFUL, 0 errors.
+
+---

@@ -5,6 +5,18 @@
      Dates must use the format yyyy-MM-dd. Keep summaries short. -->
 <feed>
 	<entry>
+		<title>Version 2.0.0 — The Grand Finale</title>
+		<published>2026-10-18</published>
+		<summary>Atlas Pixel Dungeon v2.0 is here: The Sunken Deep brings endless descent past the Crown of Atlas with depth ranking records. The Herald of Dawn joins the Dawn Priest, and Liquid Gold lets you melt spare rings at the alchemy pot. Discover Dual Enchantments via Blueprints, 12 new Tier-4 class talents, 5 brutal Deep Challenges, Casual/Assist mode with checkpoints, free seeded runs with curated Atlas phrases, full save export/import, combat stats inspector, hero and item renaming, talent queueing, and a complete suite of QoL improvements.</summary>
+		<link href="https://github.com/ellsimohammed8-prog/atlas-pixel-dungeon/releases"/>
+	</entry>
+	<entry>
+		<title>الإصدار 2.0.0 — الختام الكبير</title>
+		<published>2026-10-18</published>
+		<summary>وصل الإصدار 2.0 من أطلس بيكسل دانجن: الأعماق الغارقة تفتح نزولاً لا نهائيًا بعد تاج أطلس مع تسجيل أعمق طابق في لوحة الأرقام القياسية. رائد الفجر ينضم كتخصص جديد لكاهن الفجر، والذهب السائل يتيح صهر الخواتم الفائضة في إناء الكيمياء لتقوية خواتمك. اكتشف التعاويذ المزدوجة عبر المخططات، و12 موهبة جديدة من الدرجة الرابعة، و5 تحديات قاسية جديدة، ونمط اللعب المريح بنقاط حفظ، وتوليد البذور المفتوح مع عبارات أطلس المختارة، وتصدير واستيراد الحفظ كاملاً، وفاحص إحصائيات المعركة، وتسمية البطل والعتاد، وقائمة انتظار المواهب، وباقة شاملة من تحسينات جودة اللعب.</summary>
+		<link href="https://github.com/ellsimohammed8-prog/atlas-pixel-dungeon/releases"/>
+	</entry>
+	<entry>
 		<title>Version 1.3.2 — Text Rendering, Fixed</title>
 		<published>2026-10-17</published>
 		<summary>This update rebuilds how the game shapes and lays out right-to-left text: letters now connect into real words, lines wrap and align the way they should, and mixed text with numbers, brackets and foreign names keeps its proper order. If you play in a right-to-left language, every screen should finally read the way it was written.</summary>

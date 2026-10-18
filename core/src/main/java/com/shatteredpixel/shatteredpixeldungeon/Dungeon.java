@@ -182,6 +182,7 @@ public class Dungeon {
 
 	public static int challenges;
 	public static int pacts;
+	public static boolean casualMode;
 	public static float mobsToChampion;
 
 	public static Hero hero;
@@ -237,6 +238,7 @@ public class Dungeon {
 		initialVersion = version = Game.versionCode;
 		challenges = SPDSettings.challenges();
 		pacts = SPDSettings.pacts();
+		casualMode = SPDSettings.casualMode();
 		mobsToChampion = 1;
 
 		Actor.clear();
@@ -622,6 +624,7 @@ public class Dungeon {
 	private static final String LAST_PLAYED = "last_played";
 	private static final String CHALLENGES	= "challenges";
 	private static final String PACTS	= "pacts";
+	private static final String CASUAL_MODE	= "casual_mode";
 	private static final String MOBS_TO_CHAMPION	= "mobs_to_champion";
 	private static final String HERO		= "hero";
 	private static final String DEPTH		= "depth";
@@ -650,6 +653,7 @@ public class Dungeon {
 			bundle.put( LAST_PLAYED, lastPlayed = Game.realTime);
 			bundle.put( CHALLENGES, challenges );
 			bundle.put( PACTS, pacts );
+			bundle.put( CASUAL_MODE, casualMode );
 			bundle.put( MOBS_TO_CHAMPION, mobsToChampion );
 			bundle.put( HERO, hero );
 			bundle.put( DEPTH, depth );
@@ -758,6 +762,7 @@ public class Dungeon {
 
 		Dungeon.challenges = bundle.getInt( CHALLENGES );
 		Dungeon.pacts = bundle.getInt( PACTS );
+		Dungeon.casualMode = bundle.getBoolean( CASUAL_MODE );
 		Dungeon.mobsToChampion = bundle.getFloat( MOBS_TO_CHAMPION );
 		
 		Dungeon.level = null;
@@ -878,6 +883,7 @@ public class Dungeon {
 		info.version = bundle.getInt( VERSION );
 		info.challenges = bundle.getInt( CHALLENGES );
 		info.pacts = bundle.getInt( PACTS );
+		info.casualMode = bundle.getBoolean( CASUAL_MODE );
 		info.seed = bundle.getLong( SEED );
 		info.customSeed = bundle.getString( CUSTOM_SEED );
 		info.daily = bundle.getBoolean( DAILY );

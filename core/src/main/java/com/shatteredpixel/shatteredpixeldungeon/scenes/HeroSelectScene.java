@@ -179,15 +179,13 @@ public class HeroSelectScene extends PixelScene {
 				ShatteredPixelDungeon.scene().addToFront(new WndChallenges(SPDSettings.challenges(), true) {
 					public void onBackPressed() {
 						super.onBackPressed();
-						pactsBtn.icon(Icons.get(SPDSettings.challenges() > 0 || SPDSettings.pacts() > 0 ? Icons.CHALLENGE_COLOR : Icons.CHALLENGE_GREY));
+						updatePactsBtn();
 						updateOptionsColor();
 					}
 				} );
 			}
 		};
-		pactsBtn.icon(Icons.get(SPDSettings.challenges() > 0 || SPDSettings.pacts() > 0 ? Icons.CHALLENGE_COLOR : Icons.CHALLENGE_GREY));
-		pactsBtn.setSize(pactsBtn.reqWidth() + 8, 21);
-		pactsBtn.textColor(Window.TITLE_COLOR);
+		updatePactsBtn();
 		add(pactsBtn);
 		pactsBtn.visible = pactsBtn.active = false;
 
@@ -425,11 +423,27 @@ public class HeroSelectScene extends PixelScene {
 
 	}
 
+	private void updatePactsBtn(){
+		if (pactsBtn != null){
+			if (SPDSettings.casualMode()){
+				pactsBtn.text(Messages.titleCase(Messages.get(this, "challenges_pacts")) + " [Casual]");
+				pactsBtn.textColor(0x00E5FF);
+			} else {
+				pactsBtn.text(Messages.titleCase(Messages.get(this, "challenges_pacts")));
+				pactsBtn.textColor(Window.TITLE_COLOR);
+			}
+			pactsBtn.setSize(pactsBtn.reqWidth() + 8, 21);
+			pactsBtn.icon(Icons.get(SPDSettings.challenges() > 0 || SPDSettings.pacts() > 0 ? Icons.CHALLENGE_COLOR : Icons.CHALLENGE_GREY));
+		}
+	}
+
 	private void updateOptionsColor(){
 		if (!SPDSettings.customSeed().isEmpty()){
 			btnOptions.icon().hardlight(1f, 1.5f, 0.67f);
 		} else if (SPDSettings.challenges() != 0){
 			btnOptions.icon().hardlight(2f, 1.33f, 0.5f);
+		} else if (SPDSettings.casualMode()){
+			btnOptions.icon().hardlight(0.5f, 1.5f, 2f);
 		} else {
 			btnOptions.icon().resetColor();
 		}
@@ -858,6 +872,21 @@ public class HeroSelectScene extends PixelScene {
 			add(challengeButton);
 			buttons.add(challengeButton);
 
+			StyledButton casualButton = new StyledButton(Chrome.Type.BLANK, casualButtonText(), 6){
+				@Override
+				protected void onClick() {
+					SPDSettings.casualMode(!SPDSettings.casualMode());
+					text(casualButtonText());
+					icon(Icons.get(SPDSettings.casualMode() ? Icons.CHECKED : Icons.UNCHECKED));
+					updateOptionsColor();
+					updatePactsBtn();
+				}
+			};
+			casualButton.leftJustify = true;
+			casualButton.icon(Icons.get(SPDSettings.casualMode() ? Icons.CHECKED : Icons.UNCHECKED));
+			add(casualButton);
+			buttons.add(casualButton);
+
 			int unlockedCount = 0;
 			for (HeroClass cls : HeroClass.values()){
 				if (cls.isUnlocked()) unlockedCount++;
@@ -892,6 +921,10 @@ public class HeroSelectScene extends PixelScene {
 				add(spc);
 				spacers.add(spc);
 			}
+		}
+
+		private String casualButtonText(){
+			return SPDSettings.casualMode() ? Messages.get(HeroSelectScene.class, "casual_on") : Messages.get(HeroSelectScene.class, "casual_off");
 		}
 
 		private class WndRandomize extends Window {

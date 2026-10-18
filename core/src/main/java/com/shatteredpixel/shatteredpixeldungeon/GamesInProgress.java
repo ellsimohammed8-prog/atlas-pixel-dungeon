@@ -181,6 +181,7 @@ public class GamesInProgress {
 		public int version;
 		public int challenges;
 		public int pacts;
+		public boolean casualMode;
 
 		public long seed;
 		public String customSeed;

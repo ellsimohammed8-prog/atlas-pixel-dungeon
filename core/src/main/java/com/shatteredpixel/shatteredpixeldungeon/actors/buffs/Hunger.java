@@ -78,7 +78,7 @@ public class Hunger extends Buff implements Hero.Doom {
 
 			if (isStarving()) {
 
-				partialDamage += target.HT/1000f;
+				partialDamage += target.HT / (Dungeon.casualMode ? 2500f : 1000f);
 
 				if (partialDamage > 1){
 					target.damage( (int)partialDamage, this);
@@ -94,6 +94,8 @@ public class Hunger extends Buff implements Hero.Doom {
 				hungerDelay /= SaltCube.hungerGainMultiplier();
 				//Atlas pact: Hungry Dark slows hunger's growth
 				if (Dungeon.isPacted( Pacts.HUNGRY_DARK )) hungerDelay *= 2f;
+				//Casual Mode: hunger accumulates 50% slower
+				if (Dungeon.casualMode) hungerDelay *= 2f;
 
 				float newLevel = level + (1f/hungerDelay);
 				if (newLevel >= STARVING) {

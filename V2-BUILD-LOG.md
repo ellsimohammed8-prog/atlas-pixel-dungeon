@@ -128,3 +128,32 @@ Base commit: `964507a` (main, v1.3.2)
 - **Compile result**: BUILD SUCCESSFUL, 0 errors.
 
 ---
+
+## Slice B3.1: Assist / Casual Mode
+
+- **Status**: BUILT
+- **What changed**: Added optional unranked Assist / Casual Mode reachable from hero selection (via the top "Challenges & Pacts" / "[Casual]" entry point and Game Options pane). While active:
+  - Hunger accumulates 50% slower, and starvation damage rate is softened.
+  - Defeat offers a floor checkpoint respawn (`WndCasualRevive`): hero respawns at entrance with full health, cured negative buffs, and invulnerability grace, preserving full inventory and equipment. If defeated on a locked boss floor, the boss level is cleanly reset via `InterlevelScene.Mode.RESET`.
+  - Badges and rankings are completely disabled during casual runs (`Badges.displayBadge`, `Badges.unlock`, and `Rankings.submit` return early). Ranked play is untouched.
+  - Full bilingual EN/AR parity on all new strings.
+- **Files touched**:
+  - `core/src/main/assets/messages/scenes/scenes.properties`
+  - `core/src/main/assets/messages/scenes/scenes_ar.properties`
+  - `core/src/main/assets/messages/windows/windows.properties`
+  - `core/src/main/assets/messages/windows/windows_ar.properties`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Badges.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Dungeon.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/GamesInProgress.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Rankings.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SPDSettings.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/buffs/Hunger.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/Hero.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/scenes/HeroSelectScene.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndCasualRevive.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndChallenges.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndGameInProgress.java`
+- **Save compatibility**: Full compatibility. `casual_mode` boolean is stored in save bundles with a default fallback of `false`. Existing ranked runs load as normal ranked runs; casual runs resume cleanly with their unranked status intact.
+- **Compile result**: BUILD SUCCESSFUL, 0 errors.
+
+---

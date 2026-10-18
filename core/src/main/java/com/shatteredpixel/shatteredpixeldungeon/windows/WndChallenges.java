@@ -49,6 +49,7 @@ public class WndChallenges extends Window {
 	private int shownPacts;
 	private ArrayList<CheckBox> boxes;
 	private ArrayList<CheckBox> pactBoxes;
+	private CheckBox chkCasual;
 
 	public WndChallenges( int checked, boolean editable ) {
 		this( checked, editable, Dungeon.pacts );
@@ -73,16 +74,56 @@ public class WndChallenges extends Window {
 		boxes = new ArrayList<>();
 
 		//Atlas: challenges stay victory-gated, pacts are open to all from the first run
-		boolean challengesLocked = editable && !Badges.isUnlocked(Badges.Badge.VICTORY) && !DeviceCompat.isDebug();
+		final boolean challengesLocked = editable && !Badges.isUnlocked(Badges.Badge.VICTORY) && !DeviceCompat.isDebug();
+		final boolean isCasual = editable ? SPDSettings.casualMode() : Dungeon.casualMode;
 
 		float pos = TTL_HEIGHT;
+
+		chkCasual = new CheckBox( Messages.get(WndChallenges.class, "casual_mode") ){
+			@Override
+			public void checked(boolean value) {
+				super.checked(value);
+				if (editable) {
+					SPDSettings.casualMode(value);
+					if (value) {
+						for (CheckBox b : boxes) {
+							b.checked(false);
+							b.active = false;
+						}
+					} else {
+						for (CheckBox b : boxes) {
+							b.active = !challengesLocked;
+						}
+					}
+				}
+			}
+		};
+		chkCasual.checked( isCasual );
+		chkCasual.active = editable;
+		chkCasual.setRect( 0, pos, WIDTH-16, BTN_HEIGHT );
+		add( chkCasual );
+
+		IconButton infoCasual = new IconButton(Icons.get(Icons.INFO)){
+			@Override
+			protected void onClick() {
+				super.onClick();
+				ShatteredPixelDungeon.scene().add(
+						new WndMessage(Messages.get(WndChallenges.class, "casual_mode_desc"))
+				);
+			}
+		};
+		infoCasual.setRect(chkCasual.right(), pos, 16, BTN_HEIGHT);
+		add(infoCasual);
+
+		pos = chkCasual.bottom() + GAP + 2;
+
 		for (int i=0; i < Challenges.NAME_IDS.length; i++) {
 
 			final String challenge = Challenges.NAME_IDS[i];
 			
 			CheckBox cb = new CheckBox( Messages.titleCase(Messages.get(Challenges.class, challenge)) );
-			cb.checked( (checked & Challenges.MASKS[i]) != 0 );
-			cb.active = editable && !challengesLocked;
+			cb.checked( (checked & Challenges.MASKS[i]) != 0 && !isCasual );
+			cb.active = editable && !challengesLocked && !isCasual;
 
 			if (i > 0) {
 				pos += GAP;
@@ -185,10 +226,14 @@ public class WndChallenges extends Window {
 	public void onBackPressed() {
 
 		if (editable) {
+			SPDSettings.casualMode( chkCasual.checked() );
+
 			int value = 0;
-			for (int i=0; i < boxes.size(); i++) {
-				if (boxes.get( i ).checked()) {
-					value |= Challenges.MASKS[i];
+			if (!chkCasual.checked()) {
+				for (int i=0; i < boxes.size(); i++) {
+					if (boxes.get( i ).checked()) {
+						value |= Challenges.MASKS[i];
+					}
 				}
 			}
 			SPDSettings.challenges( value );

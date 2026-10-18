@@ -67,11 +67,11 @@ public class WndGameInProgress extends Window {
 		title.setRect( 0, 0, WIDTH, 0 );
 		add(title);
 		
-		if (info.challenges > 0 || info.pacts > 0) GAP -= 2;
+		if (info.challenges > 0 || info.pacts > 0 || info.casualMode) GAP -= 2;
 		
 		pos = title.bottom() + GAP;
 		
-		if (info.challenges > 0 || info.pacts > 0) {
+		if (info.challenges > 0 || info.pacts > 0 || info.casualMode) {
 			RedButton btnChallenges = new RedButton( Messages.get(this, "challenges") ) {
 				@Override
 				protected void onClick() {
@@ -109,6 +109,9 @@ public class WndGameInProgress extends Window {
 			statSlot( Messages.get(this, "custom_seed"), "_" + info.customSeed + "_" );
 		} else {
 			statSlot( Messages.get(this, "dungeon_seed"), DungeonSeed.convertToCode(info.seed) );
+		}
+		if (info.casualMode) {
+			statSlot( Messages.get(this, "mode"), Messages.get(WndChallenges.class, "casual_mode") );
 		}
 		
 		pos += GAP;

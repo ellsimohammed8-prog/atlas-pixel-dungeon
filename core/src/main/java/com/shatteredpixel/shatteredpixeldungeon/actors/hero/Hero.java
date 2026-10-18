@@ -177,6 +177,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.QuickSlotButton;
 import com.shatteredpixel.shatteredpixeldungeon.ui.StatusPane;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndHero;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndCasualRevive;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndResurrect;
 import com.shatteredpixel.shatteredpixeldungeon.windows.WndTradeItem;
@@ -2272,6 +2273,18 @@ public class Hero extends Char {
 			}
 			return;
 		}
+
+		if (Dungeon.casualMode) {
+			interrupt();
+			WndResurrect.instance = new Object();
+			Game.runOnRenderThread(new Callback() {
+				@Override
+				public void call() {
+					GameScene.show( new WndCasualRevive(cause) );
+				}
+			});
+			return;
+		}
 		
 		Actor.fixTime();
 		super.die( cause );
@@ -2709,6 +2722,16 @@ public class Hero extends Char {
 			}
 		}
 
+		updateHT(false);
+	}
+
+	public void casualRevive() {
+		HP = HT;
+		live();
+		com.shatteredpixel.shatteredpixeldungeon.items.potions.PotionOfHealing.cure(this);
+		Hunger hunger = buff(Hunger.class);
+		if (hunger != null) hunger.satisfy(300);
+		Buff.prolong(this, Invulnerability.class, 4f);
 		updateHT(false);
 	}
 

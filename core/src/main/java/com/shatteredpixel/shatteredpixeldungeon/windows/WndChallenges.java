@@ -228,8 +228,10 @@ public class WndChallenges extends Window {
 
 		content.setSize( WIDTH, pos );
 		int paneHeight = (int)Math.min( pos, PixelScene.uiCamera.height - 20 - TTL_HEIGHT );
-		pane.setRect( 0, TTL_HEIGHT, WIDTH, paneHeight );
+		//the pane must be added before setRect: its layout reads the window
+		//camera through the parent chain, and crashes without one
 		add( pane );
+		pane.setRect( 0, TTL_HEIGHT, WIDTH, paneHeight );
 
 		resize( WIDTH, TTL_HEIGHT + paneHeight );
 	}

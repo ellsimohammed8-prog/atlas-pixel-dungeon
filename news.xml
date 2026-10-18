@@ -5,6 +5,18 @@
      Dates must use the format yyyy-MM-dd. Keep summaries short. -->
 <feed>
 	<entry>
+		<title>Version 2.0.2 — Hotfix</title>
+		<published>2026-10-18</published>
+		<summary>Hotfix: opening the Challenges &amp; Pacts window could crash the game on some devices. It now opens and scrolls as intended.</summary>
+		<link href="https://github.com/ellsimohammed8-prog/atlas-pixel-dungeon/releases"/>
+	</entry>
+	<entry>
+		<title>الإصدار 2.0.2 — إصلاح عاجل</title>
+		<published>2026-10-18</published>
+		<summary>إصلاح عاجل: فتح نافذة التحديات والعهود كان قد يسبب انهيار اللعبة على بعض الأجهزة. الآن تفتح وتتحرك كما يجب.</summary>
+		<link href="https://github.com/ellsimohammed8-prog/atlas-pixel-dungeon/releases"/>
+	</entry>
+	<entry>
 		<title>Version 2.0.1 — Small Fixes</title>
 		<published>2026-10-18</published>
 		<summary>A small patch on the v2.0 finale: the Challenges &amp; Pacts window now scrolls properly when the list is taller than the screen, and translator credits were corrected.</summary>

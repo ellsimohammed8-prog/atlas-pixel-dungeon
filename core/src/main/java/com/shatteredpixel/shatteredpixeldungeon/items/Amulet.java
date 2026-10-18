@@ -29,6 +29,7 @@ import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.AscensionChallenge;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.levels.LastLevel;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.AmuletScene;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
@@ -75,6 +76,10 @@ public class Amulet extends Item {
 			if (!Statistics.amuletObtained) {
 				Statistics.amuletObtained = true;
 				hero.spend(-hero.cooldown());
+
+				if (Dungeon.level instanceof LastLevel) {
+					((LastLevel) Dungeon.level).unlockSunkenDeep();
+				}
 
 				//delay with an actor here so pickup behaviour can fully process.
 				Actor.add(new Actor(){

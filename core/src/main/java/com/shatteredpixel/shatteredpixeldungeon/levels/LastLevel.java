@@ -31,11 +31,13 @@ import com.shatteredpixel.shatteredpixeldungeon.items.Amulet;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.painters.Painter;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.CustomTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTileSheet;
 import com.watabou.noosa.Group;
 import com.watabou.noosa.Tilemap;
 import com.watabou.noosa.audio.Music;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.PathFinder;
 import com.watabou.utils.Random;
 
@@ -168,7 +170,35 @@ public class LastLevel extends Level {
 		vis.pos(0, height - ROOM_TOP-1);
 		customWalls.add(vis);
 
+		if (Statistics.amuletObtained) {
+			int exitPos = 9 * width() + MID;
+			map[exitPos] = Terrain.EXIT;
+			transitions.add(new LevelTransition(this, exitPos, LevelTransition.Type.REGULAR_EXIT));
+		}
+
 		return true;
+	}
+
+	public void unlockSunkenDeep() {
+		final int MID = width / 2;
+		int exitPos = 9 * width() + MID;
+		set(exitPos, Terrain.EXIT);
+		if (getTransition(LevelTransition.Type.REGULAR_EXIT) == null) {
+			transitions.add(new LevelTransition(this, exitPos, LevelTransition.Type.REGULAR_EXIT));
+		}
+		GameScene.updateMap(exitPos);
+		Dungeon.observe();
+	}
+
+	@Override
+	public void restoreFromBundle(Bundle bundle) {
+		super.restoreFromBundle(bundle);
+		if (Statistics.amuletObtained && getTransition(LevelTransition.Type.REGULAR_EXIT) == null) {
+			final int MID = width / 2;
+			int exitPos = 9 * width() + MID;
+			map[exitPos] = Terrain.EXIT;
+			transitions.add(new LevelTransition(this, exitPos, LevelTransition.Type.REGULAR_EXIT));
+		}
 	}
 
 	@Override

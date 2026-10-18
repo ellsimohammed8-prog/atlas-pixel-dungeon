@@ -69,6 +69,7 @@ import com.shatteredpixel.shatteredpixeldungeon.levels.PrisonLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.RegularLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.SewerBossLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.SewerLevel;
+import com.shatteredpixel.shatteredpixeldungeon.levels.SunkenDeepLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.VaultLevel;
 import com.shatteredpixel.shatteredpixeldungeon.levels.features.LevelTransition;
 import com.shatteredpixel.shatteredpixeldungeon.levels.rooms.secret.SecretRoom;
@@ -360,7 +361,11 @@ public class Dungeon {
 					level = new LastLevel();
 					break;
 				default:
-					level = new DeadEndLevel();
+					if (depth >= 27) {
+						level = new SunkenDeepLevel();
+					} else {
+						level = new DeadEndLevel();
+					}
 			}
 		} else if (branch == 1) {
 			switch (depth) {

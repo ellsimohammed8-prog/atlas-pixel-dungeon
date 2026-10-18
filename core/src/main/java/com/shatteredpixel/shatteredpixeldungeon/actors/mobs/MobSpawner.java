@@ -111,6 +111,14 @@ public class MobSpawner extends Actor {
 
 	//returns a rotation of standard mobs, unshuffled.
 	private static ArrayList<Class<? extends Mob>> standardMobRotation( int depth ){
+		if (depth >= 27) {
+			return new ArrayList<>(Arrays.asList(
+					Succubus.class,
+					Eye.class, Eye.class,
+					Scorpio.class, Scorpio.class,
+					Golem.class,
+					Monk.class));
+		}
 		switch(depth){
 
 			// Sewers

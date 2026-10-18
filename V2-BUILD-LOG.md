@@ -392,3 +392,35 @@ Base commit: `964507a` (main, v1.3.2)
 - **Compile result**: BUILD SUCCESSFUL, 0 errors.
 
 ---
+
+## Slice B6.1: The Sunken Deep Endless Descent
+
+- **DESIGN-GATE**: `SUNKEN-DEEP-DESIGN.md` committed at `04e186b` (conservative design choices selected: opt-in player choice via AmuletScene button and level 26 exit stair, RegularLevel/CavesPainter architecture ensuring 100% pathfinding reliability, linear progressive scaling +10% HP / +8% damage per floor, strict Halal canon compliance with no deities or worship).
+- **Status**: BUILT
+- **What changed**:
+  - Implemented the headline endless descent feature: The Sunken Deep (الأعماق الغارقة), allowing players who defeat The Sealed Darkness and acquire the Crown of Atlas to delve into infinite scaling depths (floor 27+):
+    - Added `SunkenDeepLevel.java` extending `RegularLevel`: dark subterranean aquifer palette (`color1 = 0x0c2828`, `color2 = 0x228888`), cave rock and water features, full trap roster, and progressive mob HP scaling (+10% max HP per floor past depth 26).
+    - Updated `Dungeon.newLevel()` to generate `SunkenDeepLevel` dynamically for any `depth >= 27`.
+    - Added exit transition on `LastLevel.java` (floor 26) north of the Crown altar opening downward stairs (`Terrain.EXIT`) to depth 27 when `Statistics.amuletObtained` is true. Added `unlockSunkenDeep()` and bundle restoration hook.
+    - Added "Descend into the Deep" (`btnDescend` / "النزول إلى الأعماق الغارقة") button to `AmuletScene.java`, enabling immediate descent into the Sunken Deep from the Crown victory screen.
+    - Updated `Char.attackProc()`: monster attack damage scales by +8% per floor deeper than 26 (`Math.round(damage * (1f + (depth - 26) * 0.08f))`).
+    - Updated `MobSpawner.standardMobRotation()` for `depth >= 27`: spawns a challenging endgame rotation (Succubus, Eye, Scorpio, Golem, Monk).
+    - Rankings & Depth records: `Statistics.deepestFloor` naturally tracks records beyond floor 26 (e.g. Depth 27, 34, 52), displaying exact depth attained in `RankingsScene` and `WndRanking`.
+  - Full EN + AR parity across all strings in `scenes.properties`, `scenes_ar.properties`, `levels.properties`, and `levels_ar.properties`.
+- **Files touched**:
+  - `core/src/main/assets/messages/levels/levels.properties`
+  - `core/src/main/assets/messages/levels/levels_ar.properties`
+  - `core/src/main/assets/messages/scenes/scenes.properties`
+  - `core/src/main/assets/messages/scenes/scenes_ar.properties`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Dungeon.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/Char.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/MobSpawner.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Amulet.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/levels/LastLevel.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/levels/SunkenDeepLevel.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/scenes/AmuletScene.java`
+  - `V2-BUILD-LOG.md`
+- **Save compatibility**: Full compatibility. `SunkenDeepLevel` serializes cleanly with standard `Level` bundling and `depth%d.dat` save files. Floor 26 save restoration safely restores the open Sunken Deep stairs if the crown was previously picked up.
+- **Compile result**: BUILD SUCCESSFUL, 0 errors.
+
+---

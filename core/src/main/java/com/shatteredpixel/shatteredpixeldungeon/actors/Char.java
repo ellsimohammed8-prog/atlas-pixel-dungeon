@@ -723,6 +723,9 @@ public abstract class Char extends Actor {
 		for (ChampionEnemy buff : buffs(ChampionEnemy.class)){
 			buff.onAttackProc( enemy );
 		}
+		if (this instanceof Mob && alignment == Alignment.ENEMY && Dungeon.depth >= 27){
+			damage = Math.round(damage * (1f + (Dungeon.depth - 26) * 0.08f));
+		}
 		return damage;
 	}
 	

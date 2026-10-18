@@ -184,3 +184,26 @@ Base commit: `964507a` (main, v1.3.2)
 - **Compile result**: BUILD SUCCESSFUL, 0 errors.
 
 ---
+
+## Slice B3.3: Save Export and Import
+
+- **Status**: BUILT
+- **What changed**: Added comprehensive in-game backup capabilities allowing players to export and restore active dungeon runs and full profile progress (Badges, Rankings, Journal) via clipboard (Base64-encoded GZIP bundles) or local files (`atlas_run_backup.dat` and `atlas_profile_backup.dat`).
+  - Added `SaveBackup` utility for container bundle creation and serialization of game files and level files.
+  - Added `WndSaveBackup` window accessible via "Save Backup & Restore" button in Settings -> Connectivity & Data tab (`WndSettings.DataTab`).
+  - Added 1-tap "Export" button in `WndGameInProgress` slot cards to copy any slot's active run to clipboard immediately.
+  - Added `reloadGlobal()` to `Badges` and `Journal` so restored profile progress refreshes immediately in memory without restarting.
+  - Full EN/AR bilingual parity on all strings.
+- **Files touched**:
+  - `core/src/main/assets/messages/windows/windows.properties`
+  - `core/src/main/assets/messages/windows/windows_ar.properties`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Badges.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/journal/Journal.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/utils/SaveBackup.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndGameInProgress.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndSaveBackup.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndSettings.java`
+- **Save compatibility**: Full compatibility. Saves are read and written using standard `Bundle` and `FileUtils` routines matching the engine's exact internal formats. No changes to existing save formats or structures; all previous saves load cleanly.
+- **Compile result**: BUILD SUCCESSFUL, 0 errors.
+
+---

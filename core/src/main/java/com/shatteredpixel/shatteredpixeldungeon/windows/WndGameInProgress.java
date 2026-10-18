@@ -39,6 +39,9 @@ import com.shatteredpixel.shatteredpixeldungeon.ui.Window;
 import com.shatteredpixel.shatteredpixeldungeon.utils.DungeonSeed;
 import com.watabou.noosa.Game;
 
+import com.badlogic.gdx.Gdx;
+import com.shatteredpixel.shatteredpixeldungeon.utils.SaveBackup;
+import com.watabou.utils.Bundle;
 import java.util.Locale;
 
 public class WndGameInProgress extends Window {
@@ -152,15 +155,36 @@ public class WndGameInProgress extends Window {
 			}
 		};
 
+		RedButton export = new RedButton(Messages.get(this, "export")) {
+			@Override
+			protected void onClick() {
+				super.onClick();
+				Bundle b = SaveBackup.createSlotBundle(slot);
+				if (b != null) {
+					String str = SaveBackup.bundleToString(b);
+					Gdx.app.getClipboard().setContents(str);
+					ShatteredPixelDungeon.scene().add(new WndMessage(Messages.get(WndSaveBackup.class, "run_copied")));
+				} else {
+					ShatteredPixelDungeon.scene().add(new WndMessage(Messages.get(WndSaveBackup.class, "import_err_invalid")));
+				}
+			}
+		};
+
 		cont.icon(Icons.get(Icons.ENTER));
-		cont.setRect(0, pos, WIDTH/2 -1, 20);
+		cont.setRect(0, pos, WIDTH, 18);
 		add(cont);
 
+		pos = cont.bottom() + 2;
+
+		export.icon(Icons.get(Icons.DATA));
+		export.setRect(0, pos, WIDTH/2 - 1, 16);
+		add(export);
+
 		erase.icon(Icons.get(Icons.CLOSE));
-		erase.setRect(WIDTH/2 + 1, pos, WIDTH/2 - 1, 20);
+		erase.setRect(WIDTH/2 + 1, pos, WIDTH/2 - 1, 16);
 		add(erase);
 		
-		resize(WIDTH, (int)cont.bottom()+1);
+		resize(WIDTH, (int)erase.bottom()+1);
 	}
 	
 	private void statSlot( String label, String value ) {

@@ -325,6 +325,11 @@ public class Badges {
 		}
 	}
 
+	public static void reloadGlobal() {
+		global = null;
+		loadGlobal();
+	}
+
 	public static void saveGlobal(){
 		saveGlobal(false);
 	}

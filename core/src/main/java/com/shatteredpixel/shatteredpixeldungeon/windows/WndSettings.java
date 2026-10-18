@@ -784,6 +784,7 @@ public class WndSettings extends WndTabbed {
 		CheckBox chkBetas;
 		CheckBox chkWifi;
 		CheckBox chkAds;
+		RedButton btnSaveBackup;
 
 		@Override
 		protected void createChildren() {
@@ -854,6 +855,16 @@ public class WndSettings extends WndTabbed {
 				chkAds.checked(Ads.enabled());
 				add(chkAds);
 			}
+
+			btnSaveBackup = new RedButton(Messages.get(this, "save_backup")){
+				@Override
+				protected void onClick() {
+					super.onClick();
+					ShatteredPixelDungeon.scene().add(new WndSaveBackup());
+				}
+			};
+			btnSaveBackup.icon(Icons.get(Icons.DATA));
+			add(btnSaveBackup);
 		}
 
 		@Override
@@ -890,6 +901,9 @@ public class WndSettings extends WndTabbed {
 				chkAds.setRect(0, pos + GAP, width, BTN_HEIGHT);
 				pos = chkAds.bottom();
 			}
+
+			btnSaveBackup.setRect(0, pos + 2*GAP, width, BTN_HEIGHT);
+			pos = btnSaveBackup.bottom();
 
 			height = pos;
 

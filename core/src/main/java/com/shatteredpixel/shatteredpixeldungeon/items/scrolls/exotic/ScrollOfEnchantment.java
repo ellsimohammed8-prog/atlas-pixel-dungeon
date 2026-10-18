@@ -119,14 +119,23 @@ public class ScrollOfEnchantment extends ExoticScroll {
 				}
 				identifiedByUse = false;
 				
-				final Weapon.Enchantment enchants[] = new Weapon.Enchantment[3];
-				
-				Class<? extends Weapon.Enchantment> existing = ((Weapon) item).enchantment != null ? ((Weapon) item).enchantment.getClass() : null;
-				enchants[0] = Weapon.Enchantment.randomCommon( existing );
-				enchants[1] = Weapon.Enchantment.randomUncommon( existing );
-				enchants[2] = Weapon.Enchantment.random( existing, enchants[0].getClass(), enchants[1].getClass());
-
-				GameScene.show(new WndEnchantSelect((Weapon) item, enchants[0], enchants[1], enchants[2]));
+				final Weapon wep = (Weapon) item;
+				if (wep.hasDualEnchant) {
+					String slot1 = wep.enchantment != null ? wep.enchantment.name() : Messages.get(ScrollOfEnchantment.class, "slot_empty");
+					String slot2 = wep.enchantment2 != null ? wep.enchantment2.name() : Messages.get(ScrollOfEnchantment.class, "slot_empty");
+					GameScene.show(new WndOptions(new ItemSprite(ScrollOfEnchantment.this),
+							Messages.titleCase(name()),
+							Messages.get(ScrollOfEnchantment.class, "choose_slot"),
+							Messages.get(ScrollOfEnchantment.class, "slot_1", slot1),
+							Messages.get(ScrollOfEnchantment.class, "slot_2", slot2)) {
+						@Override
+						protected void onSelect(int index) {
+							openEnchantSelect(wep, index == 1);
+						}
+					});
+					return;
+				}
+				openEnchantSelect(wep, false);
 			
 			} else if (item instanceof Armor) {
 				if (!identifiedByUse) {
@@ -146,20 +155,48 @@ public class ScrollOfEnchantment extends ExoticScroll {
 				((ScrollOfEnchantment)curItem).confirmCancelation();
 			}
 		}
+
+		private void openEnchantSelect(Weapon wep, boolean isSecondSlot) {
+			final Weapon.Enchantment enchants[] = new Weapon.Enchantment[3];
+			Class<? extends Weapon.Enchantment> existing = isSecondSlot ?
+					(wep.enchantment2 != null ? wep.enchantment2.getClass() : null) :
+					(wep.enchantment != null ? wep.enchantment.getClass() : null);
+			Class<? extends Weapon.Enchantment> other = isSecondSlot ?
+					(wep.enchantment != null ? wep.enchantment.getClass() : null) :
+					(wep.enchantment2 != null ? wep.enchantment2.getClass() : null);
+
+			if (other != null) {
+				enchants[0] = Weapon.Enchantment.randomCommon( existing, other );
+				enchants[1] = Weapon.Enchantment.randomUncommon( existing, other );
+				enchants[2] = Weapon.Enchantment.random( existing, other, enchants[0].getClass(), enchants[1].getClass());
+			} else {
+				enchants[0] = Weapon.Enchantment.randomCommon( existing );
+				enchants[1] = Weapon.Enchantment.randomUncommon( existing );
+				enchants[2] = Weapon.Enchantment.random( existing, enchants[0].getClass(), enchants[1].getClass());
+			}
+
+			GameScene.show(new WndEnchantSelect(wep, enchants[0], enchants[1], enchants[2], isSecondSlot));
+		}
 	};
 
 	public static class WndEnchantSelect extends WndOptions {
 
 		private static Weapon wep;
 		private static Weapon.Enchantment[] enchantments;
+		private static boolean secondSlot = false;
 
 		//used in PixelScene.restoreWindows
 		public WndEnchantSelect(){
-			this(wep, enchantments[0], enchantments[1], enchantments[2]);
+			this(wep, enchantments[0], enchantments[1], enchantments[2], secondSlot);
 		}
 
 		public WndEnchantSelect(Weapon wep, Weapon.Enchantment ench1,
 		                           Weapon.Enchantment ench2, Weapon.Enchantment ench3){
+			this(wep, ench1, ench2, ench3, false);
+		}
+
+		public WndEnchantSelect(Weapon wep, Weapon.Enchantment ench1,
+		                           Weapon.Enchantment ench2, Weapon.Enchantment ench3, boolean isSecondSlot){
 			super(new ItemSprite(new ScrollOfEnchantment()),
 					Messages.titleCase(new ScrollOfEnchantment().name()),
 					Messages.get(ScrollOfEnchantment.class, "weapon"),
@@ -168,6 +205,7 @@ public class ScrollOfEnchantment extends ExoticScroll {
 					ench3.name(),
 					Messages.get(ScrollOfEnchantment.class, "cancel"));
 			this.wep = wep;
+			this.secondSlot = isSecondSlot;
 			enchantments = new Weapon.Enchantment[3];
 			enchantments[0] = ench1;
 			enchantments[1] = ench2;
@@ -179,7 +217,11 @@ public class ScrollOfEnchantment extends ExoticScroll {
 		@Override
 		protected void onSelect(int index) {
 			if (index < 3) {
-				wep.enchant(enchantments[index]);
+				if (secondSlot) {
+					wep.enchant2(enchantments[index]);
+				} else {
+					wep.enchant(enchantments[index]);
+				}
 				GLog.p(Messages.get(StoneOfEnchantment.class, "weapon"));
 				((ScrollOfEnchantment)curItem).readAnimation();
 

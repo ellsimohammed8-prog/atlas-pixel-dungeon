@@ -418,6 +418,9 @@ public class QuickRecipe extends Component {
 				result.add(new QuickRecipe(new Blueprints.CedarCleaverRecipe(),
 						new ArrayList<>(Arrays.asList(new BattleAxe(), new ScrollOfUpgrade())),
 						new CedarCleaver()));
+				result.add(new QuickRecipe(new Blueprints.DualEnchantRecipe(),
+						new ArrayList<>(Arrays.asList(new Longsword(), new ScrollOfUpgrade())),
+						new Longsword()));
 				return result;
 		}
 	}

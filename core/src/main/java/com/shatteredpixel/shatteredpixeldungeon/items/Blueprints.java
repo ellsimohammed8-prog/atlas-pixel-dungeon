@@ -71,6 +71,8 @@ public class Blueprints {
 			MeleeWeapon result = Reflection.newInstance(evolved);
 			result.level(weapon.level());
 			result.enchantment = weapon.enchantment;
+			result.enchantment2 = weapon.enchantment2;
+			result.hasDualEnchant = weapon.hasDualEnchant;
 			result.augment = weapon.augment;
 			result.cursed = weapon.cursed;
 			result.cursedKnown = weapon.cursedKnown;
@@ -101,5 +103,70 @@ public class Blueprints {
 
 	public static class CedarCleaverRecipe extends Evolution {
 		{ base = BattleAxe.class; evolved = CedarCleaver.class; }
+	}
+
+	// Dual Enchantment: Blueprint recipe to unlock and grant a second enchantment slot
+	public static class DualEnchantRecipe extends Recipe {
+		public static final int ENERGY_COST = 8;
+
+		@Override
+		public boolean testIngredients(ArrayList<Item> ingredients) {
+			boolean hasWeapon = false;
+			boolean hasScroll = false;
+			for (Item i : ingredients) {
+				if (i instanceof MeleeWeapon && i.isUpgradable() && !((MeleeWeapon) i).hasDualEnchant && i.isIdentified()) {
+					hasWeapon = true;
+				}
+				if (i.getClass() == ScrollOfUpgrade.class && i.isIdentified()) hasScroll = true;
+			}
+			return hasWeapon && hasScroll && ingredients.size() == 2;
+		}
+
+		@Override
+		public int cost(ArrayList<Item> ingredients) {
+			return ENERGY_COST;
+		}
+
+		@Override
+		public Item brew(ArrayList<Item> ingredients) {
+			if (!testIngredients(ingredients)) return null;
+
+			MeleeWeapon weapon = null;
+			Item scroll = null;
+			for (Item i : ingredients) {
+				if (i instanceof MeleeWeapon && !((MeleeWeapon) i).hasDualEnchant) weapon = (MeleeWeapon) i;
+				if (i.getClass() == ScrollOfUpgrade.class) scroll = i;
+			}
+			if (weapon == null || scroll == null) return null;
+
+			MeleeWeapon result = Reflection.newInstance(weapon.getClass());
+			result.level(weapon.level());
+			result.enchantment = weapon.enchantment;
+			result.augment = weapon.augment;
+			result.cursed = weapon.cursed;
+			result.cursedKnown = weapon.cursedKnown;
+			result.hasDualEnchant = true;
+			if (result.enchantment == null) {
+				result.enchant();
+			}
+			result.enchant2();
+			result.identify(false);
+
+			scroll.quantity(scroll.quantity() - 1);
+			weapon.quantity(0);
+			return result;
+		}
+
+		@Override
+		public Item sampleOutput(ArrayList<Item> ingredients) {
+			for (Item i : ingredients) {
+				if (i instanceof MeleeWeapon && i.isUpgradable()) {
+					MeleeWeapon sample = Reflection.newInstance(((MeleeWeapon) i).getClass());
+					sample.hasDualEnchant = true;
+					return sample;
+				}
+			}
+			return new Longsword();
+		}
 	}
 }

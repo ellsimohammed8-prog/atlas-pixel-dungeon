@@ -60,3 +60,22 @@ Base commit: `964507a` (main, v1.3.2)
 - **Compile result**: BUILD SUCCESSFUL, 0 errors.
 
 ---
+
+## Slice B1.3: Dual Enchantments via Blueprints
+
+- **Status**: BUILT
+- **What changed**: Added Dual Enchantment Blueprint recipe (`base weapon + Scroll of Upgrade + 8 energy`) preserving upgrade level, augment, curse, and existing enchantment. Dual-enchanted weapons proc both enchantments independently at 60% rate. Stones and Scrolls of Enchantment present a replace-or-fill prompt when used on a dual-enchant weapon. Curses on the second slot mirror slot one behavior for upgrades and identification. Full EN/AR string parity.
+- **Files touched**:
+  - `core/src/main/assets/messages/items/items.properties`
+  - `core/src/main/assets/messages/items/items_ar.properties`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Blueprints.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Recipe.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/scrolls/exotic/ScrollOfEnchantment.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/stones/StoneOfEnchantment.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/weapon/Weapon.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/weapon/melee/MeleeWeapon.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/ui/QuickRecipe.java`
+- **Save compatibility**: Old saves load cleanly. The new fields `enchantment2` and `hasDualEnchant` in `Weapon` serialize into Bundle tags. If absent when loading older saves, `enchantment2` restores as `null` and `hasDualEnchant` defaults to `false`.
+- **Compile result**: BUILD SUCCESSFUL, 0 errors.
+
+---

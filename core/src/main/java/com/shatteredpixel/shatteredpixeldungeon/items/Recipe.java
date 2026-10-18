@@ -62,6 +62,7 @@ import com.shatteredpixel.shatteredpixeldungeon.items.wands.Wand;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.BattleAxe;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Glaive;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.Longsword;
+import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.MeleeWeapon;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.melee.WarHammer;
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.missiles.MissileWeapon;
 import com.watabou.utils.Reflection;
@@ -177,7 +178,9 @@ public abstract class Recipe {
 			new Blueprints.CrownbladeRecipe(),
 			new Blueprints.EngineHammerRecipe(),
 			new Blueprints.MirelordsReachRecipe(),
-			new Blueprints.CedarCleaverRecipe()
+			new Blueprints.CedarCleaverRecipe(),
+			//Atlas Blueprints: dual enchantment
+			new Blueprints.DualEnchantRecipe()
 	};
 	
 	private static Recipe[] oneIngredientRecipes = new Recipe[]{
@@ -273,14 +276,11 @@ public abstract class Recipe {
 			return item.cursedKnown;
 		}
 		//only upgradeable thrown weapons and wands allowed among equipment items
-		//Atlas: blueprint base weapons are also allowed, they evolve at the pot
+		//Atlas: blueprint base weapons are also allowed, they evolve or gain dual enchant at the pot
 		if (item instanceof EquipableItem){
 			return item.cursedKnown && !item.cursed &&
 					((item instanceof MissileWeapon && item.isUpgradable())
-					|| item instanceof Longsword
-					|| item instanceof WarHammer
-					|| item instanceof Glaive
-					|| item instanceof BattleAxe);
+					|| (item instanceof MeleeWeapon && item.isUpgradable()));
 		} else if (item instanceof Wand) {
 			return item.cursedKnown && !item.cursed;
 		} else {

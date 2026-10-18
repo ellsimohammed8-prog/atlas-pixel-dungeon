@@ -129,9 +129,15 @@ abstract public class Weapon extends KindOfWeapon {
 	protected float availableUsesToID = usesToID()/2f;
 	
 	public Enchantment enchantment;
+	public Enchantment enchantment2;
+	public boolean hasDualEnchant = false;
 	public boolean enchantHardened = false;
 	public boolean curseInfusionBonus = false;
 	public boolean masteryPotionBonus = false;
+
+	public boolean hasBothEnchants() {
+		return enchantment != null && enchantment2 != null;
+	}
 	
 	@Override
 	public int proc( Char attacker, Char defender, int damage ) {
@@ -151,7 +157,15 @@ abstract public class Weapon extends KindOfWeapon {
 					&& attacker.buff(HolyWeapon.HolyWepBuff.class) != null){
 				if (enchantment != null &&
 						(((Hero) attacker).subClass == HeroSubClass.PALADIN || hasCurseEnchant())){
-					damage = enchantment.proc(this, attacker, defender, damage);
+					if (!hasBothEnchants() || Random.Float() < 0.6f) {
+						damage = enchantment.proc(this, attacker, defender, damage);
+					}
+				}
+				if (defender.isAlive() && enchantment2 != null &&
+						(((Hero) attacker).subClass == HeroSubClass.PALADIN || hasCurseEnchant())){
+					if (!hasBothEnchants() || Random.Float() < 0.6f) {
+						damage = enchantment2.proc(this, attacker, defender, damage);
+					}
 				}
 				if (defender.isAlive() && trinityEnchant != null){
 					damage = trinityEnchant.proc(this, attacker, defender, damage);
@@ -163,7 +177,15 @@ abstract public class Weapon extends KindOfWeapon {
 
 			} else {
 				if (enchantment != null) {
-					damage = enchantment.proc(this, attacker, defender, damage);
+					if (!hasBothEnchants() || Random.Float() < 0.6f) {
+						damage = enchantment.proc(this, attacker, defender, damage);
+					}
+				}
+
+				if (defender.isAlive() && enchantment2 != null) {
+					if (!hasBothEnchants() || Random.Float() < 0.6f) {
+						damage = enchantment2.proc(this, attacker, defender, damage);
+					}
 				}
 
 				if (defender.isAlive() && trinityEnchant != null){
@@ -218,6 +240,8 @@ abstract public class Weapon extends KindOfWeapon {
 	private static final String USES_LEFT_TO_ID = "uses_left_to_id";
 	private static final String AVAILABLE_USES  = "available_uses";
 	private static final String ENCHANTMENT	    = "enchantment";
+	private static final String ENCHANTMENT2    = "enchantment2";
+	private static final String HAS_DUAL_ENCHANT = "has_dual_enchant";
 	private static final String ENCHANT_HARDENED = "enchant_hardened";
 	private static final String CURSE_INFUSION_BONUS = "curse_infusion_bonus";
 	private static final String MASTERY_POTION_BONUS = "mastery_potion_bonus";
@@ -229,6 +253,8 @@ abstract public class Weapon extends KindOfWeapon {
 		bundle.put( USES_LEFT_TO_ID, usesLeftToID );
 		bundle.put( AVAILABLE_USES, availableUsesToID );
 		bundle.put( ENCHANTMENT, enchantment );
+		bundle.put( ENCHANTMENT2, enchantment2 );
+		bundle.put( HAS_DUAL_ENCHANT, hasDualEnchant );
 		bundle.put( ENCHANT_HARDENED, enchantHardened );
 		bundle.put( CURSE_INFUSION_BONUS, curseInfusionBonus );
 		bundle.put( MASTERY_POTION_BONUS, masteryPotionBonus );
@@ -241,6 +267,8 @@ abstract public class Weapon extends KindOfWeapon {
 		usesLeftToID = bundle.getFloat( USES_LEFT_TO_ID );
 		availableUsesToID = bundle.getFloat( AVAILABLE_USES );
 		enchantment = (Enchantment)bundle.get( ENCHANTMENT );
+		enchantment2 = (Enchantment)bundle.get( ENCHANTMENT2 );
+		hasDualEnchant = bundle.getBoolean( HAS_DUAL_ENCHANT );
 		enchantHardened = bundle.getBoolean( ENCHANT_HARDENED );
 		curseInfusionBonus = bundle.getBoolean( CURSE_INFUSION_BONUS );
 		masteryPotionBonus = bundle.getBoolean( MASTERY_POTION_BONUS );
@@ -258,9 +286,15 @@ abstract public class Weapon extends KindOfWeapon {
 	@Override
 	public boolean collect(Bag container) {
 		if(super.collect(container)){
-			if (Dungeon.hero != null && Dungeon.hero.isAlive() && isIdentified() && enchantment != null){
-				Catalog.setSeen(enchantment.getClass());
-				Statistics.itemTypesDiscovered.add(enchantment.getClass());
+			if (Dungeon.hero != null && Dungeon.hero.isAlive() && isIdentified()){
+				if (enchantment != null){
+					Catalog.setSeen(enchantment.getClass());
+					Statistics.itemTypesDiscovered.add(enchantment.getClass());
+				}
+				if (enchantment2 != null){
+					Catalog.setSeen(enchantment2.getClass());
+					Statistics.itemTypesDiscovered.add(enchantment2.getClass());
+				}
 			}
 			return true;
 		} else {
@@ -270,9 +304,15 @@ abstract public class Weapon extends KindOfWeapon {
 
 	@Override
 	public Item identify(boolean byHero) {
-		if (enchantment != null && byHero && Dungeon.hero != null && Dungeon.hero.isAlive()){
-			Catalog.setSeen(enchantment.getClass());
-			Statistics.itemTypesDiscovered.add(enchantment.getClass());
+		if (byHero && Dungeon.hero != null && Dungeon.hero.isAlive()){
+			if (enchantment != null){
+				Catalog.setSeen(enchantment.getClass());
+				Statistics.itemTypesDiscovered.add(enchantment.getClass());
+			}
+			if (enchantment2 != null){
+				Catalog.setSeen(enchantment2.getClass());
+				Statistics.itemTypesDiscovered.add(enchantment2.getClass());
+			}
 		}
 		return super.identify(byHero);
 	}
@@ -379,8 +419,10 @@ abstract public class Weapon extends KindOfWeapon {
 		if (enchant){
 			if (enchantment == null){
 				enchant(Enchantment.random());
+			} else if (hasDualEnchant && enchantment2 == null){
+				enchant2(Enchantment.random(enchantment.getClass()));
 			}
-		} else if (enchantment != null) {
+		} else if (enchantment != null || enchantment2 != null) {
 			//chance to lose harden buff is 10/20/40/80/100% when upgrading from +6/7/8/9/10
 			if (enchantHardened){
 				if (level() >= 6 && Random.Float(10) < Math.pow(2, level()-6)){
@@ -388,21 +430,33 @@ abstract public class Weapon extends KindOfWeapon {
 				}
 
 			//chance to remove curse is a static 33%
-			} else if (hasCurseEnchant()) {
-				if (Random.Int(3) == 0) enchant(null);
-
-			//otherwise chance to lose enchant is 10/20/40/80/100% when upgrading from +4/5/6/7/8
-			} else if (level() >= 4 && Random.Float(10) < Math.pow(2, level()-4)){
-				enchant(null);
+			} else {
+				if (enchantment != null) {
+					if (enchantment.curse()) {
+						if (Random.Int(3) == 0) enchant(null);
+					} else if (level() >= 4 && Random.Float(10) < Math.pow(2, level()-4)){
+						enchant(null);
+					}
+				}
+				if (enchantment2 != null) {
+					if (enchantment2.curse()) {
+						if (Random.Int(3) == 0) enchant2(null);
+					} else if (level() >= 4 && Random.Float(10) < Math.pow(2, level()-4)){
+						enchant2(null);
+					}
+				}
 			}
 
 			//if we still have a crystal enchant, repair it (just like thrown weapon repair)
 			if (enchantment instanceof Crystal){
 				((Crystal) enchantment).repair(this, false, 100);
 			}
+			if (enchantment2 instanceof Crystal){
+				((Crystal) enchantment2).repair(this, false, 100);
+			}
 		}
 		
-		cursed = false;
+		cursed = hasCurseEnchant();
 
 		return super.upgrade();
 	}
@@ -410,11 +464,17 @@ abstract public class Weapon extends KindOfWeapon {
 	@Override
 	public String name() {
 		if (isEquipped(Dungeon.hero) && !hasCurseEnchant() && Dungeon.hero.buff(HolyWeapon.HolyWepBuff.class) != null
-			&& (Dungeon.hero.subClass != HeroSubClass.PALADIN || enchantment == null)){
+			&& (Dungeon.hero.subClass != HeroSubClass.PALADIN || (enchantment == null && enchantment2 == null))){
 				return Messages.get(HolyWeapon.class, "ench_name", super.name());
-			} else {
-				return enchantment != null && (cursedKnown || !enchantment.curse()) ? enchantment.name(super.name()) : super.name();
-
+		} else {
+			String str = super.name();
+			if (enchantment2 != null && (cursedKnown || !enchantment2.curse())) {
+				str = enchantment2.name(str);
+			}
+			if (enchantment != null && (cursedKnown || !enchantment.curse())) {
+				str = enchantment.name(str);
+			}
+			return str;
 		}
 	}
 	
@@ -454,6 +514,7 @@ abstract public class Weapon extends KindOfWeapon {
 	public Weapon enchant( Enchantment ench ) {
 		if (ench == null || !ench.curse()) curseInfusionBonus = false;
 		enchantment = ench;
+		cursed = hasCurseEnchant();
 		updateQuickslot();
 		if (ench != null && isIdentified() && Dungeon.hero != null
 				&& Dungeon.hero.isAlive() && Dungeon.hero.belongings.contains(this)){
@@ -466,16 +527,37 @@ abstract public class Weapon extends KindOfWeapon {
 	public Weapon enchant() {
 
 		Class<? extends Enchantment> oldEnchantment = enchantment != null ? enchantment.getClass() : null;
-		Enchantment ench = Enchantment.random( oldEnchantment );
+		Class<? extends Enchantment> other = enchantment2 != null ? enchantment2.getClass() : null;
+		Enchantment ench = other != null ? Enchantment.random( oldEnchantment, other ) : Enchantment.random( oldEnchantment );
 
 		return enchant( ench );
+	}
+
+	public Weapon enchant2( Enchantment ench ) {
+		enchantment2 = ench;
+		cursed = hasCurseEnchant();
+		updateQuickslot();
+		if (ench != null && isIdentified() && Dungeon.hero != null
+				&& Dungeon.hero.isAlive() && Dungeon.hero.belongings.contains(this)){
+			Catalog.setSeen(ench.getClass());
+			Statistics.itemTypesDiscovered.add(ench.getClass());
+		}
+		return this;
+	}
+
+	public Weapon enchant2() {
+
+		Class<? extends Enchantment> oldEnchantment2 = enchantment2 != null ? enchantment2.getClass() : null;
+		Class<? extends Enchantment> other = enchantment != null ? enchantment.getClass() : null;
+		Enchantment ench = other != null ? Enchantment.random( oldEnchantment2, other ) : Enchantment.random( oldEnchantment2 );
+
+		return enchant2( ench );
 	}
 
 	public boolean hasEnchant(Class<?extends Enchantment> type, Char owner) {
 		if (owner.buff(MagicImmune.class) != null) {
 			return false;
-		} else if (enchantment != null
-				&& !enchantment.curse()
+		} else if (hasGoodEnchant()
 				&& owner instanceof Hero
 				&& isEquipped((Hero) owner)
 				&& owner.buff(HolyWeapon.HolyWepBuff.class) != null
@@ -485,20 +567,21 @@ abstract public class Weapon extends KindOfWeapon {
 				&& owner.buff(BodyForm.BodyFormBuff.class).enchant() != null
 				&& owner.buff(BodyForm.BodyFormBuff.class).enchant().getClass().equals(type)){
 			return true;
-		} else if (enchantment != null) {
-			return enchantment.getClass() == type;
 		} else {
-			return false;
+			return (enchantment != null && enchantment.getClass() == type)
+					|| (enchantment2 != null && enchantment2.getClass() == type);
 		}
 	}
 	
 	//these are not used to process specific enchant effects, so magic immune doesn't affect them
 	public boolean hasGoodEnchant(){
-		return enchantment != null && !enchantment.curse();
+		return (enchantment != null && !enchantment.curse())
+				|| (enchantment2 != null && !enchantment2.curse());
 	}
 
 	public boolean hasCurseEnchant(){
-		return enchantment != null && enchantment.curse();
+		return (enchantment != null && enchantment.curse())
+				|| (enchantment2 != null && enchantment2.curse());
 	}
 
 	private static ItemSprite.Glowing HOLY = new ItemSprite.Glowing( 0xFFFF00 );
@@ -506,10 +589,14 @@ abstract public class Weapon extends KindOfWeapon {
 	@Override
 	public ItemSprite.Glowing glowing() {
 		if (isEquipped(Dungeon.hero) && !hasCurseEnchant() && Dungeon.hero.buff(HolyWeapon.HolyWepBuff.class) != null
-				&& (Dungeon.hero.subClass != HeroSubClass.PALADIN || enchantment == null)){
+				&& (Dungeon.hero.subClass != HeroSubClass.PALADIN || (enchantment == null && enchantment2 == null))){
 			return HOLY;
+		} else if (enchantment != null && (cursedKnown || !enchantment.curse())) {
+			return enchantment.glowing();
+		} else if (enchantment2 != null && (cursedKnown || !enchantment2.curse())) {
+			return enchantment2.glowing();
 		} else {
-			return enchantment != null && (cursedKnown || !enchantment.curse()) ? enchantment.glowing() : null;
+			return null;
 		}
 	}
 

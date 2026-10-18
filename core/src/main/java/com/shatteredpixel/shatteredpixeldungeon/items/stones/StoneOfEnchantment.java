@@ -31,8 +31,11 @@ import com.shatteredpixel.shatteredpixeldungeon.items.scrolls.exotic.ScrollOfEnc
 import com.shatteredpixel.shatteredpixeldungeon.items.weapon.Weapon;
 import com.shatteredpixel.shatteredpixeldungeon.journal.Catalog;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
+import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSprite;
 import com.shatteredpixel.shatteredpixeldungeon.sprites.ItemSpriteSheet;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.shatteredpixel.shatteredpixeldungeon.windows.WndOptions;
 
 public class StoneOfEnchantment extends InventoryStone {
 	
@@ -57,8 +60,32 @@ public class StoneOfEnchantment extends InventoryStone {
 		}
 		
 		if (item instanceof Weapon) {
+			final Weapon wep = (Weapon) item;
+			if (wep.hasDualEnchant) {
+				String slot1 = wep.enchantment != null ? wep.enchantment.name() : Messages.get(StoneOfEnchantment.class, "slot_empty");
+				String slot2 = wep.enchantment2 != null ? wep.enchantment2.name() : Messages.get(StoneOfEnchantment.class, "slot_empty");
+				GameScene.show(new WndOptions(new ItemSprite(this),
+						Messages.titleCase(name()),
+						Messages.get(StoneOfEnchantment.class, "choose_slot"),
+						Messages.get(StoneOfEnchantment.class, "slot_1", slot1),
+						Messages.get(StoneOfEnchantment.class, "slot_2", slot2)) {
+					@Override
+					protected void onSelect(int index) {
+						if (index == 0) {
+							wep.enchant();
+						} else {
+							wep.enchant2();
+						}
+						curUser.sprite.emitter().start( Speck.factory( Speck.LIGHT ), 0.1f, 5 );
+						Enchanting.show( curUser, wep );
+						GLog.p(Messages.get(StoneOfEnchantment.class, "weapon"));
+						useAnimation();
+					}
+				});
+				return;
+			}
 			
-			((Weapon)item).enchant();
+			wep.enchant();
 			
 		} else {
 			

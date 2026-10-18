@@ -7,13 +7,13 @@
 	<entry>
 		<title>Version 2.0.2 — Hotfix</title>
 		<published>2026-10-18</published>
-		<summary>Hotfix: opening the Challenges &amp; Pacts window could crash the game on some devices. It now opens and scrolls as intended.</summary>
+		<summary>Hotfix: the Challenges &amp; Pacts window could crash when opened, and its list rendered outside the window. It now opens, displays and scrolls correctly.</summary>
 		<link href="https://github.com/ellsimohammed8-prog/atlas-pixel-dungeon/releases"/>
 	</entry>
 	<entry>
 		<title>الإصدار 2.0.2 — إصلاح عاجل</title>
 		<published>2026-10-18</published>
-		<summary>إصلاح عاجل: فتح نافذة التحديات والعهود كان قد يسبب انهيار اللعبة على بعض الأجهزة. الآن تفتح وتتحرك كما يجب.</summary>
+		<summary>إصلاح عاجل: نافذة التحديات والعهود كانت قد تنهار عند فتحها وتظهر قائمتها خارج النافذة. الآن تفتح وتظهر وتتحرك بشكل صحيح.</summary>
 		<link href="https://github.com/ellsimohammed8-prog/atlas-pixel-dungeon/releases"/>
 	</entry>
 	<entry>

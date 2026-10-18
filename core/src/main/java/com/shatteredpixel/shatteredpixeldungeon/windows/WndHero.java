@@ -27,6 +27,7 @@ import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
+import com.shatteredpixel.shatteredpixeldungeon.items.rings.RingOfForce;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.GameScene;
 import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
@@ -131,26 +132,36 @@ public class WndHero extends WndTabbed {
 	@Override
 	public void offset(int xOffset, int yOffset) {
 		super.offset(xOffset, yOffset);
+		stats.layout();
 		talents.layout();
 		buffs.layout();
 	}
 
-	private class StatsTab extends Group {
+	private class StatsTab extends Component {
 		
-		private static final int GAP = 6;
+		private static final int GAP = 4;
 		
+		private ScrollPane pane;
+		private Component content;
 		private float pos;
 		
 		public StatsTab() {
+			super();
+			content = new Component();
+			pane = new ScrollPane(content);
+			add(pane);
 			initialize();
+		}
+
+		@Override
+		protected void layout() {
+			super.layout();
+			pane.setRect(0, 0, width, height);
 		}
 
 		public void initialize(){
 
-			for (Gizmo g : members){
-				if (g != null) g.destroy();
-			}
-			clear();
+			content.clear();
 			
 			Hero hero = Dungeon.hero;
 
@@ -162,7 +173,7 @@ public class WndHero extends WndTabbed {
 				title.label((hero.name() + "\n" + Messages.get(this, "title", hero.lvl, hero.className())).toUpperCase(Locale.ENGLISH));
 			title.color(Window.TITLE_COLOR);
 			title.setRect( 0, 0, WIDTH-16, 0 );
-			add(title);
+			content.add(title);
 
 			IconButton infoButton = new IconButton(Icons.get(Icons.INFO)){
 				@Override
@@ -182,7 +193,7 @@ public class WndHero extends WndTabbed {
 
 			};
 			infoButton.setRect(title.right(), 0, 16, 16);
-			add(infoButton);
+			content.add(infoButton);
 
 			pos = title.bottom() + 2*GAP;
 
@@ -193,6 +204,28 @@ public class WndHero extends WndTabbed {
 			if (hero.shielding() > 0)   statSlot( Messages.get(this, "health"), hero.HP + "+" + hero.shielding() + "/" + hero.HT );
 			else                        statSlot( Messages.get(this, "health"), (hero.HP) + "/" + hero.HT );
 			statSlot( Messages.get(this, "exp"), hero.exp + "/" + hero.maxExp() );
+
+			pos += GAP;
+
+			statSlot( Messages.get(this, "accuracy"), hero.attackSkill(null) );
+			statSlot( Messages.get(this, "evasion"), hero.defenseSkill(null) );
+
+			int minDr = 0;
+			int maxDr = 0;
+			if (hero.belongings.armor() != null) {
+				minDr = hero.belongings.armor().DRMin();
+				maxDr = hero.belongings.armor().DRMax();
+				if (hero.STR() < hero.belongings.armor().STRReq()) {
+					int penalty = 2 * (hero.belongings.armor().STRReq() - hero.STR());
+					minDr = Math.max(0, minDr - penalty);
+					maxDr = Math.max(0, maxDr - penalty);
+				}
+			}
+			if (hero.belongings.weapon() != null && !RingOfForce.fightingUnarmed(hero)) {
+				maxDr += hero.belongings.weapon().defenseFactor(hero);
+			}
+			statSlot( Messages.get(this, "armor_roll"), minDr + "-" + maxDr );
+			statSlot( Messages.get(this, "speed"), Messages.decimalFormat("#.##", hero.speed()) + "x" );
 
 			pos += GAP;
 
@@ -211,6 +244,9 @@ public class WndHero extends WndTabbed {
 			}
 
 			pos += GAP;
+
+			content.setSize(WIDTH, pos);
+			pane.setSize(WIDTH, HEIGHT);
 		}
 
 		private void statSlot( String label, String value ) {
@@ -223,7 +259,7 @@ public class WndHero extends WndTabbed {
 			} while (txt.width() >= WIDTH * 0.55f);
 			txt.setPos(0, pos + (6 - txt.height())/2);
 			PixelScene.align(txt);
-			add( txt );
+			content.add( txt );
 
 			size = 8;
 			do {
@@ -232,7 +268,7 @@ public class WndHero extends WndTabbed {
 			} while (txt.width() >= WIDTH * 0.45f);
 			txt.setPos(WIDTH * 0.55f, pos + (6 - txt.height())/2);
 			PixelScene.align(txt);
-			add( txt );
+			content.add( txt );
 			
 			pos += GAP + txt.height();
 		}
@@ -328,7 +364,12 @@ public class WndHero extends WndTabbed {
 				icon.y = this.y;
 				add( icon );
 
-				txt = PixelScene.renderTextBlock( Messages.titleCase(buff.name()), 8 );
+				String nameStr = Messages.titleCase(buff.name());
+				float cd = buff.visualcooldown();
+				if (cd > 0 && cd < 1000) {
+					nameStr += " (" + Messages.decimalFormat("#.#", cd) + "t)";
+				}
+				txt = PixelScene.renderTextBlock( nameStr, 8 );
 				txt.setPos(
 						icon.width + GAP,
 						this.y + (icon.height - txt.height()) / 2

@@ -207,3 +207,23 @@ Base commit: `964507a` (main, v1.3.2)
 - **Compile result**: BUILD SUCCESSFUL, 0 errors.
 
 ---
+
+## Slice B4.1: Combat Stats Inspector
+
+- **Status**: BUILT
+- **What changed**: Added full combat transparency in inspection and status windows:
+  - In `WndHero`'s `StatsTab`, added scrollable combat stats inspector displaying exact Accuracy (`hero.attackSkill(null)`), Evasion (`hero.defenseSkill(null)`), Armor Roll absorption range (`[minDr - maxDr]`), and Speed multiplier (`hero.speed() + "x"`).
+  - In `WndHero`'s `BuffsTab` buff list, added remaining turn timers next to buff names (e.g. `(4.5t)`).
+  - In `WndInfoBuff`, added explicit remaining turns description for active timed buffs.
+  - In `WndInfoMob` (examine window for monsters/bosses), added dedicated Combat Stats block showing HP/HT, Accuracy, Evasion against hero, and Speed.
+  - Full EN/AR bilingual parity on all strings.
+- **Files touched**:
+  - `core/src/main/assets/messages/windows/windows.properties`
+  - `core/src/main/assets/messages/windows/windows_ar.properties`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndHero.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndInfoBuff.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndInfoMob.java`
+- **Save compatibility**: Full compatibility. All changes are entirely UI and inspection formatting; no save file formats, Bundles, or character state serialization fields modified.
+- **Compile result**: BUILD SUCCESSFUL, 0 errors.
+
+---

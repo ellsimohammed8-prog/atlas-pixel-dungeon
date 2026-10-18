@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.windows;
 
+import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Char;
 import com.shatteredpixel.shatteredpixeldungeon.actors.mobs.Mob;
 import com.shatteredpixel.shatteredpixeldungeon.messages.Messages;
@@ -34,9 +35,19 @@ import com.watabou.noosa.ui.Component;
 public class WndInfoMob extends WndTitledMessage {
 	
 	public WndInfoMob( Mob mob ) {
+		super( new MobTitle( mob ), formatMobInfo( mob ) );
+	}
 
-		super( new MobTitle( mob ), mob.info() );
-		
+	private static String formatMobInfo( Mob mob ) {
+		String info = mob.info();
+		Char opp = Dungeon.hero != null ? Dungeon.hero : mob;
+		StringBuilder sb = new StringBuilder(info);
+		sb.append("\n\n_").append(Messages.get(WndInfoMob.class, "combat_stats")).append("_\n");
+		sb.append(Messages.get(WndInfoMob.class, "health")).append(": ").append(mob.HP).append("/").append(mob.HT).append("\n");
+		sb.append(Messages.get(WndInfoMob.class, "accuracy")).append(": ").append(mob.attackSkill(opp)).append("\n");
+		sb.append(Messages.get(WndInfoMob.class, "evasion")).append(": ").append(mob.defenseSkill(opp)).append("\n");
+		sb.append(Messages.get(WndInfoMob.class, "speed")).append(": ").append(Messages.decimalFormat("#.##", mob.speed())).append("x");
+		return sb.toString();
 	}
 	
 	private static class MobTitle extends Component {

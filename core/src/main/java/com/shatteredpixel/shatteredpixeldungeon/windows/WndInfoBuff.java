@@ -47,7 +47,12 @@ public class WndInfoBuff extends Window {
 		titlebar.setRect( 0, 0, WIDTH, 0 );
 		add( titlebar );
 
-		RenderedTextBlock txtInfo = PixelScene.renderTextBlock(buff.desc(), 6);
+		String desc = buff.desc();
+		float cd = buff.visualcooldown();
+		if (cd > 0 && cd < 1000) {
+			desc += "\n\n" + Messages.get(this, "duration", Messages.decimalFormat("#.#", cd));
+		}
+		RenderedTextBlock txtInfo = PixelScene.renderTextBlock(desc, 6);
 		txtInfo.maxWidth(WIDTH);
 		txtInfo.setPos(titlebar.left(), titlebar.bottom() + 2*GAP);
 		add( txtInfo );

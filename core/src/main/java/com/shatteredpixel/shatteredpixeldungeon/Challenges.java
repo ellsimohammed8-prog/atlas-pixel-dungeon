@@ -36,9 +36,14 @@ public class Challenges {
 	public static final int NO_SCROLLS		    = 64;
 	public static final int CHAMPION_ENEMIES	= 128;
 	public static final int STRONGER_BOSSES 	= 256;
+	public static final int CRUMBLING_DEPTHS	= 512;
+	public static final int BARREN_SOIL			= 1024;
+	public static final int REINFORCED_FOES		= 2048;
+	public static final int UNSTABLE_MAGIC		= 4096;
+	public static final int RELENTLESS_SHADOWS	= 8192;
 
-	public static final int MAX_VALUE           = 511;
-	public static final int MAX_CHALS           = 9;
+	public static final int MAX_VALUE           = 16383;
+	public static final int MAX_CHALS           = 14;
 
 	public static final String[] NAME_IDS = {
 			"champion_enemies",
@@ -49,11 +54,17 @@ public class Challenges {
 			"no_herbalism",
 			"swarm_intelligence",
 			"darkness",
-			"no_scrolls"
+			"no_scrolls",
+			"crumbling_depths",
+			"barren_soil",
+			"reinforced_foes",
+			"unstable_magic",
+			"relentless_shadows"
 	};
 
 	public static final int[] MASKS = {
-			CHAMPION_ENEMIES, STRONGER_BOSSES, NO_FOOD, NO_ARMOR, NO_HEALING, NO_HERBALISM, SWARM_INTELLIGENCE, DARKNESS, NO_SCROLLS
+			CHAMPION_ENEMIES, STRONGER_BOSSES, NO_FOOD, NO_ARMOR, NO_HEALING, NO_HERBALISM, SWARM_INTELLIGENCE, DARKNESS, NO_SCROLLS,
+			CRUMBLING_DEPTHS, BARREN_SOIL, REINFORCED_FOES, UNSTABLE_MAGIC, RELENTLESS_SHADOWS
 	};
 
 	public static int activeChallenges(){
@@ -70,7 +81,7 @@ public class Challenges {
 
 	public static boolean isItemBlocked( Item item ){
 
-		if (Dungeon.isChallenged(NO_HERBALISM) && item instanceof Dewdrop){
+		if ((Dungeon.isChallenged(NO_HERBALISM) || Dungeon.isChallenged(BARREN_SOIL)) && item instanceof Dewdrop){
 			return true;
 		}
 

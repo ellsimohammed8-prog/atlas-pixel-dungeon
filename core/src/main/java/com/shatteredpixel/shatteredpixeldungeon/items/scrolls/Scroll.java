@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.items.scrolls;
 
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Statistics;
@@ -69,6 +70,10 @@ public abstract class Scroll extends Item {
 	public static final String AC_READ	= "READ";
 	
 	protected static final float TIME_TO_READ	= 1f;
+
+	public static float timeToRead() {
+		return Dungeon.isChallenged(Challenges.UNSTABLE_MAGIC) ? 1.25f : 1f;
+	}
 
 	private static final LinkedHashMap<String, Integer> runes = new LinkedHashMap<String, Integer>() {
 		{
@@ -195,7 +200,7 @@ public abstract class Scroll extends Item {
 
 	public void readAnimation() {
 		Invisibility.dispel();
-		curUser.spend( TIME_TO_READ );
+		curUser.spend( timeToRead() );
 		curUser.busy();
 		((HeroSprite)curUser.sprite).read();
 

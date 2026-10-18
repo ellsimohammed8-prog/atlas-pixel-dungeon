@@ -362,3 +362,33 @@ Base commit: `964507a` (main, v1.3.2)
 - **Compile result**: BUILD SUCCESSFUL, 0 errors.
 
 ---
+
+## Slice B5.2: Deep Run Challenges
+
+- **DESIGN-GATE**: `CHALLENGES-DESIGN.md` committed at `7dd6c2a` (conservative design options selected: soft enrage tremors instead of sudden-death timer, chapter-scaled flat DR, single 1-HP wraith spawn).
+- **Status**: BUILT
+- **What changed**:
+  - Expanded opt-in challenge set from 9 to 14 challenges (bits 9–13 of bitmask, `MAX_VALUE = 16383`, `MAX_CHALS = 14`):
+    - `CRUMBLING_DEPTHS` (bit 512): Spending 250+ turns on a level triggers seismic tremors (`PixelScene.shake(2, 0.5f)`), rockfall sound (`Assets.Sounds.ROCKS`), hero rock dust emitter, and alerts all sleeping mobs on the level via `mob.notice()`.
+    - `BARREN_SOIL` (bit 1024): Arid desert drought; plants drop no seeds when trampled, high grass yields zero dew or seeds, and dew drops are blocked.
+    - `REINFORCED_FOES` (bit 2048): Enemies scavenge ancient armor plates; all enemy monsters gain depth-scaling armor damage reduction (`+1` in early depths up to `+3` in deep halls).
+    - `UNSTABLE_MAGIC` (bit 4096): Leyline interference distorts ambient arcana; reading scrolls and casting wands requires 1.25x action delay.
+    - `RELENTLESS_SHADOWS` (bit 8192): Slaying regular non-boss monsters grants a 25% chance to manifest a frail shadow wraith at the death tile.
+  - Dynamically rendered in `WndChallenges` checkbox list.
+  - Full EN + AR parity on all names and descriptions in `misc.properties` and `misc_ar.properties`.
+- **Files touched**:
+  - `core/src/main/assets/messages/misc/misc.properties`
+  - `core/src/main/assets/messages/misc/misc_ar.properties`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Challenges.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/Char.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Mob.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/MobSpawner.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/scrolls/Scroll.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/wands/Wand.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/levels/features/HighGrass.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/plants/Plant.java`
+  - `V2-BUILD-LOG.md`
+- **Save compatibility**: Full compatibility. Challenge bitmask is stored as an integer, 14 bits fit comfortably within standard 32-bit signed integer serialization. Old saves load seamlessly without modification.
+- **Compile result**: BUILD SUCCESSFUL, 0 errors.
+
+---

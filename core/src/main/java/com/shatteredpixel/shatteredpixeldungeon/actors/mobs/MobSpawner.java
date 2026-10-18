@@ -21,9 +21,16 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.actors.mobs;
 
+import com.shatteredpixel.shatteredpixeldungeon.Assets;
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
+import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
+import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
 import com.shatteredpixel.shatteredpixeldungeon.items.trinkets.RatSkull;
+import com.shatteredpixel.shatteredpixeldungeon.scenes.PixelScene;
+import com.watabou.noosa.audio.Sample;
+import com.watabou.utils.Bundle;
 import com.watabou.utils.Random;
 
 import java.util.ArrayList;
@@ -31,12 +38,47 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 public class MobSpawner extends Actor {
+
+	private int floorTicks = 0;
+
+	private static final String TICKS = "floor_ticks";
+
 	{
 		actPriority = BUFF_PRIO; //as if it were a buff.
 	}
 
 	@Override
+	public void storeInBundle( Bundle bundle ) {
+		super.storeInBundle( bundle );
+		bundle.put( TICKS, floorTicks );
+	}
+
+	@Override
+	public void restoreFromBundle( Bundle bundle ) {
+		super.restoreFromBundle( bundle );
+		floorTicks = bundle.getInt( TICKS );
+	}
+
+	@Override
 	protected boolean act() {
+
+		if (Dungeon.isChallenged(Challenges.CRUMBLING_DEPTHS)) {
+			floorTicks++;
+			if (floorTicks >= 5) {
+				if (Dungeon.hero != null && Dungeon.hero.isAlive()) {
+					PixelScene.shake( 2, 0.5f );
+					Sample.INSTANCE.play(Assets.Sounds.ROCKS);
+					CellEmitter.get(Dungeon.hero.pos).start(Speck.factory(Speck.ROCK), 0.07f, 6);
+				}
+				if (Dungeon.level != null && Dungeon.level.mobs != null) {
+					for (Mob mob : Dungeon.level.mobs.toArray(new Mob[0])) {
+						if (mob != null && mob.state == mob.SLEEPING) {
+							mob.notice();
+						}
+					}
+				}
+			}
+		}
 
 		if (Dungeon.level.mobCount() < Dungeon.level.mobLimit()) {
 

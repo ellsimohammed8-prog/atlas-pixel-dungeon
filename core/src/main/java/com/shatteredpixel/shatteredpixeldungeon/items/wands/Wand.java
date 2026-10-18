@@ -23,6 +23,7 @@ package com.shatteredpixel.shatteredpixeldungeon.items.wands;
 
 import com.shatteredpixel.shatteredpixeldungeon.Assets;
 import com.shatteredpixel.shatteredpixeldungeon.Badges;
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.Pacts;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
@@ -554,7 +555,11 @@ public abstract class Wand extends Item {
 		updateQuickslot();
 
 		//Atlas pact: Iron Patience slows the hero's wand zaps too, not just melee
-		curUser.spendAndNext( TIME_TO_ZAP * (Dungeon.isPacted( Pacts.IRON_PATIENCE ) ? 1.15f : 1f) );
+		float zapTime = TIME_TO_ZAP * (Dungeon.isPacted( Pacts.IRON_PATIENCE ) ? 1.15f : 1f);
+		if (Dungeon.isChallenged(Challenges.UNSTABLE_MAGIC)){
+			zapTime *= 1.25f;
+		}
+		curUser.spendAndNext( zapTime );
 	}
 	
 	@Override

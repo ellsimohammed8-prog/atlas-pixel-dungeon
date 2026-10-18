@@ -1100,6 +1100,19 @@ public abstract class Mob extends Char {
 				}
 			}
 		}
+
+		if (!(this instanceof Wraith)
+				&& !properties.contains(Property.BOSS)
+				&& !properties.contains(Property.MINIBOSS)
+				&& alignment == Alignment.ENEMY
+				&& Dungeon.isChallenged(Challenges.RELENTLESS_SHADOWS)
+				&& Random.Float() < 0.25f){
+			Wraith w = Wraith.spawnAt(pos, Wraith.class);
+			if (w != null && Dungeon.level != null && Dungeon.level.heroFOV[pos]) {
+				CellEmitter.get(pos).burst(ShadowParticle.CURSE, 6);
+				Sample.INSTANCE.play(Assets.Sounds.CURSED);
+			}
+		}
 	}
 
 	public float lootChance(){

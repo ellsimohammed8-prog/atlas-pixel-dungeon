@@ -21,6 +21,7 @@
 
 package com.shatteredpixel.shatteredpixeldungeon.levels.features;
 
+import com.shatteredpixel.shatteredpixeldungeon.Challenges;
 import com.shatteredpixel.shatteredpixeldungeon.Dungeon;
 import com.shatteredpixel.shatteredpixeldungeon.ShatteredPixelDungeon;
 import com.shatteredpixel.shatteredpixeldungeon.actors.Actor;
@@ -129,7 +130,7 @@ public class HighGrass {
 				naturalismLevel = -1;
 			}
 			
-			if (naturalismLevel >= 0) {
+			if (naturalismLevel >= 0 && !Dungeon.isChallenged(Challenges.BARREN_SOIL)) {
 				// Seed, scales from 1/25 to 1/9
 				float lootChance = 1/(25f - naturalismLevel*4f);
 

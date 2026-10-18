@@ -294,3 +294,21 @@ Base commit: `964507a` (main, v1.3.2)
 - **Compile result**: BUILD SUCCESSFUL, 0 errors.
 
 ---
+
+## Slice B4.5: Accessibility and Trap-Trinket Tunes
+
+- **Status**: BUILT
+- **What changed**:
+  - Widened brightness and contrast accessibility range: expanded brightness settings in `SPDSettings.java`, `WndSettings.java`, and `FogOfWar.java` from 3 steps (`[-1, 1]`) to 5 steps (`[-2, 2]`), providing extra-dark high-contrast and extra-bright visibility modes for low-visibility environments and diverse displays.
+  - Softened Salt Cube health regen penalty in `SaltCube.java`: adjusted health regen multiplier across levels 0 to 3 from `0.84/0.73/0.66/0.60` (-16% to -40%) to `0.92/0.85/0.80/0.75` (-8% to -25%), preserving its hunger-slowing identity without crippling health recovery on challenge runs.
+  - Softened Chaotic Censer gas hazards in `ChaoticCenser.java`: increased minimum spawn distance from hero (3-7 tiles instead of 2-6 tiles) to prevent unavoidable engulfment; reduced common gas volume from 300 to 180 and corrosive gas from 200 to 130; rebalanced gas category chances (increasing utility/beneficial gases like storm cloud, smoke screen, and regrowth to 25%-35% and reducing harmful common gases).
+- **Files touched**:
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/SPDSettings.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/trinkets/ChaoticCenser.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/trinkets/SaltCube.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/tiles/FogOfWar.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndSettings.java`
+- **Save compatibility**: Full compatibility. Brightness setting is clamped safely with `Math.max/min`, existing saves with older values adapt cleanly, and trinket tuning is purely algorithmic.
+- **Compile result**: BUILD SUCCESSFUL, 0 errors.
+
+---

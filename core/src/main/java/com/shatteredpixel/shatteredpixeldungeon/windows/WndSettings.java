@@ -274,7 +274,7 @@ public class WndSettings extends WndTabbed {
 			add(sep2);
 
 			optBrightness = new OptionSlider(Messages.get(this, "brightness"),
-					Messages.get(this, "dark"), Messages.get(this, "bright"), -1, 1) {
+					Messages.get(this, "dark"), Messages.get(this, "bright"), -2, 2) {
 				@Override
 				protected void onChange() {
 					SPDSettings.brightness(getSelectedValue());

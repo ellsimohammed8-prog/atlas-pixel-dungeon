@@ -37,21 +37,29 @@ public class FogOfWar extends Image {
 	//first index is visibility type, second is brightness level
 	private static final int FOG_COLORS[][] = new int[][]{{
 			//visible
+			0x00000000, //-2 brightness
 			0x00000000, //-1 brightness
 			0x00000000, //0  brightness
 			0x00000000, //1  brightness
+			0x00000000  //2  brightness
 			}, {
 			//visited
-			0xCC000000,
-			0x99000000,
-			0x55000000
+			0xEE000000, //-2 brightness (extra dark)
+			0xCC000000, //-1 brightness
+			0x99000000, //0  brightness
+			0x55000000, //1  brightness
+			0x22000000  //2  brightness (extra bright)
 			}, {
 			//mapped
-			0xCC112244,
-			0x99193366,
-			0x55224488
+			0xEE0D1933, //-2 brightness
+			0xCC112244, //-1 brightness
+			0x99193366, //0  brightness
+			0x55224488, //1  brightness
+			0x222B55AA  //2  brightness
 			}, {
 			//invisible
+			0xFF000000,
+			0xFF000000,
 			0xFF000000,
 			0xFF000000,
 			0xFF000000
@@ -173,7 +181,7 @@ public class FogOfWar extends Image {
 		this.visible = visible;
 		this.visited = visited;
 		this.mapped = mapped;
-		this.brightness = SPDSettings.brightness() + 1;
+		this.brightness = Math.max(0, Math.min(FOG_COLORS[0].length - 1, SPDSettings.brightness() + 2));
 
 		moveToUpdating();
 		

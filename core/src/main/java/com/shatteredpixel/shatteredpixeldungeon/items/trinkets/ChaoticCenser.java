@@ -175,12 +175,12 @@ public class ChaoticCenser extends Trinket {
 		}
 
 		HashMap<Integer, Float> candidateCells = new HashMap<>();
-		PathFinder.buildDistanceMap(Dungeon.hero.pos, BArray.not(Dungeon.level.solid, null), 6);
+		PathFinder.buildDistanceMap(Dungeon.hero.pos, BArray.not(Dungeon.level.solid, null), 7);
 
-		//spawn gas in a random visible cell 2-6 tiles away
+		//spawn gas in a random visible cell 3-7 tiles away (giving hero safer buffer)
 		for (int i = 0; i < Dungeon.level.length(); i++){
 			if (Dungeon.level.heroFOV[i] && PathFinder.distance[i] < Integer.MAX_VALUE) {
-				if (PathFinder.distance[i] >= 2 && PathFinder.distance[i] <= 6) {
+				if (PathFinder.distance[i] >= 3 && PathFinder.distance[i] <= 7) {
 					candidateCells.put(i, 0f);
 				}
 			}
@@ -299,32 +299,32 @@ public class ChaoticCenser extends Trinket {
 
 	private static final float[][] GAS_CAT_CHANCES = new float[4][3];
 	static {
-		GAS_CAT_CHANCES[0] = new float[]{80, 10, 10};
-		GAS_CAT_CHANCES[1] = new float[]{67, 13, 20};
-		GAS_CAT_CHANCES[2] = new float[]{54, 16, 30};
-		GAS_CAT_CHANCES[3] = new float[]{40, 20, 40};
+		GAS_CAT_CHANCES[0] = new float[]{60, 25, 15};
+		GAS_CAT_CHANCES[1] = new float[]{50, 30, 20};
+		GAS_CAT_CHANCES[2] = new float[]{40, 32, 28};
+		GAS_CAT_CHANCES[3] = new float[]{30, 35, 35};
 	}
 
 	private static final HashMap<Class<? extends Blob>, Float> COMMON_GASSES = new HashMap<>();
 	static {
-		COMMON_GASSES.put(ToxicGas.class, 300f);
-		COMMON_GASSES.put(ConfusionGas.class, 300f);
-		COMMON_GASSES.put(StenchGas.class, 200f);
+		COMMON_GASSES.put(ToxicGas.class, 180f);
+		COMMON_GASSES.put(ConfusionGas.class, 180f);
+		COMMON_GASSES.put(StenchGas.class, 130f);
 	}
 
 	//all non-harmful, don't scale as well as rares
 	private static final HashMap<Class<? extends Blob>, Float> UNCOMMON_GASSES = new HashMap<>();
 	static {
-		UNCOMMON_GASSES.put(StormCloud.class, 300f);
-		UNCOMMON_GASSES.put(SmokeScreen.class, 300f);
-		UNCOMMON_GASSES.put(Regrowth.class, 200f);
+		UNCOMMON_GASSES.put(StormCloud.class, 220f);
+		UNCOMMON_GASSES.put(SmokeScreen.class, 220f);
+		UNCOMMON_GASSES.put(Regrowth.class, 180f);
 	}
 
 	private static final HashMap<Class<? extends Blob>, Float> RARE_GASSES = new HashMap<>();
 	static {
-		RARE_GASSES.put(Inferno.class, 300f);
-		RARE_GASSES.put(Blizzard.class, 300f);
-		RARE_GASSES.put(CorrosiveGas.class, 200f);
+		RARE_GASSES.put(Inferno.class, 180f);
+		RARE_GASSES.put(Blizzard.class, 180f);
+		RARE_GASSES.put(CorrosiveGas.class, 130f);
 	}
 
 	private static final HashMap<Class<? extends Blob>, Integer> MISSILE_VFX = new HashMap<>();

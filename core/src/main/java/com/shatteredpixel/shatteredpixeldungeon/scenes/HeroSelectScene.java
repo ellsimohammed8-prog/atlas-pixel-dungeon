@@ -699,48 +699,18 @@ public class HeroSelectScene extends PixelScene {
 			StyledButton seedButton = new StyledButton(Chrome.Type.BLANK, Messages.get(HeroSelectScene.class, "custom_seed"), 6){
 				@Override
 				protected void onClick() {
-					if (!Badges.isUnlocked(Badges.Badge.VICTORY) && !DeviceCompat.isDebug()){
-						ShatteredPixelDungeon.scene().addToFront( new WndTitledMessage(
-								Icons.get(Icons.SEED),
-								Messages.get(HeroSelectScene.class, "custom_seed"),
-								Messages.get(HeroSelectScene.class, "custom_seed_nowin"))
-						);
-						return;
-					}
-
-					String existingSeedtext = SPDSettings.customSeed();
-					ShatteredPixelDungeon.scene().addToFront( new WndTextInput(Messages.get(HeroSelectScene.class, "custom_seed_title"),
-							Messages.get(HeroSelectScene.class, "custom_seed_desc"),
-							existingSeedtext,
-							20,
-							false,
-							Messages.get(HeroSelectScene.class, "custom_seed_set"),
-							Messages.get(HeroSelectScene.class, "custom_seed_clear")){
+					final StyledButton btn = this;
+					ShatteredPixelDungeon.scene().addToFront( new com.shatteredpixel.shatteredpixeldungeon.windows.WndSeedSelect(new com.shatteredpixel.shatteredpixeldungeon.windows.WndSeedSelect.Listener() {
 						@Override
-						public void onSelect(boolean positive, String text) {
-							text = DungeonSeed.formatText(text);
-							long seed = DungeonSeed.convertFromText(text);
-
-							if (positive && seed != -1){
-
-								for (GamesInProgress.Info info : GamesInProgress.checkAll()){
-									if (info.customSeed.isEmpty() && info.seed == seed){
-										SPDSettings.customSeed("");
-										icon.resetColor();
-										ShatteredPixelDungeon.scene().addToFront(new WndMessage(Messages.get(HeroSelectScene.class, "custom_seed_duplicate")));
-										return;
-									}
-								}
-
-								SPDSettings.customSeed(text);
-								icon.hardlight(1f, 1.5f, 0.67f);
+						public void onSeedChanged() {
+							if (!SPDSettings.customSeed().isEmpty()){
+								btn.icon().hardlight(1f, 1.5f, 0.67f);
 							} else {
-								SPDSettings.customSeed("");
-								icon.resetColor();
+								btn.icon().resetColor();
 							}
 							updateOptionsColor();
 						}
-					});
+					}));
 				}
 			};
 			seedButton.leftJustify = true;

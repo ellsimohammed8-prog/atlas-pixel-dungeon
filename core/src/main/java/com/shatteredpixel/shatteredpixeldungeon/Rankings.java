@@ -86,6 +86,11 @@ public enum Rankings {
 			return;
 		}
 
+		//Seeded runs stay unranked until a normal win exists
+		if (!Dungeon.customSeedText.isEmpty() && !Badges.isUnlocked(Badges.Badge.VICTORY)){
+			return;
+		}
+
 		load();
 		
 		Record rec = new Record();

@@ -81,7 +81,7 @@ public class Dewdrop extends Item {
 
 	public static boolean consumeDew(int quantity, Hero hero, boolean force){
 		//20 drops for a full heal
-		int effect = Math.round( hero.HT * 0.05f * quantity );
+		int effect = Math.round( hero.HT * 0.05f * quantity ) + com.shatteredpixel.shatteredpixeldungeon.utils.AtlasSeeds.dewHealingBonus() * quantity;
 
 		int heal = Math.min( hero.HT - hero.HP, effect );
 

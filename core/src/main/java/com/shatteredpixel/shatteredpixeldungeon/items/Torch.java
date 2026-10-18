@@ -69,7 +69,7 @@ public class Torch extends Item {
 			detach( hero.belongings.backpack );
 			Catalog.countUse(getClass());
 			
-			Buff.affect(hero, Light.class, Light.DURATION);
+			Buff.affect(hero, Light.class, Light.DURATION * com.shatteredpixel.shatteredpixeldungeon.utils.AtlasSeeds.torchDurationMultiplier());
 			Sample.INSTANCE.play(Assets.Sounds.BURNING);
 			
 			Emitter emitter = hero.sprite.centerEmitter();

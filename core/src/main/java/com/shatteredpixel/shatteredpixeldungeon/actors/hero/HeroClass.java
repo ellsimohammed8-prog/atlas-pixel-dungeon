@@ -151,6 +151,8 @@ public enum HeroClass {
 			}
 		}
 
+		com.shatteredpixel.shatteredpixeldungeon.utils.AtlasSeeds.applyStartBonus( hero );
+
 	}
 
 	public Badges.Badge masteryBadge() {

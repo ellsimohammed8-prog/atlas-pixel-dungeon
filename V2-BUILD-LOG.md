@@ -157,3 +157,30 @@ Base commit: `964507a` (main, v1.3.2)
 - **Compile result**: BUILD SUCCESSFUL, 0 errors.
 
 ---
+
+## Slice B3.2: Ungated Custom Seeds and Atlas Seed Phrases
+
+- **Status**: BUILT
+- **What changed**: Ungated custom dungeon seed selection on hero select, removing the prior victory requirement so all players can practice or explore specific seeds immediately. To preserve leaderboard integrity, seeded runs remain unranked until a normal victory badge is achieved. Created `WndSeedSelect` allowing players to enter arbitrary custom seed strings or select from 5 curated "Atlas Seed Phrases" with themed gameplay effects:
+  - `CROWN OF ATLAS`: +150 starting gold.
+  - `SUNKEN CISTERNS`: +2 health restored per consumed dewdrop.
+  - `BURIED CITY`: +35% bonus gold picked up from all gold drops.
+  - `DAWN OF ATLAS`: Starting backpack includes a bonus Torch and Sungrass seed.
+  - `SEALED DARKNESS`: Torches burn 50% longer (150 turns).
+- **Files touched**:
+  - `core/src/main/assets/messages/misc/misc.properties`
+  - `core/src/main/assets/messages/misc/misc_ar.properties`
+  - `core/src/main/assets/messages/windows/windows.properties`
+  - `core/src/main/assets/messages/windows/windows_ar.properties`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/Rankings.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/hero/HeroClass.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Dewdrop.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Gold.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/Torch.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/scenes/HeroSelectScene.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/utils/AtlasSeeds.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/windows/WndSeedSelect.java`
+- **Save compatibility**: Full compatibility. Seed string is already part of standard Dungeon bundles (`Dungeon.customSeedText`). Seeds and modifiers trigger transiently or check the immutable active seed text; no changes to save bundle formats.
+- **Compile result**: BUILD SUCCESSFUL, 0 errors.
+
+---

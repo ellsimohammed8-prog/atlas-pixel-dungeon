@@ -66,6 +66,9 @@ public class Gold extends Item {
 		//Atlas pact: Buried Hoard increases all gold found by 50%
 		int gained = quantity;
 		if (Dungeon.isPacted( Pacts.BURIED_HOARD )) gained += quantity / 2;
+		if (com.shatteredpixel.shatteredpixeldungeon.utils.AtlasSeeds.goldMultiplier() > 1f) {
+			gained = Math.round(gained * com.shatteredpixel.shatteredpixeldungeon.utils.AtlasSeeds.goldMultiplier());
+		}
 		Dungeon.gold += gained;
 		Statistics.goldCollected += gained;
 		Badges.validateGoldCollected();

@@ -34,6 +34,7 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.blobs.Fire;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Blindness;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Buff;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Burning;
+import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Chained;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Doom;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.Dread;
 import com.shatteredpixel.shatteredpixeldungeon.actors.buffs.LockedFloor;
@@ -43,6 +44,8 @@ import com.shatteredpixel.shatteredpixeldungeon.actors.hero.Hero;
 import com.shatteredpixel.shatteredpixeldungeon.actors.hero.HeroSubClass;
 import com.shatteredpixel.shatteredpixeldungeon.effects.BlobEmitter;
 import com.shatteredpixel.shatteredpixeldungeon.effects.CellEmitter;
+import com.shatteredpixel.shatteredpixeldungeon.effects.Chains;
+import com.shatteredpixel.shatteredpixeldungeon.effects.Effects;
 import com.shatteredpixel.shatteredpixeldungeon.effects.FloatingText;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Lightning;
 import com.shatteredpixel.shatteredpixeldungeon.effects.Speck;
@@ -69,6 +72,8 @@ import com.shatteredpixel.shatteredpixeldungeon.sprites.TenguSprite;
 import com.shatteredpixel.shatteredpixeldungeon.tiles.DungeonTilemap;
 import com.shatteredpixel.shatteredpixeldungeon.ui.BossHealthBar;
 import com.shatteredpixel.shatteredpixeldungeon.utils.GLog;
+import com.watabou.noosa.Group;
+import com.watabou.noosa.Image;
 import com.watabou.noosa.audio.Sample;
 import com.watabou.noosa.particles.Emitter;
 import com.watabou.utils.BArray;
@@ -186,6 +191,7 @@ public class Tengu extends Mob {
 		//if tengu has lost a certain amount of hp, jump
 		} else if (newBracket != curbracket) {
 			//let full attack action complete first
+			pendingJump = true;
 			Actor.add(new Actor() {
 
 				{
@@ -195,6 +201,7 @@ public class Tengu extends Mob {
 				@Override
 				protected boolean act() {
 					Actor.remove(this);
+					pendingJump = false;
 					jump();
 					return true;
 				}
@@ -357,6 +364,9 @@ public class Tengu extends Mob {
 	private static final String ABILITIES_USED   = "abilities_used";
 	private static final String ARENA_JUMPS      = "arena_jumps";
 	private static final String ABILITY_COOLDOWN = "ability_cooldown";
+	private static final String CHAIN_COOLDOWN   = "chain_cooldown";
+	private static final String CHAIN_USED       = "chain_used";
+	private static final String CHAIN_PENDING_JUMP = "chain_pending_jump";
 	
 	@Override
 	public void storeInBundle(Bundle bundle) {
@@ -365,6 +375,9 @@ public class Tengu extends Mob {
 		bundle.put( ABILITIES_USED, abilitiesUsed );
 		bundle.put( ARENA_JUMPS, arenaJumps );
 		bundle.put( ABILITY_COOLDOWN, abilityCooldown );
+		bundle.put( CHAIN_COOLDOWN, chainCooldown );
+		bundle.put( CHAIN_USED, chainUsed );
+		bundle.put( CHAIN_PENDING_JUMP, pendingJump );
 	}
 	
 	@Override
@@ -376,6 +389,9 @@ public class Tengu extends Mob {
 		abilitiesUsed = bundle.getInt( ABILITIES_USED );
 		arenaJumps = bundle.getInt( ARENA_JUMPS );
 		abilityCooldown = bundle.getInt( ABILITY_COOLDOWN );
+		chainCooldown = bundle.getInt( CHAIN_COOLDOWN );
+		chainUsed = bundle.getBoolean( CHAIN_USED );
+		pendingJump = bundle.getBoolean( CHAIN_PENDING_JUMP );
 		
 		BossHealthBar.assignBoss(this);
 		if (HP <= HT/2) BossHealthBar.bleed(true);
@@ -439,15 +455,32 @@ public class Tengu extends Mob {
 	private int abilitiesUsed = 0;
 	private int arenaJumps = 0;
 	
+	//the Chain Snare's own throttle, counted in Warden actions, plus the teaching flag
+	private int chainCooldown = 0;
+	private boolean chainUsed = false;
+	//true while a bracket warp is scheduled but not yet done, so no chain starts on that action
+	private boolean pendingJump = false;
+	
 	//starts at 2, so one turn and then first ability
 	private int abilityCooldown = 2;
 	
 	private static final int BOMB_ABILITY    = 0;
 	private static final int FIRE_ABILITY    = 1;
 	private static final int SHOCKER_ABILITY = 2;
+	private static final int CHAIN_ABILITY   = 3;
+	
+	private static final int CHAIN_RANGE_MIN = 2;
+	private static final int CHAIN_RANGE_MAX = 5;
 	
 	//expects to be called once per turn;
 	public boolean canUseAbility(){
+		
+		//the chain's own cooldown is counted in Warden actions, so it ticks here
+		if (chainCooldown > 0) chainCooldown--;
+		
+		//the Chain Snare is the single deliberate exception to the phase-1 ability
+		//lock-out, and whenever it is eligible it is taken over the roll below
+		if (chainUsable()) return true;
 		
 		if (HP > HT/2) return false;
 		
@@ -492,6 +525,27 @@ public class Tengu extends Mob {
 	public boolean useAbility(){
 		boolean abilityUsed = false;
 		int abilityToUse = -1;
+		
+		//The Chain Snare is a fourth ability, taken deterministically whenever it is
+		//eligible instead of as part of the 0/1/2 roll below. Its dedicated cooldown and
+		//the 'never twice in a row' rule (both in chainUsable) are its throttle. The
+		//phase-1 teaching use is the one exception to the phase-1 ability lock-out (see
+		//canUseAbility) and deliberately consumes no ability use, so the arena's opening
+		//bomb/shocker sequence is left exactly as it was.
+		if (chainUsable()){
+			boolean phase1 = Dungeon.level instanceof PrisonBossLevel
+					&& ((PrisonBossLevel)Dungeon.level).state() == PrisonBossLevel.State.FIGHT_START;
+			if (throwChain(Tengu.this, Dungeon.hero)){
+				boolean teaching = !chainUsed;
+				chainUsed = true;
+				chainCooldown = chainCooldownMax();
+				lastAbility = CHAIN_ABILITY;
+				if (!phase1) abilitiesUsed++;
+				telegraphChain(teaching);
+				spendAbilityTime();
+				return false;
+			}
+		}
 		
 		while (!abilityUsed){
 			
@@ -539,6 +593,15 @@ public class Tengu extends Mob {
 		}
 		
 		//spend 1 less turn if seriously behind on ability uses
+		spendAbilityTime();
+		
+		lastAbility = abilityToUse;
+		abilitiesUsed++;
+		return lastAbility == FIRE_ABILITY;
+	}
+	
+	//the shared ability pacing cost; the chain snare uses the same cost as a rolled ability
+	private void spendAbilityTime(){
 		if (Dungeon.isChallenged(Challenges.STRONGER_BOSSES)){
 			if (targetAbilityUses() - abilitiesUsed >= 4) {
 				//spend no time
@@ -552,10 +615,69 @@ public class Tengu extends Mob {
 				spend(2 * TICK);
 			}
 		}
+	}
+	
+	private int chainCooldownMax(){
+		return Dungeon.isChallenged(Challenges.STRONGER_BOSSES) ? 3 : 4;
+	}
+	
+	//every condition the Chain Snare needs, re-read live. Side-effect free.
+	private boolean chainUsable(){
 		
-		lastAbility = abilityToUse;
-		abilitiesUsed++;
-		return lastAbility == FIRE_ABILITY;
+		if (!(Dungeon.level instanceof PrisonBossLevel)) return false;
+		PrisonBossLevel.State state = ((PrisonBossLevel)Dungeon.level).state();
+		
+		boolean teaching = !chainUsed;
+		
+		if (state == PrisonBossLevel.State.FIGHT_START){
+			//the single teaching use is the only chain allowed in phase 1
+			if (!teaching) return false;
+		} else if (state == PrisonBossLevel.State.FIGHT_ARENA){
+			//never preempt the fight's scripted opening bomb and shocker
+			if (abilitiesUsed < 2) return false;
+		} else {
+			return false;
+		}
+		
+		//never on the same action as a warp, and never on the notice beat
+		if (pendingJump) return false;
+		if (!BossHealthBar.isAssigned()) return false;
+		
+		//the chain's own throttle: a set number of Warden actions between snares
+		if (chainCooldown > 0) return false;
+		//never twice in a row
+		if (lastAbility == CHAIN_ABILITY) return false;
+		
+		//the HP gate: 3/4 for the single teaching use, half for regular uses
+		if (teaching){
+			if (HP > 3 * HT / 4) return false;
+		} else {
+			if (HP > HT / 2) return false;
+			//arena uses share the fight's ability budget with the rolled abilities
+			if (abilitiesUsed >= targetAbilityUses()) return false;
+		}
+		
+		//the hero must be a valid, reachable, not-already-chained target
+		Char hero = Dungeon.hero;
+		if (hero == null || !hero.isAlive()) return false;
+		if (hero.buff(Chained.class) != null) return false;
+		if (hero.properties().contains(Char.Property.IMMOVABLE)) return false;
+		
+		//2 to 5 tiles inclusive, with the same projectile line of sight the boss attacks on
+		int dist = Dungeon.level.distance(pos, hero.pos);
+		if (dist < CHAIN_RANGE_MIN || dist > CHAIN_RANGE_MAX) return false;
+		if (new Ballistica(pos, hero.pos, Ballistica.PROJECTILE).collisionPos != hero.pos) return false;
+		
+		return true;
+	}
+	
+	private void telegraphChain(boolean teaching){
+		yell(Messages.get(ChainAbility.class, "yell_wind", Dungeon.hero.name()));
+		GLog.w(Messages.get(ChainAbility.class, "telegraph"));
+		if (teaching){
+			GLog.w(Messages.get(ChainAbility.class, "telegraph_teaching"));
+			GLog.i(Messages.get(ChainAbility.class, "teaching_hint"));
+		}
 	}
 	
 	//******************
@@ -1138,5 +1260,186 @@ public class Tengu extends Mob {
 			}
 		}
 		
+	}
+	
+	//*******************
+	//***Chain Ability***
+	//*******************
+	
+	//returns true if the chain snare was thrown
+	public static boolean throwChain(final Char thrower, final Char target){
+		
+		if (thrower == null || target == null) return false;
+		if (thrower.sprite == null || target.sprite == null) return false;
+		
+		if (target.buff(Chained.class) != null) return false;
+		if (target.properties().contains(Char.Property.IMMOVABLE)) return false;
+		
+		if (new Ballistica(thrower.pos, target.pos, Ballistica.PROJECTILE).collisionPos != target.pos) return false;
+		int dist = Dungeon.level.distance(thrower.pos, target.pos);
+		if (dist < CHAIN_RANGE_MIN || dist > CHAIN_RANGE_MAX) return false;
+		
+		//the wind-up reads as him whipping the chain out; no new art, reuse the zap frames
+		thrower.sprite.zap(target.pos);
+		
+		ChainAbility windUp = Buff.append(thrower, ChainAbility.class);
+		windUp.start(target.pos);
+		windUp.showVisual(target);
+		
+		CellEmitter.get(target.pos).burst(Speck.factory(Speck.RATTLE), 4);
+		Sample.INSTANCE.play(Assets.Sounds.CHAINS);
+		
+		PointF p = DungeonTilemap.raisedTileCenterToWorld(target.pos);
+		FloatingText.show(p.x, p.y, target.pos, "!", CharSprite.WARNING);
+		
+		return true;
+	}
+	
+	//the one full turn of warning, held on the Warden's own buff list (see BombAbility).
+	//The telegraph is emitted when the buff is created; the first act() resolves it.
+	public static class ChainAbility extends Buff {
+		
+		//the cell the hero stood on when the chain was thrown, kept for reference only:
+		//resolution always re-reads the hero's live position, never this
+		public int targetPos = -1;
+		
+		//visual only, never serialised; the chain that hangs for the warning turn
+		private Group chainVisual;
+		
+		//starts the wind-up, delaying the first act() by one full turn
+		public void start(int victimPos){
+			targetPos = victimPos;
+			spend(TICK);
+		}
+		
+		public void showVisual(Char victim){
+			if (chainVisual != null) return;
+			if (target == null || target.sprite == null || target.sprite.parent == null) return;
+			if (victim == null || victim.sprite == null) return;
+			chainVisual = new HangingChain(target.sprite.center(), victim.sprite.destinationCenter());
+			target.sprite.parent.add(chainVisual);
+		}
+		
+		private void clearVisual(){
+			if (chainVisual != null){
+				chainVisual.killAndErase();
+				chainVisual = null;
+			}
+		}
+		
+		@Override
+		public boolean act() {
+			
+			//never resolve during a level rebuild or after the fight has moved on
+			if (!(Dungeon.level instanceof PrisonBossLevel)
+					|| target == null
+					|| !Dungeon.level.mobs.contains(target)){
+				detach();
+				return true;
+			}
+			
+			PrisonBossLevel.State state = ((PrisonBossLevel)Dungeon.level).state();
+			if (state != PrisonBossLevel.State.FIGHT_START && state != PrisonBossLevel.State.FIGHT_ARENA){
+				detach();
+				return true;
+			}
+			
+			Char hero = Dungeon.hero;
+			
+			//re-verify everything against live state: state, distance, line of sight, hero
+			boolean connected = hero != null && hero.isAlive()
+					&& hero.buff(Chained.class) == null
+					&& !hero.properties().contains(Char.Property.IMMOVABLE)
+					&& Dungeon.level.distance(target.pos, hero.pos) >= CHAIN_RANGE_MIN
+					&& Dungeon.level.distance(target.pos, hero.pos) <= CHAIN_RANGE_MAX
+					&& new Ballistica(target.pos, hero.pos, Ballistica.PROJECTILE).collisionPos == hero.pos;
+			
+			if (!connected){
+				//the chain whiffs: it snaps visibly and the hero is left entirely alone
+				if (hero != null && hero.sprite != null && target.sprite != null && target.sprite.parent != null){
+					target.sprite.parent.add(new Chains(target.sprite.center(),
+							hero.sprite.destinationCenter(),
+							Effects.Type.CHAIN,
+							null));
+				}
+				Sample.INSTANCE.play(Assets.Sounds.CHAINS);
+				GLog.i(Messages.get(ChainAbility.class, "snapped"));
+				detach();
+				return true;
+			}
+			
+			//the chain connects: one turn of lost movement, and nothing else at all
+			Sample.INSTANCE.play(Assets.Sounds.CHAINS);
+			Buff.affect(hero, Chained.class, 1f);
+			if (hero.buff(Chained.class) == null){
+				//the hero cannot be anchored (they are off the ground)
+				GLog.w(Messages.get(ChainAbility.class, "no_anchor"));
+			}
+			detach();
+			return true;
+		}
+		
+		@Override
+		public void detach() {
+			clearVisual();
+			super.detach();
+		}
+		
+		private static final String TARGET_POS = "target_pos";
+		
+		@Override
+		public void storeInBundle(Bundle bundle) {
+			super.storeInBundle(bundle);
+			bundle.put( TARGET_POS, targetPos );
+		}
+		
+		@Override
+		public void restoreFromBundle(Bundle bundle) {
+			super.restoreFromBundle(bundle);
+			targetPos = bundle.getInt( TARGET_POS );
+		}
+	}
+	
+	//the chain that hangs for the whole warning turn. Built from the existing chain
+	//texture, link for link the way effects/Chains.java builds its own (that file and
+	//Effects.java are not touched), but with a long, dim life instead of a fast snap.
+	private static class HangingChain extends Group {
+		
+		private final Image[] links;
+		private final float fromX, fromY, toX, toY;
+		
+		HangingChain(PointF from, PointF to){
+			super();
+			
+			fromX = from.x;
+			fromY = from.y;
+			toX = to.x;
+			toY = to.y;
+			
+			float dx = toX - fromX;
+			float dy = toY - fromY;
+			float rotation = (float)(Math.atan2(dy, dx) * (180 / Math.PI)) + 90f;
+			
+			int numLinks = Math.round((float)Math.hypot(dx, dy) / 6f) + 1;
+			links = new Image[numLinks];
+			for (int i = 0; i < numLinks; i++){
+				links[i] = new Image(Effects.get(Effects.Type.CHAIN));
+				links[i].angle = rotation;
+				links[i].origin.set(links[i].width()/2, links[i].height());
+				links[i].alpha(0.6f);
+				add(links[i]);
+			}
+			
+			layout();
+		}
+		
+		private void layout(){
+			float dx = toX - fromX;
+			float dy = toY - fromY;
+			for (int i = 0; i < links.length; i++){
+				float t = i / (float)links.length;
+				links[i].center(new PointF(fromX + dx * t, fromY + dy * t));
+			}
+		}
 	}
 }

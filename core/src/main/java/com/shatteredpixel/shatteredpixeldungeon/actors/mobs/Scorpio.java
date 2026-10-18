@@ -43,7 +43,7 @@ public class Scorpio extends Mob {
 		
 		HP = HT = 110;
 		defenseSkill = 24;
-		viewDistance = Light.DISTANCE;
+		viewDistance = 7;
 		
 		EXP = 14;
 		maxLvl = 27;
@@ -56,7 +56,7 @@ public class Scorpio extends Mob {
 	
 	@Override
 	public int damageRoll() {
-		return Random.NormalIntRange( 30, 40 );
+		return Random.NormalIntRange( 26, 36 );
 	}
 	
 	@Override
@@ -79,7 +79,7 @@ public class Scorpio extends Mob {
 	public int attackProc( Char enemy, int damage ) {
 		damage = super.attackProc( enemy, damage );
 		if (Random.Int( 2 ) == 0) {
-			Buff.prolong( enemy, Cripple.class, Cripple.DURATION );
+			Buff.prolong( enemy, Cripple.class, 3f );
 		}
 		
 		return damage;

@@ -312,3 +312,21 @@ Base commit: `964507a` (main, v1.3.2)
 - **Compile result**: BUILD SUCCESSFUL, 0 errors.
 
 ---
+
+## Slice B4.6: Enemy Counterplay and Artifact Usability
+
+- **Status**: BUILT
+- **What changed**:
+  - Improved Alchemist's Toolkit usability: allowed brewing and energizing directly from inventory (`actions()` and `execute()` in `AlchemistsToolkit.java`) without needing to equip the artifact into an accessory slot and wait for warm-up.
+  - Cave Spinner counterplay in `Spinner.java`: reduced attack poison duration from 7-8 turns to 5-6 turns; reduced web volume from 20 to 12; increased web shooting cooldown from 10 to 12 turns.
+  - Sewer Crab counterplay in `Crab.java`: adjusted base movement speed from 2.0x to 1.75x; adjusted armor roll from 0..4 to 0..3 to prevent complete damage deflection against tier-1 starter weapons in early sewer floors.
+  - Scorpio counterplay in `Scorpio.java`: reduced cripple duration from 5.0 turns to 3.0 turns on attack; lowered view distance from 8 to 7 tiles; adjusted damage roll from 30..40 to 26..36 to prevent unpreventable off-screen kiting wipes.
+- **Files touched**:
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Crab.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Scorpio.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/mobs/Spinner.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/artifacts/AlchemistsToolkit.java`
+- **Save compatibility**: Full compatibility. All monster adjustments and artifact execution changes operate purely on standard in-memory actor stats and action handlers.
+- **Compile result**: BUILD SUCCESSFUL, 0 errors.
+
+---

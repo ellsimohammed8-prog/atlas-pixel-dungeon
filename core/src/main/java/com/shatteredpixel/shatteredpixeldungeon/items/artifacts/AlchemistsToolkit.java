@@ -62,7 +62,7 @@ public class AlchemistsToolkit extends Artifact {
 	@Override
 	public ArrayList<String> actions( Hero hero ) {
 		ArrayList<String> actions = super.actions( hero );
-		if (isEquipped( hero ) && !cursed && hero.buff(MagicImmune.class) == null) {
+		if (!cursed && hero.buff(MagicImmune.class) == null) {
 			actions.add(AC_BREW);
 			if (level() < levelCap) {
 				actions.add(AC_ENERGIZE);
@@ -79,17 +79,15 @@ public class AlchemistsToolkit extends Artifact {
 		if (hero.buff(MagicImmune.class) != null) return;
 
 		if (action.equals(AC_BREW)){
-			if (!isEquipped(hero))              GLog.i( Messages.get(this, "need_to_equip") );
-			else if (cursed)                    GLog.w( Messages.get(this, "cursed") );
-			else if (warmUpDelay > 0)           GLog.w( Messages.get(this, "not_ready") );
+			if (cursed)                                       GLog.w( Messages.get(this, "cursed") );
+			else if (isEquipped(hero) && warmUpDelay > 0)     GLog.w( Messages.get(this, "not_ready") );
 			else {
 				AlchemyScene.assignToolkit(this);
 				Game.switchScene(AlchemyScene.class);
 			}
 			
 		} else if (action.equals(AC_ENERGIZE)){
-			if (!isEquipped(hero))              GLog.i( Messages.get(this, "need_to_equip") );
-			else if (cursed)                    GLog.w( Messages.get(this, "cursed") );
+			if (cursed)                         GLog.w( Messages.get(this, "cursed") );
 			else if (Dungeon.energy < 6)        GLog.w( Messages.get(this, "need_energy") );
 			else {
 

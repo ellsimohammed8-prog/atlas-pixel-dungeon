@@ -120,7 +120,7 @@ public class Spinner extends Mob {
 	public int attackProc(Char enemy, int damage) {
 		damage = super.attackProc( enemy, damage );
 		if (Random.Int(2) == 0) {
-			int duration = Random.IntRange(7, 8);
+			int duration = Random.IntRange(5, 6);
 			//we only use half the ascension modifier here as total poison dmg doesn't scale linearly
 			duration = Math.round(duration * (AscensionChallenge.statModifier(this)/2f + 0.5f));
 			Buff.affect(enemy, Poison.class).set(duration);
@@ -195,7 +195,7 @@ public class Spinner extends Mob {
 			if (Dungeon.level.passable[webPos])  applyWebToCell(webPos);
 			if (Dungeon.level.passable[rightPos])applyWebToCell(rightPos);
 			
-			webCoolDown = 10;
+			webCoolDown = 12;
 
 			if (Dungeon.level.heroFOV[enemy.pos]){
 				Dungeon.hero.interrupt();
@@ -205,7 +205,7 @@ public class Spinner extends Mob {
 	}
 
 	protected void applyWebToCell(int cell){
-		GameScene.add(Blob.seed(cell, 20, Web.class));
+		GameScene.add(Blob.seed(cell, 12, Web.class));
 	}
 	
 	private int left(int direction){

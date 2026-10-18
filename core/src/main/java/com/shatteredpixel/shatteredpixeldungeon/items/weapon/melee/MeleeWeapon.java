@@ -431,15 +431,23 @@ public class MeleeWeapon extends Weapon {
 			revivePersists = true;
 		}
 
-		public int charges = 2;
+		public int charges = 3;
 		public float partialCharge;
 
 		@Override
 		public boolean act() {
 			if (charges < chargeCap()){
 				if (Regeneration.regenOn()){
-					//60 to 45 turns per charge
-					float chargeToGain = 1/(60f-1.5f*(chargeCap()-charges));
+					//Floor-band charge pacing: 35 turns in Sewers, 45 in Prison, 60 in Caves+
+					float baseTurns;
+					if (Dungeon.depth <= 5) {
+						baseTurns = 35f;
+					} else if (Dungeon.depth <= 10) {
+						baseTurns = 45f;
+					} else {
+						baseTurns = 60f;
+					}
+					float chargeToGain = 1 / (baseTurns - 1.5f * (chargeCap() - charges));
 
 					//40 to 30 turns per charge for champion
 					if (Dungeon.hero.subClass == HeroSubClass.CHAMPION){
@@ -495,7 +503,7 @@ public class MeleeWeapon extends Weapon {
 			if (Dungeon.hero.subClass == HeroSubClass.CHAMPION){
 				return Math.min(10, 4 + (Dungeon.hero.lvl - 1) / 3);
 			} else {
-				return Math.min(8, 2 + (Dungeon.hero.lvl - 1) / 3);
+				return Math.min(8, 3 + (Dungeon.hero.lvl - 1) / 3);
 			}
 		}
 

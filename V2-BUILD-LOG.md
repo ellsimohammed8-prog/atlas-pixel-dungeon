@@ -117,3 +117,14 @@ Base commit: `964507a` (main, v1.3.2)
 - **Compile result**: BUILD SUCCESSFUL, 0 errors.
 
 ---
+
+## Slice B2.3: Sirocco Blade Weapon Charge Pacing
+
+- **Status**: BUILT
+- **What changed**: Tuned weapon charge pacing by floor band in `MeleeWeapon.Charger.act()`: 35 turns per charge in the Sunken Cisterns (depths 1-5), 45 turns in the Prison of Chains (depths 6-10), and standard 60 turns in Caves+ (depths 11+). Increased base baseline charge capacity from 2 to 3 charges in `chargeCap()` and initial `charges = 3`, giving the Duelist reliable weapon ability usage across early encounters without RNG starvation.
+- **Files touched**:
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/weapon/melee/MeleeWeapon.java`
+- **Save compatibility**: Full compatibility. `Charger` restores `charges` and `partialCharge` from Bundle; older saves with 2 charges will charge up to the new cap of 3 naturally.
+- **Compile result**: BUILD SUCCESSFUL, 0 errors.
+
+---

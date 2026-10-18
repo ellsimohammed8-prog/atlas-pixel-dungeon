@@ -90,3 +90,15 @@ Base commit: `964507a` (main, v1.3.2)
 - **Compile result**: N/A (Documentation/Design commit before code).
 
 ---
+
+## Slice B2.1: Atlas King Armor Seal and Berserker Pacing
+
+- **Status**: BUILT
+- **What changed**: Tuned BrokenSeal shield recharge cooldown from 150 to 100 turns in `BrokenSeal.WarriorShield`. In `Berserk`, extended rage loss buffer from 3 to 6 turns and reduced the base decay rate multiplier from 0.05f to 0.03f, preserving Berserker rage across adjacent rooms and sustaining the Warrior's armor identity under high challenges.
+- **Files touched**:
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/actors/buffs/Berserk.java`
+  - `core/src/main/java/com/shatteredpixel/shatteredpixeldungeon/items/BrokenSeal.java`
+- **Save compatibility**: Full compatibility. Only internal pacing constants and formulas modified; save structure and state bundles remain completely unchanged.
+- **Compile result**: BUILD SUCCESSFUL, 0 errors.
+
+---
